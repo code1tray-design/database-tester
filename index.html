@@ -1,58 +1,133 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Image Download Page</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f4f4f9;
-      text-align: center;
-      padding: 40px;
-    }
-    .container {
-      max-width: 600px;
-      margin: auto;
-      background: #fff;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    }
-    img {
-      max-width: 100%;
-      border-radius: 10px;
-      margin-bottom: 20px;
-    }
-    .download-btn {
-      display: inline-block;
-      padding: 12px 24px;
-      background: #007bff;
-      color: #fff;
-      font-size: 16px;
-      font-weight: bold;
-      text-decoration: none;
-      border-radius: 8px;
-      transition: background 0.3s;
-    }
-    .download-btn:hover {
-      background: #0056b3;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gurmat Traders - Document Portal</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
 </head>
 <body>
-  <div class="container">
-    <h1>Download Image</h1>
-    <p>Click below to view or download the image.</p>
-    
-    <!-- Replace IMAGE_URL_HERE with your image URL -->
-    <img src="https://drive.google.com/uc?export=download&id=17a4yKLeeQMqct5zM4IukJNvwgPfgZL4o" alt="Preview Image">
+    <!-- Splash Screen Animation -->
+    <div class="splash-screen" id="splash-screen">
+        <div class="splash-content">
+            <div class="agriculture-elements">
+                <div class="wheat-stalk wheat-left"></div>
+                <div class="wheat-stalk wheat-right"></div>
+                <div class="tractor"></div>
+            </div>
+            <div class="logo-animation">
+                <svg class="gt-logo" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                    <path class="g-path" d="M50,50 C30,50 20,70 20,100 C20,130 30,150 50,150 C70,150 80,130 80,100 L50,100 L50,80 L100,80 L100,100 C100,150 80,180 50,180 C20,180 0,150 0,100 C0,50 20,20 50,20 C70,20 85,30 95,50 L70,65 C65,55 60,50 50,50 Z" />
+                    <path class="t-path" d="M110,20 L190,20 L190,50 L165,50 L165,180 L135,180 L135,50 L110,50 Z" />
+                </svg>
+            </div>
+            <div class="company-name">Gurmat Traders</div>
+            <div class="tagline">Quality Farm Documents</div>
+            <div class="owner-info">Est. by AVTAR SINGH</div>
+        </div>
+    </div>
 
-    <!-- Replace DOWNLOAD_LINK_HERE with your direct download link -->
-    <br>
-    <a href="DOWNLOAD_LINK_HERE" class="download-btn" download>
-      Download Image
-    </a>
-  </div>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <h1>Gurmat Traders</h1>
+                <p>Document Search Portal</p>
+            </div>
+            <div class="address-info">
+                <p>Chanarthal Kalan, Fatehgarh Sahib, Punjab</p>
+            </div>
+        </header>
+
+    <main>
+        <section class="search-section">
+            <div class="container">
+                <div class="search-container">
+                    <h2>Find Your Documents</h2>
+                    <p>Enter your Aadhaar number to search for associated documents</p>
+                    <div class="search-box">
+                        <div class="input-wrapper">
+                            <i class="fas fa-id-card input-icon"></i>
+                            <input type="text" id="aadhaar-input" placeholder="Enter Aadhaar Number" maxlength="12">
+                        </div>
+                        <button id="search-btn"><i class="fas fa-search"></i> Search</button>
+                    </div>
+                    <div class="error-message" id="error-msg"></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="results-section" class="results-section">
+            <div class="container">
+                <div class="results-container">
+                    <div class="results-header">
+                        <div class="results-title">
+                            <h2>Search Results</h2>
+                            <p class="results-subtitle">Documents associated with your Aadhaar number</p>
+                        </div>
+                        <div class="filter-options">
+                            <div class="filter-group">
+                                <label for="year-filter">Year:</label>
+                                <select id="year-filter">
+                                    <option value="all">All Years</option>
+                                </select>
+                            </div>
+                            <div class="filter-group">
+                                <label for="month-filter">Month:</label>
+                                <select id="month-filter">
+                                    <option value="all">All Months</option>
+                                    <option value="01">January</option>
+                                    <option value="02">February</option>
+                                    <option value="03">March</option>
+                                    <option value="04">April</option>
+                                    <option value="05">May</option>
+                                    <option value="06">June</option>
+                                    <option value="07">July</option>
+                                    <option value="08">August</option>
+                                    <option value="09">September</option>
+                                    <option value="10">October</option>
+                                    <option value="11">November</option>
+                                    <option value="12">December</option>
+                                </select>
+                            </div>
+                            <button id="sort-btn"><i class="fas fa-sort"></i> <span>Newest First</span></button>
+                        </div>
+                    </div>
+                    <div class="view-controls">
+                        <div class="items-per-page-control">
+                            <label for="items-per-page">Items per page:</label>
+                            <select id="items-per-page">
+                                <option value="5">5</option>
+                                <option value="10" selected>10</option>
+                                <option value="20">20</option>
+                                <option value="50">50</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="results-list" class="results-list">
+                        <!-- Results will be populated here by JavaScript -->
+                    </div>
+                    <div id="pagination-controls" class="pagination-controls">
+                        <button id="prev-page" class="pagination-btn"><i class="fas fa-chevron-left"></i> Previous</button>
+                        <span id="page-info" class="page-info">Page 1 of 1</span>
+                        <button id="next-page" class="pagination-btn">Next <i class="fas fa-chevron-right"></i></button>
+                    </div>
+                    <div id="no-results" class="no-results">
+                        <p>No documents found for this Aadhaar number.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2023 Gurmat Traders. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
 </body>
 </html>
