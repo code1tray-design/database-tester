@@ -567,8 +567,8 @@ function createDocumentListItem(doc) {
     downloadBtn.href = doc.link;
     downloadBtn.target = '_blank';
     downloadBtn.className = 'list-action-btn download-btn';
-    downloadBtn.innerHTML = '<i class="fas fa-download"></i>';
-    downloadBtn.title = 'Download';
+    downloadBtn.innerHTML = '<i class="fas fa-download"></i> <span>Download</span>';
+    downloadBtn.title = 'Click to download document';
     actionsSection.appendChild(downloadBtn);
     
     // WhatsApp share button
@@ -576,15 +576,15 @@ function createDocumentListItem(doc) {
     whatsappBtn.href = `https://wa.me/?text=View your document: ${encodeURIComponent(doc.link)}`;
     whatsappBtn.target = '_blank';
     whatsappBtn.className = 'list-action-btn whatsapp-btn';
-    whatsappBtn.innerHTML = '<i class="fab fa-whatsapp"></i>';
-    whatsappBtn.title = 'Share on WhatsApp';
+    whatsappBtn.innerHTML = '<i class="fab fa-whatsapp"></i> <span>Share</span>';
+    whatsappBtn.title = 'Share document on WhatsApp';
     actionsSection.appendChild(whatsappBtn);
     
     // Copy link button
     const copyBtn = document.createElement('button');
     copyBtn.className = 'list-action-btn copy-btn';
-    copyBtn.innerHTML = '<i class="fas fa-link"></i>';
-    copyBtn.title = 'Copy Link';
+    copyBtn.innerHTML = '<i class="fas fa-link"></i> <span>Copy Link</span>';
+    copyBtn.title = 'Copy document link to clipboard';
     copyBtn.addEventListener('click', () => copyToClipboard(doc.link));
     actionsSection.appendChild(copyBtn);
     

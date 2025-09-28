@@ -631,19 +631,41 @@ select:focus {
 .items-per-page-control {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
 }
 
 .items-per-page-control label {
     font-size: 0.9rem;
-    color: var(--text-light);
+    color: #666;
 }
 
-#items-per-page {
-    padding: 6px 10px;
+.items-per-page-control select {
+    padding: 5px;
     border: 1px solid #ddd;
     border-radius: 4px;
     font-size: 0.9rem;
+}
+
+.usage-tip {
+    background-color: #f8f9fa;
+    border-left: 4px solid var(--accent-color);
+    padding: 12px 15px;
+    margin-top: 15px;
+    border-radius: 4px;
+    font-size: 0.95rem;
+    color: #555;
+    line-height: 1.4;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.usage-tip i {
+    color: var(--accent-color);
+    margin-right: 5px;
+}
+
+.usage-tip strong {
+    color: var(--primary-color);
+    font-weight: 600;
 }
 
 /* Pagination Controls */
@@ -765,7 +787,7 @@ select:focus {
 }
 
 .list-action-btn {
-    width: 36px;
+    min-width: 36px;
     height: 36px;
     display: flex;
     align-items: center;
@@ -777,6 +799,10 @@ select:focus {
     color: white;
     text-decoration: none;
     box-shadow: var(--shadow-light);
+    padding: 0 12px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    gap: 6px;
 }
 
 .list-action-btn.download-btn {
