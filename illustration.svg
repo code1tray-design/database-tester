@@ -19,7 +19,7 @@
         
         <!-- Monitor Screen -->
         <rect x="50" y="50" width="300" height="300" rx="20" fill="#2d3436"/>
-        <rect x="60" y="60" width="280" height="280" rx="15" fill="#6c5ce7"/>
+        <rect x="60" y="60" width="280" height="280" rx="15" fill="#d12026"/>
         
         <!-- Character -->
         <g transform="translate(100, 80)">
@@ -36,7 +36,7 @@
             <circle cx="130" cy="90" r="3" fill="#2d3436"/>
 
             <!-- Body -->
-            <path d="M20,140 Q20,120 50,120 L150,120 Q180,120 180,140 L180,250 L20,250 Z" fill="#4834d4"/>
+            <path d="M20,140 Q20,120 50,120 L150,120 Q180,120 180,140 L180,250 L20,250 Z" fill="#d12026"/>
             
             <!-- Arm/Hand Gesture (OK Sign) -->
             <path d="M-20,160 Q-10,140 10,150 L30,160 L30,200 L10,210 Q-10,200 -20,180 Z" fill="#fff"/>
@@ -50,7 +50,7 @@
         <!-- Checkmark Bubble -->
         <g transform="translate(-20, 200)">
             <circle cx="30" cy="30" r="30" fill="#fff"/>
-            <path d="M15,30 L25,40 L45,20" stroke="#6c5ce7" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M15,30 L25,40 L45,20" stroke="#d12026" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
         </g>
     </g>
 </svg>
