@@ -1,30 +1,129 @@
-// Student Database (To be populated by the user)
-const students = [
-    { name: "John Doe", rollNumber: "123456" },
-    { name: "Jane Smith", rollNumber: "654321" },
-    // Add more student data here
-];
+const STORAGE_KEY = "chitkara-university-student-logins";
 
-const loginForm = document.getElementById('login-form');
-const errorMessage = document.getElementById('error-message');
+const form = document.getElementById("login-form");
+const submitButton = document.getElementById("submitButton");
+const nameInput = document.getElementById("studentName");
+const rollInput = document.getElementById("rollNumber");
+const formStatus = document.getElementById("formStatus");
+const previewName = document.getElementById("previewName");
+const previewRoll = document.getElementById("previewRoll");
+const previewTime = document.getElementById("previewTime");
+const previewStatus = document.getElementById("previewStatus");
+const storageMode = document.getElementById("storageMode");
 
-loginForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const name = document.getElementById('student-name').value.trim();
-    const roll = document.getElementById('roll-number').value.trim();
+function collapseSpaces(value) {
+    return value.replace(/\s+/g, " ").trim();
+}
 
-    const student = students.find(s => s.name.toLowerCase() === name.toLowerCase() && s.rollNumber === roll);
+function normalizeRollNumber(value) {
+    return value.replace(/\s+/g, "").trim().toUpperCase();
+}
 
-    if (student) {
-        // Successful login
-        errorMessage.textContent = "";
-        alert(`Welcome, ${student.name}! Redirecting to dashboard...`);
-        // Redirect logic would go here, e.g., window.location.href = 'dashboard.html';
-    } else {
-        // Failed login
-        errorMessage.textContent = "Invalid Name or Roll Number. Please try again.";
-        // Clear inputs for better UX
-        document.getElementById('student-name').value = '';
-        document.getElementById('roll-number').value = '';
+function isValidName(value) {
+    return /^[A-Za-z]+(?:[ .'-][A-Za-z]+)*$/.test(value);
+}
+
+function isValidRollNumber(value) {
+    return /^[A-Z0-9-]{4,20}$/.test(value);
+}
+
+function setStatus(message, tone) {
+    formStatus.textContent = message;
+    formStatus.className = "status";
+
+    if (tone) {
+        formStatus.classList.add(tone);
     }
+}
+
+function formatDate(value) {
+    const date = new Date(value);
+
+    if (Number.isNaN(date.getTime())) {
+        return "Unknown time";
+    }
+
+    return new Intl.DateTimeFormat("en-IN", {
+        dateStyle: "medium",
+        timeStyle: "short"
+    }).format(date);
+}
+
+function readSavedLogins() {
+    try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        return raw ? JSON.parse(raw) : [];
+    } catch (error) {
+        return [];
+    }
+}
+
+function saveLoginLocally(record) {
+    const savedLogins = readSavedLogins();
+    const nextLogins = [record, ...savedLogins].slice(0, 25);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(nextLogins));
+}
+
+function updatePreview(record) {
+    previewName.textContent = record.studentName;
+    previewRoll.textContent = record.rollNumber;
+    previewTime.textContent = formatDate(record.submittedAt);
+    previewStatus.textContent = record.statusText;
+    storageMode.textContent = record.storageMode;
+}
+
+function showSavedPreview() {
+    const [latestRecord] = readSavedLogins();
+
+    if (!latestRecord) {
+        return;
+    }
+
+    updatePreview(latestRecord);
+    nameInput.value = latestRecord.studentName;
+    rollInput.value = latestRecord.rollNumber;
+}
+
+form.addEventListener("submit", (event) => {
+    event.preventDefault();
+
+    const studentName = collapseSpaces(nameInput.value);
+    const rollNumber = normalizeRollNumber(rollInput.value);
+
+    if (!studentName || !rollNumber) {
+        setStatus("Please enter both the student name and roll number.", "error");
+        return;
+    }
+
+    if (!isValidName(studentName)) {
+        setStatus("Please enter a valid student name using letters and spaces only.", "error");
+        nameInput.focus();
+        return;
+    }
+
+    if (!isValidRollNumber(rollNumber)) {
+        setStatus("Please enter a valid roll number using letters, numbers, or hyphens.", "error");
+        rollInput.focus();
+        return;
+    }
+
+    const record = {
+        studentName,
+        rollNumber,
+        submittedAt: new Date().toISOString(),
+        storageMode: "Static mode",
+        statusText: "Login captured successfully in this browser."
+    };
+
+    submitButton.disabled = true;
+    submitButton.textContent = "Saving...";
+
+    saveLoginLocally(record);
+    updatePreview(record);
+    setStatus(`Welcome, ${studentName}. Your login has been saved in this static page.`, "success");
+
+    submitButton.disabled = false;
+    submitButton.textContent = "Access portal";
 });
+
+showSavedPreview();
