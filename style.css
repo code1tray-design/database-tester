@@ -133,6 +133,33 @@ body {
 
 .btn-primary:hover {
     background-color: var(--primary-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(209, 32, 38, 0.2);
+}
+
+.admin-access {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border-color);
+    text-align: center;
+}
+
+.admin-access p {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+}
+
+.admin-link {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 600;
+    margin-left: 4px;
+    transition: color 0.2s;
+}
+
+.admin-link:hover {
+    color: var(--primary-hover);
+    text-decoration: underline;
 }
 
 .error {
@@ -172,12 +199,353 @@ body {
     }
 }
 
-/* Dashboard Styles */
-.dashboard-body {
-    background-color: #f0f2f5;
-    display: block;
-    height: 100vh;
+/* Simulator Game Styles */
+.game-body {
+    background-color: #fdfbf7;
+    margin: 0;
+    min-height: 100dvh;
+    font-family: 'Inter', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+    box-sizing: border-box;
+    overflow-y: auto;
+}
+
+.game-container {
+    display: flex;
+    width: 100%;
+    max-width: 1400px;
+    height: 850px;
+    max-height: calc(100vh - 4rem);
+    gap: 1.5rem;
+    position: relative;
+}
+
+/* Left Panel: Scenario & Decisions */
+.game-main {
+    flex: 1.6;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    min-width: 0; /* Prevent flex overflow */
+}
+
+.game-header {
+    background: #ffffff;
+    padding: 1.5rem 2rem;
+    border-radius: 1.25rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+.header-left {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.game-header h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.75rem;
+    color: var(--primary-color);
+    margin: 0;
+    line-height: 1;
+}
+
+.round-indicator {
+    background: #fff5f5;
+    color: var(--primary-color);
+    padding: 0.6rem 1.2rem;
+    border-radius: 2rem;
+    font-weight: 800;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+}
+
+.scenario-card {
+    background: #ffffff;
+    flex: 1;
+    padding: 3rem;
+    border-radius: 1.5rem;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
     overflow: hidden;
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+.scenario-title {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: var(--text-muted);
+    margin-bottom: 0.75rem;
+    font-weight: 700;
+}
+
+.scenario-text {
+    font-size: 1.35rem;
+    font-weight: 600;
+    line-height: 1.5;
+    margin-bottom: 2.5rem;
+    color: #1a1a1a;
+}
+
+.options-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+}
+
+.option-btn {
+    background: #fff;
+    border: 1px solid #edf2f7;
+    padding: 1.25rem 1.75rem;
+    border-radius: 1rem;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    position: relative;
+}
+
+.option-btn:hover {
+    border-color: var(--primary-color);
+    background: #fffafa;
+    transform: translateX(8px);
+    box-shadow: 0 4px 12px rgba(209, 32, 38, 0.08);
+}
+
+.option-label {
+    font-weight: 800;
+    color: var(--primary-color);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.option-text {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #2d3748;
+}
+
+/* Right Panel: Performance Metrics */
+.game-sidebar {
+    flex: 0.8;
+    background: #ffffff;
+    border-radius: 1.5rem;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.05);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    border: 1px solid rgba(0,0,0,0.05);
+    min-width: 320px;
+}
+
+.sidebar-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.4rem;
+    color: #1a1a1a;
+    margin-bottom: 0.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.metrics-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    padding-right: 5px;
+}
+
+/* Custom Scrollbar */
+.metrics-list::-webkit-scrollbar { width: 4px; }
+.metrics-list::-webkit-scrollbar-track { background: transparent; }
+.metrics-list::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+
+.metric-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.6rem 0.85rem;
+    background: #f8fafc;
+    border-radius: 0.75rem;
+    transition: transform 0.2s;
+}
+
+.metric-item:hover {
+    transform: scale(1.02);
+    background: #f1f5f9;
+}
+
+.metric-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.metric-name {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.metric-value {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #1a202c;
+}
+
+.metric-change {
+    font-size: 0.75rem;
+    font-weight: 800;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.5rem;
+}
+
+.timer-bar {
+    height: 4px;
+    background: #f1f5f9;
+    border-radius: 10px;
+    overflow: hidden;
+    width: 100%;
+    max-width: 300px;
+}
+
+.timer-fill {
+    height: 100%;
+    background: var(--primary-color);
+    width: 100%;
+    transition: width linear 1s;
+    border-radius: 10px;
+}
+
+/* Result & Feedback Overlays */
+.overlay-content {
+    background: white;
+    padding: 3.5rem;
+    border-radius: 2rem;
+    max-width: 600px;
+    width: 90%;
+    box-shadow: 0 25px 70px rgba(0,0,0,0.15);
+    position: relative;
+    text-align: center;
+}
+
+.ranking-badge {
+    font-size: 4.5rem;
+    margin-bottom: 1.5rem;
+    filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));
+}
+
+.ranking-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.75rem;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+    font-weight: 700;
+}
+
+.score-summary {
+    font-size: 1.1rem;
+    color: #4a5568;
+    line-height: 1.7;
+    margin-bottom: 2.5rem;
+}
+
+.metric-card-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+    margin-bottom: 2rem;
+}
+
+.metric-card {
+    padding: 1.5rem;
+    background: #f8fafc;
+    border-radius: 1.25rem;
+    border: 1px solid #edf2f7;
+}
+
+.metric-card-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+}
+
+.metric-card-value {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #1a202c;
+}
+
+/* Responsive Scaling */
+@media (max-height: 900px) {
+    .game-container {
+        height: 750px;
+    }
+    .scenario-card {
+        padding: 2rem;
+    }
+    .scenario-text {
+        font-size: 1.2rem;
+        margin-bottom: 1.5rem;
+    }
+}
+
+@media (max-width: 1200px) {
+    .game-body {
+        padding: 1rem;
+    }
+    .game-container {
+        flex-direction: column;
+        height: auto;
+        max-height: none;
+    }
+    .game-sidebar {
+        flex: none;
+        width: 100%;
+        min-width: 0;
+    }
+    .metrics-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 0.75rem;
+    }
+}
+
+@media (max-width: 600px) {
+    .scenario-card {
+        padding: 1.5rem;
+    }
+    .scenario-text {
+        font-size: 1.1rem;
+    }
+    .game-header {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+    .timer-bar {
+        max-width: none;
+    }
 }
 
 .dashboard-container {

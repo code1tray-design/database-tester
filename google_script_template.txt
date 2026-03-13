@@ -1,0 +1,215 @@
+/**
+ * Google Apps Script for saving and retrieving Student Portal data.
+ * 
+ * 1. Open a Google Sheet.
+ * 2. Go to Extensions > Apps Script.
+ * 3. Delete any existing code and paste this.
+ * 4. Click 'Deploy' > 'New Deployment'.
+ * 5. Select 'Web App'.
+ * 6. Execute as: 'Me'.
+ * 7. Who has access: 'Anyone'.
+ * 8. Authorize the script.
+ * 9. Copy the Web App URL and paste it into your app.js, test.js, and admin.js files.
+ * 
+ * SETUP NOTE: Create a sheet named 'Settings' and set cell A1 to 'location_check_enabled' and B1 to 'true' or 'false'.
+ */
+
+function doPost(e) {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var debugSheet = ss.getSheetByName('DebugLog');
+  if (!debugSheet) {
+    debugSheet = ss.insertSheet('DebugLog');
+    debugSheet.appendRow(['Timestamp', 'Raw Data', 'Status', 'Error']);
+  }
+
+  try {
+    var contents = e.postData.contents;
+    if (!contents) throw new Error("No data received in post body.");
+    
+    var data = JSON.parse(contents);
+    debugSheet.appendRow([new Date(), contents, "Success", ""]);
+    
+    // Handle GPS Toggle update from Admin Panel
+    if (data.type === 'update_settings') {
+      var settingsSheet = ss.getSheetByName('Settings');
+      if (!settingsSheet) {
+        settingsSheet = ss.insertSheet('Settings');
+        settingsSheet.appendRow(['Setting', 'Value']);
+      }
+      settingsSheet.getRange(2, 1).setValue('location_check_enabled');
+      settingsSheet.getRange(2, 2).setValue(data.enabled);
+      return ContentService.createTextOutput(JSON.stringify({ 'result': 'success', 'message': 'Settings updated' }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+
+    // Determine target sheet
+    var sheetName = 'Logins';
+    if (data.type === 'test') {
+      if (data.testName === 'CaseStudy_Test1') {
+        sheetName = 'CaseStudy_Test1';
+      } else {
+        sheetName = (data.testName && data.testName.includes("Simulator")) ? 'SimulatorResults' : 'MCQResults';
+      }
+    } else if (data.type === 'location_log') {
+      sheetName = 'Attendance_GPS';
+    }
+    
+    var sheet = ss.getSheetByName(sheetName);
+    
+    // Create sheet with correct headers if it doesn't exist
+    if (!sheet) {
+      sheet = ss.insertSheet(sheetName);
+      if (sheetName === 'Logins') {
+        sheet.appendRow(['Timestamp', 'Student Name', 'Roll Number', 'Status', 'Selfie']);
+      } else if (sheetName === 'Attendance_GPS') {
+        sheet.appendRow(['Timestamp', 'Student Name', 'Roll Number', 'Lat', 'Lng', 'Distance (km)', 'Status']);
+      } else if (sheetName === 'CaseStudy_Test1') {
+        sheet.appendRow(['Timestamp', 'Student Name', 'Roll Number', 'Score', 'Title', 'Duration', 'Finance', 'Strategy', 'ESG', 'Risk', 'Detailed Answers']);
+      } else if (sheetName === 'SimulatorResults') {
+        sheet.appendRow(['Timestamp', 'Student Name', 'Roll Number', 'Final Score', 'Total Profit', 'Time Taken', 'Market Share', 'ESG Score', 'Reputation', 'Investor Confidence', 'Ranking', 'Decisions Made']);
+      } else {
+        sheet.appendRow(['Timestamp', 'Student Name', 'Roll Number', 'Test Name', 'Score', 'Total Questions', 'Percentage', 'Answers']);
+      }
+      sheet.getRange(1, 1, 1, sheet.getLastColumn()).setFontWeight('bold').setBackground('#f3f3f3');
+    }
+    
+    var timestamp = new Date();
+    
+    if (sheetName === 'Logins') {
+      sheet.appendRow([timestamp, data.studentName, data.rollNumber, data.statusText || "Login Successful", data.selfie || "No Selfie"]);
+    } else if (sheetName === 'Attendance_GPS') {
+      sheet.appendRow([
+        timestamp,
+        data.studentName,
+        data.rollNumber,
+        data.latitude,
+        data.longitude,
+        data.distanceKm,
+        data.status
+      ]);
+    } else if (sheetName === 'CaseStudy_Test1') {
+      sheet.appendRow([
+        timestamp,
+        data.studentName,
+        data.rollNumber,
+        data.score,
+        data.percentage, 
+        data.duration,
+        data.finance || 0,
+        data.strategy || 0,
+        data.esg || 0,
+        data.risk || 0,
+        JSON.stringify(data.answers)
+      ]);
+    } else if (sheetName === 'SimulatorResults') {
+      sheet.appendRow([
+        timestamp,
+        data.studentName,
+        data.rollNumber,
+        data.score,
+        data.profit,
+        data.duration,
+        data.marketShare + "%",
+        data.esgScore,
+        data.reputation,
+        data.investor,
+        data.percentage,
+        JSON.stringify(data.answers.map(h => h.round + ":" + h.decision))
+      ]);
+    } else {
+      sheet.appendRow([
+        timestamp,
+        data.studentName,
+        data.rollNumber,
+        data.testName,
+        data.score,
+        data.total,
+        data.percentage + "%",
+        JSON.stringify(data.answers)
+      ]);
+    }
+    
+    return ContentService.createTextOutput(JSON.stringify({ 'result': 'success' }))
+      .setMimeType(ContentService.MimeType.JSON);
+      
+  } catch (error) {
+    if (debugSheet) debugSheet.appendRow([new Date(), e.postData ? e.postData.contents : "No data", "Error", error.toString()]);
+    return ContentService.createTextOutput(JSON.stringify({ 'result': 'error', 'error': error.toString() }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+function doGet(e) {
+  try {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var type = e.parameter.type;
+    
+    // Check for Settings first
+    if (type === 'settings') {
+      var settingsSheet = ss.getSheetByName('Settings');
+      var locationEnabled = true;
+      if (settingsSheet) {
+        var val = settingsSheet.getRange(2, 2).getValue();
+        locationEnabled = (val === true || val === "true");
+      }
+      return ContentService.createTextOutput(JSON.stringify({ 'result': 'success', 'location_check_enabled': locationEnabled }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+
+    // Handle multiple types for admin dashboard
+    var sheetNames = [];
+    if (type === 'logins') sheetNames = ['Logins'];
+    else if (type === 'gps') sheetNames = ['Attendance_GPS'];
+    else if (type === 'results') sheetNames = ['MCQResults', 'SimulatorResults', 'CaseStudy_Test1'];
+    else if (type === 'all') sheetNames = ['Logins', 'Attendance_GPS', 'MCQResults', 'SimulatorResults', 'CaseStudy_Test1'];
+    else sheetNames = [type]; 
+
+    var responseData = {};
+    
+    sheetNames.forEach(function(name) {
+      var sheet = ss.getSheetByName(name);
+      var allData = [];
+      if (sheet) {
+        var data = sheet.getDataRange().getValues();
+        if (data.length > 1) {
+          var headers = data[0];
+          var rows = data.slice(1);
+          allData = rows.map(function(row) {
+            var obj = { _sheet: name };
+            headers.forEach(function(header, i) { 
+              // Standardize headers: lowercase and remove spaces for easier access
+              var cleanHeader = header.toString().toLowerCase().replace(/\s+/g, '');
+              obj[cleanHeader] = row[i]; 
+              // Also keep original header for display if needed
+              obj[header] = row[i];
+            });
+            return obj;
+          });
+        }
+      }
+      responseData[name] = allData;
+    });
+    
+    // For admin dashboard efficiency, embed settings in the response
+    var settingsSheet = ss.getSheetByName('Settings');
+    var locationEnabled = true;
+    if (settingsSheet) {
+      var val = settingsSheet.getRange(2, 2).getValue();
+      locationEnabled = (val === true || val === "true");
+    }
+    responseData['_settings'] = { location_check_enabled: locationEnabled };
+
+    // For backward compatibility or simpler requests, return the specific sheet as a flat array
+    if (type !== 'all' && sheetNames.length === 1) {
+       return ContentService.createTextOutput(JSON.stringify({ 'result': 'success', 'data': responseData[sheetNames[0]] }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+
+    return ContentService.createTextOutput(JSON.stringify({ 'result': 'success', 'data': responseData }))
+      .setMimeType(ContentService.MimeType.JSON);
+      
+  } catch (error) {
+    return ContentService.createTextOutput(JSON.stringify({ 'result': 'error', 'error': error.toString() }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
