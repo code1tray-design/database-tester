@@ -3,7 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Teacher Admin Portal - Manage student data, view analytics, and oversee academic activities at Chitkara University.">
+    <meta name="keywords" content="admin portal, teacher, student management, analytics, Chitkara University">
+    <meta name="author" content="Chitkara University">
+    <link rel="icon" href="logo.svg" type="image/svg+xml">
     <title>Advanced Teacher Admin Portal | Chitkara University</title>
+    <!-- If using GitHub Pages with a project repository, replace 'repo-name' with your repository name -->
+    <!-- <base href="/repo-name/"> -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -159,6 +165,35 @@
         }
         .perf-card h3 { margin-bottom: 20px; font-size: 1.1rem; display: flex; align-items: center; gap: 8px; }
 
+        /* Activity Feed */
+        .activity-feed { margin-bottom: 32px; }
+        .activity-list { max-height: 300px; overflow-y: auto; }
+        .activity-item {
+            display: flex; align-items: center; gap: 12px; padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .activity-item:last-child { border-bottom: none; }
+        .activity-icon {
+            width: 32px; height: 32px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-weight: bold;
+        }
+        .activity-icon.login { background: var(--primary); }
+        .activity-icon.test { background: var(--success); }
+        .activity-icon.location { background: var(--warning); }
+        .activity-content { flex: 1; }
+        .activity-content .student { font-weight: 600; }
+        .activity-content .action { color: var(--text-muted); font-size: 0.875rem; }
+        .activity-time { color: var(--text-muted); font-size: 0.75rem; }
+
+        /* Enhanced Charts */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
         .rank-list { list-style: none; }
         .rank-item {
             display: flex;
@@ -184,7 +219,12 @@
         .table-header { padding: 20px 24px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
         .table-container { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; }
-        th { background: #f8fafc; padding: 16px 24px; text-align: left; font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.05em; }
+        th { background: #f8fafc; padding: 16px 24px; text-align: left; font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.05em; cursor: pointer; user-select: none; }
+        th.sortable { cursor: pointer; transition: background 0.2s; }
+        th.sortable:hover { background: #e2e8f0; }
+        .sort-icon { width: 14px; height: 14px; margin-left: 4px; transition: transform 0.2s; }
+        .sort-icon.asc { transform: rotate(180deg); color: var(--primary); }
+        .sort-icon.desc { color: var(--primary); }
         td { padding: 16px 24px; border-bottom: 1px solid var(--border); font-size: 0.875rem; }
         tr:hover { background: #f1f5f9; }
 
@@ -277,23 +317,44 @@
 
             <!-- Dashboard View -->
             <div id="view-dashboard">
+                <!-- Activity Feed -->
+                <div class="activity-feed">
+                    <div class="perf-card" style="margin-bottom: 24px;">
+                        <h3><i data-feather="activity"></i> Recent Activity</h3>
+                        <div id="activity-feed" class="activity-list">
+                            <!-- Dynamic activity items -->
+                        </div>
+                    </div>
+                </div>
+
                 <div class="stats-grid">
                     <div class="stat-card">
                         <div class="stat-label">TOTAL LOGINS</div>
                         <div class="stat-value" id="stat-total-logins">0</div>
+                        <div style="margin-top: 8px; font-size: 0.75rem; color: var(--text-muted);">Last 24h: <span id="stat-logins-24h">0</span></div>
                     </div>
                     <div class="stat-card" style="border-left-color: var(--success);">
                         <div class="stat-label">AVG. TEST SCORE</div>
                         <div class="stat-value" id="stat-avg-score">0%</div>
+                        <div style="margin-top: 8px; font-size: 0.75rem; color: var(--text-muted);">Highest: <span id="stat-highest-score">0%</span></div>
                     </div>
                     <div class="stat-card" style="border-left-color: var(--warning);">
                         <div class="stat-label">GPS VERIFIED</div>
                         <div class="stat-value" id="stat-gps-verified">0</div>
+                        <div style="margin-top: 8px; font-size: 0.75rem; color: var(--text-muted);">Success Rate: <span id="stat-gps-rate">0%</span></div>
                     </div>
                     <div class="stat-card" style="border-left-color: #8b5cf6;">
                         <div class="stat-label">ACTIVE STUDENTS</div>
                         <div class="stat-value" id="stat-active-students">0</div>
+                        <div style="margin-top: 8px; font-size: 0.75rem; color: var(--text-muted);">This Week: <span id="stat-active-week">0</span></div>
                     </div>
+                </div>
+
+                <!-- Welcome Message for Empty State -->
+                <div id="welcome-message" class="perf-card" style="text-align: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; display: none;">
+                    <h3 style="color: white; margin-bottom: 16px;">🎓 Welcome to Chitkara Admin Portal</h3>
+                    <p style="font-size: 1.1rem; margin-bottom: 12px;">Your student portal is ready!</p>
+                    <p style="font-size: 0.9rem; opacity: 0.9;">Student activity data will appear here once they start using the portal. The dashboard will automatically update with real-time analytics.</p>
                 </div>
 
                 <div class="performance-grid">
@@ -313,9 +374,21 @@
                     </div>
                 </div>
 
-                <div class="perf-card" style="margin-bottom: 32px;">
-                    <h3><i data-feather="activity"></i> Performance Trends</h3>
-                    <canvas id="performanceChart" height="100"></canvas>
+                <!-- Enhanced Charts Section -->
+                <div class="charts-grid">
+                    <div class="perf-card">
+                        <h3><i data-feather="bar-chart-2"></i> Performance Trends</h3>
+                        <canvas id="performanceChart" height="100"></canvas>
+                    </div>
+                    <div class="perf-card">
+                        <h3><i data-feather="pie-chart"></i> Test Distribution</h3>
+                        <canvas id="testDistributionChart" height="100"></canvas>
+                    </div>
+                </div>
+
+                <div class="perf-card" style="margin-top: 24px;">
+                    <h3><i data-feather="clock"></i> Time Analytics</h3>
+                    <canvas id="timeAnalyticsChart" height="80"></canvas>
                 </div>
             </div>
 
@@ -337,7 +410,7 @@
 
             <!-- Analytics View -->
             <div id="view-analytics" class="hidden">
-                <div class="performance-grid">
+                <div class="charts-grid">
                     <div class="perf-card">
                         <h3>Test Participation Distribution</h3>
                         <canvas id="participationChart"></canvas>
@@ -346,6 +419,10 @@
                         <h3>GPS Status Overview</h3>
                         <canvas id="gpsChart"></canvas>
                     </div>
+                </div>
+                <div class="perf-card">
+                    <h3>Student Engagement Timeline</h3>
+                    <canvas id="engagementChart" height="80"></canvas>
                 </div>
             </div>
 

@@ -503,15 +503,17 @@ function endGame(score, ranking) {
 }
 
 function saveToCloud(score, ranking, callback) {
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxSc1O09OfhNkYU96lS2MwLv_9uueGkBGM-iq015LppNxFmhj8C0aVmIUN51_Ev0rjO/exec";
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyJF7MqZ4dGgf078BuUiI-EnV29Dl05dAboDYbznbmsQnkAzXuD-1Bii5T1VA7aq6fU/exec";
     const timeSec = Math.floor((Date.now() - state.startTime) / 1000);
     const data = {
-        type: "test", studentName: localStorage.getItem('studentName') || "Unknown",
-        rollNumber: localStorage.getItem('rollNumber') || "N/A", testName: "Viksit Bharat Simulator",
-        score, profit: state.profit, marketShare: state.marketShare, esgScore: state.esgScore.toFixed(1),
-        reputation: els.valReputation.textContent, investor: els.valInvestor.textContent,
-        duration: `${Math.floor(timeSec / 60)}m ${timeSec % 60}s`, timestamp: new Date().toISOString(),
-        percentage: ranking, answers: state.history
+        type: "test",
+        studentName: localStorage.getItem('studentName') || "Unknown",
+        rollNumber: localStorage.getItem('rollNumber') || "N/A",
+        testName: "Viksit Bharat Simulator",
+        score,
+        duration: `${Math.floor(timeSec / 60)}m ${timeSec % 60}s`,
+        percentage: ranking
+        // Removed detailed history and intermediate metrics for simplified logging
     };
     fetch(GOOGLE_SCRIPT_URL, { method: "POST", mode: "no-cors", body: JSON.stringify(data) });
     setTimeout(() => { if (callback) callback(); }, 1200);

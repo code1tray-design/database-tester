@@ -1,6 +1,6 @@
 // Viksit Bharat Corporate Intelligence Challenge - Logic Engine
 // PASTE YOUR GOOGLE SCRIPT URL HERE
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxSc1O09OfhNkYU96lS2MwLv_9uueGkBGM-iq015LppNxFmhj8C0aVmIUN51_Ev0rjO/exec";
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyJF7MqZ4dGgf078BuUiI-EnV29Dl05dAboDYbznbmsQnkAzXuD-1Bii5T1VA7aq6fU/exec";
 
 // State
 let state = {
@@ -418,12 +418,8 @@ async function saveToCloud(score, title) {
         score: score,
         total: 100,
         percentage: title,
-        duration: `${m}m ${s}s`,
-        finance: state.scores.finance,
-        strategy: state.scores.strategy,
-        esg: state.scores.esg,
-        risk: state.scores.risk,
-        answers: state.answers
+        duration: `${m}m ${s}s`
+        // Removed detailed scores and answers for simplified logging
     };
 
     try {

@@ -2,7 +2,7 @@
 feather.replace();
 
 // PASTE YOUR GOOGLE SCRIPT URL HERE
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxSc1O09OfhNkYU96lS2MwLv_9uueGkBGM-iq015LppNxFmhj8C0aVmIUN51_Ev0rjO/exec";
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyJF7MqZ4dGgf078BuUiI-EnV29Dl05dAboDYbznbmsQnkAzXuD-1Bii5T1VA7aq6fU/exec";
 
 // Sample Question Database
 const testQuestions = [
@@ -235,8 +235,8 @@ function submitTest() {
         score,
         total: testQuestions.length,
         percentage,
-        answers: userAnswers,
         submittedAt: new Date().toISOString()
+        // Removed detailed answers for simplified logging
     };
     
     // Clear state

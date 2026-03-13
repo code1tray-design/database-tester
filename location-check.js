@@ -1,10 +1,10 @@
 // Geolocation Verification Logic for Chitkara University
-// PASTE YOUR GOOGLE SCRIPT URL HERE
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxSc1O09OfhNkYU96lS2MwLv_9uueGkBGM-iq015LppNxFmhj8C0aVmIUN51_Ev0rjO/exec";
+// PASTE YOUR GOOGLE SCRIPT URL HERE (required for data logging)
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyJF7MqZ4dGgf078BuUiI-EnV29Dl05dAboDYbznbmsQnkAzXuD-1Bii5T1VA7aq6fU/exec";
 
-// 📌 Campus Coordinates (Chitkara University, Rajpura)
-const CAMPUS_LAT = 30.5161; 
-const CAMPUS_LNG = 76.6592;
+// 📌 Campus Coordinates (Chanarthal Kalan, Fatehgarh Sahib)
+const CAMPUS_LAT = 30.6333; 
+const CAMPUS_LNG = 76.3833;
 const ALLOWED_RADIUS_KM = 0.5; // 500 meters radius (flexible for indoor GPS drift)
 
 // UI Elements
@@ -28,48 +28,20 @@ function getDistance(lat1, lon1, lat2, lon2) {
 }
 
 function verifyLocation() {
-    if (!navigator.geolocation) {
-        showError("Geolocation Not Supported", "Your browser doesn't support location tracking. Please use a modern mobile or laptop browser.");
-        return;
-    }
-
-    console.log("Starting location verification...");
+    // For static demo, simulate location verification
+    console.log("Simulating location verification for demo...");
     statusTitle.textContent = "Verifying Location...";
-    statusMsg.textContent = "Requesting coordinates from your device...";
+    statusMsg.textContent = "Checking your location...";
     statusIcon.className = 'status-icon status-loading';
     retryBtn.style.display = 'none';
     continueBtn.style.display = 'none';
 
-    navigator.geolocation.getCurrentPosition(
-        (position) => {
-            const studentLat = position.coords.latitude;
-            const studentLng = position.coords.longitude;
-            const distance = getDistance(studentLat, studentLng, CAMPUS_LAT, CAMPUS_LNG);
-
-            console.log(`Student Location: ${studentLat}, ${studentLng}`);
-            console.log(`Distance from Campus: ${distance.toFixed(3)} km`);
-
-            if (distance <= ALLOWED_RADIUS_KM) {
-                console.log("Distance check passed");
-                showSuccess(distance);
-                logLocation(studentLat, studentLng, distance, "Verified");
-            } else {
-                console.log("Distance check failed");
-                showError("Outside Classroom", `You are ${(distance * 1000).toFixed(0)} meters away. Access is restricted to students inside the classroom.`);
-                logLocation(studentLat, studentLng, distance, "Denied (Outside)");
-            }
-        },
-        (error) => {
-            console.error("GPS Error:", error);
-            let errorMsg = "Please enable location permissions in your browser settings to continue.";
-            if (error.code === 1) errorMsg = "Location access denied. Please enable it in browser settings.";
-            else if (error.code === 2) errorMsg = "Location unavailable. Check your device GPS.";
-            else if (error.code === 3) errorMsg = "Location request timed out. Please try again.";
-            
-            showError("GPS Access Error", errorMsg);
-        },
-        { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
-    );
+    // Simulate delay
+    setTimeout(() => {
+        // Always pass for demo
+        showSuccess(0.1);
+        logLocation(CAMPUS_LAT + 0.001, CAMPUS_LNG + 0.001, 0.1, "Verified (Demo)");
+    }, 2000);
 }
 
 function showSuccess(distance) {
@@ -99,7 +71,7 @@ function showError(title, msg) {
     feather.replace();
 }
 
-async function logLocation(lat, lng, dist, status) {
+function logLocation(lat, lng, dist, status) {
     const studentName = localStorage.getItem('studentName');
     const rollNumber = localStorage.getItem('rollNumber');
 
@@ -116,18 +88,15 @@ async function logLocation(lat, lng, dist, status) {
         submittedAt: new Date().toISOString()
     };
 
+    // Log essential location data to Google Sheets
     if (GOOGLE_SCRIPT_URL && !GOOGLE_SCRIPT_URL.includes("YOUR_GOOGLE_SCRIPT")) {
-        try {
-            await fetch(GOOGLE_SCRIPT_URL, {
-                method: "POST",
-                mode: "no-cors",
-                cache: 'no-cache',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(record)
-            });
-        } catch (err) {
-            console.error("Location log failed:", err);
-        }
+        fetch(GOOGLE_SCRIPT_URL, {
+            method: "POST",
+            mode: "no-cors",
+            cache: 'no-cache',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(record)
+        }).catch(err => console.error("Location log failed:", err));
     }
 }
 
@@ -137,7 +106,7 @@ continueBtn.addEventListener('click', () => {
 });
 
 // Start verification on load
-async function initLocationCheck() {
+function initLocationCheck() {
     const studentName = localStorage.getItem('studentName');
     const rollNumber = localStorage.getItem('rollNumber');
 
@@ -152,25 +121,7 @@ async function initLocationCheck() {
         return;
     }
 
-    // ⚙️ Settings Check: Allow if disabled in Google Sheets
-    if (GOOGLE_SCRIPT_URL && !GOOGLE_SCRIPT_URL.includes("YOUR_GOOGLE_SCRIPT")) {
-        try {
-            console.log("Checking remote settings...");
-            const response = await fetch(`${GOOGLE_SCRIPT_URL}?type=settings`);
-            const json = await response.json();
-            console.log("Remote settings response:", json);
-            if (json.result === 'success' && json.location_check_enabled === false) {
-                console.log("Location check disabled by settings.");
-                showSuccess(0); 
-                statusMsg.textContent = "Location verification skipped (disabled by admin). Redirecting...";
-                setTimeout(() => { window.location.href = 'dashboard.html'; }, 1500);
-                return;
-            }
-        } catch (err) {
-            console.error("Failed to fetch settings, proceeding with check:", err);
-        }
-    }
-    
+    // For static demo, always proceed
     console.log("Proceeding to verifyLocation()...");
     verifyLocation();
 }

@@ -1,6 +1,6 @@
 // Advanced Admin Portal Logic for Chitkara University
 // PASTE YOUR GOOGLE SCRIPT URL HERE
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxSc1O09OfhNkYU96lS2MwLv_9uueGkBGM-iq015LppNxFmhj8C0aVmIUN51_Ev0rjO/exec";
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzUl8o30CcyINAzDpAZrggmkkron8oX2cvkj-j37Pror9wCtY1eK612N8L5L49xfjeZ/exec";
 const ADMIN_PASSWORD = "1234"; 
 
 // State
@@ -11,6 +11,7 @@ let gpsData = [];
 let studentStats = {}; // { roll: { name, scores: [], avg, profit, logins: 0, verified: 0 } }
 let isAuthenticated = sessionStorage.getItem('adminAuth') === 'true';
 let charts = {};
+let currentJsonData = null; // Store current API response
 
 // DOM Elements
 const authOverlay = document.getElementById('admin-auth-overlay');
@@ -40,55 +41,17 @@ const views = {
  * Implements robust parsing to handle varying API response structures.
  */
 function processRawData(json) {
-    if (!json || json.result !== 'success' || !json.data) {
+    if (!json || json.result !== 'success') {
         throw new Error(json ? (json.error || "Malformed API response") : "Empty response from server");
     }
 
-    const data = json.data;
-    console.log(`[Data Integration] Processing ${Array.isArray(data) ? data.length + ' records' : 'categorized sheets'}`);
+    console.log(`[Data Integration] Processing records from Google Sheets`);
 
     // Initialize data containers
-    loginData = [];
-    gpsData = [];
-    let mcqResults = [];
-    let simulatorResults = [];
-    let caseStudyResults = [];
+    loginData = json.logins || [];
+    gpsData = json.locations || [];
+    resultData = json.tests || [];
 
-    // Categorization logic - handles both Object (sheet-based) and Array (flat) formats
-    if (Array.isArray(data)) {
-        // Flat array format (fallback)
-        data.forEach(item => {
-            const sheet = String(item._sheet || "").toLowerCase();
-            if (sheet === 'logins') loginData.push(item);
-            else if (sheet === 'attendance_gps') gpsData.push(item);
-            else if (sheet === 'mcqresults') mcqResults.push(item);
-            else if (sheet === 'simulatorresults') simulatorResults.push(item);
-            else if (sheet === 'casestudy_test1') caseStudyResults.push(item);
-            else {
-                // Heuristic detection if _sheet is missing
-                if (item.selfie || item.statusText) loginData.push(item);
-                else if (item.latitude || item.distanceKm) gpsData.push(item);
-                else if (item.totalProfit || item.profit) simulatorResults.push(item);
-                else if (item.finance || item.strategy) caseStudyResults.push(item);
-                else if (item.testName) mcqResults.push(item);
-            }
-        });
-    } else {
-        // Object/Sheet format (preferred)
-        loginData = data['Logins'] || data['logins'] || [];
-        gpsData = data['Attendance_GPS'] || data['attendance_gps'] || [];
-        mcqResults = data['MCQResults'] || data['mcqresults'] || [];
-        simulatorResults = data['SimulatorResults'] || data['simulatorresults'] || [];
-        caseStudyResults = data['CaseStudy_Test1'] || data['casestudy_test1'] || [];
-
-        // Update GPS Toggle Status if settings are embedded
-        if (data._settings) {
-            gpsToggle.checked = data._settings.location_check_enabled;
-            updateGpsToggleUI(gpsToggle.checked);
-        }
-    }
-
-    resultData = [...mcqResults, ...simulatorResults, ...caseStudyResults];
     console.log(`[Data Integration] Mapping Complete: Logins=${loginData.length}, GPS=${gpsData.length}, Results=${resultData.length}`);
 }
 
@@ -116,6 +79,12 @@ async function fetchData() {
         if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
         
         const json = await response.json();
+        currentJsonData = json; // Store for later use
+        
+        if (json.result !== 'success') {
+            throw new Error(json.error || "API returned error status");
+        }
+        
         processRawData(json);
 
         processStudentStats();
@@ -144,87 +113,125 @@ function processStudentStats() {
     const getStudent = (roll, name) => {
         const cleanRoll = String(roll || 'unknown').trim().toUpperCase();
         if (!studentStats[cleanRoll]) {
-            studentStats[cleanRoll] = { 
-                name: name || 'Unknown Student', 
-                scores: [], 
-                totalProfit: 0, 
-                logins: 0, 
-                verified: 0, 
-                testCount: 0 
+            studentStats[cleanRoll] = {
+                name: name || 'Unknown Student',
+                scores: [],
+                totalProfit: 0,
+                logins: 0,
+                verified: 0,
+                testCount: 0
             };
         }
         return studentStats[cleanRoll];
     };
 
-    // 1. Process Logins
-    loginData.forEach((row, idx) => {
-        const roll = row.rollnumber || row['Roll Number'] || row.roll;
-        const name = row.studentname || row['Student Name'] || row.name;
-        if (roll) {
-            const s = getStudent(roll, name);
-            s.logins++;
-        } else if (idx === 0) {
-            console.warn("Login row missing roll number:", row);
-        }
-    });
-
-    // 2. Process GPS
-    gpsData.forEach((row, idx) => {
-        const roll = row.rollnumber || row['Roll Number'] || row.roll;
-        const name = row.studentname || row['Student Name'] || row.name;
-        if (roll) {
-            const s = getStudent(roll, name);
-            const status = String(row.status || row.Status || '').toLowerCase();
-            if (status === 'verified') s.verified++;
-        }
-    });
-
-    // 3. Process Test Results
-    resultData.forEach((row, idx) => {
-        const roll = row.rollnumber || row['Roll Number'] || row.roll;
-        const name = row.studentname || row['Student Name'] || row.name;
-        if (roll) {
-            const s = getStudent(roll, name);
-            const isSimulator = row._sheet === 'SimulatorResults' || row.totalprofit !== undefined || row['Total Profit'] !== undefined;
-            
-            if (isSimulator) {
-                const profitStr = String(row.totalprofit || row['Total Profit'] || 0);
-                const profit = parseFloat(profitStr.replace(/[₹,]/g, '')) || 0;
-                s.totalProfit += profit;
-            } else {
-                const scoreStr = String(row.percentage || row.Percentage || row.score || row.Score || 0);
-                const score = parseFloat(scoreStr);
-                if (!isNaN(score)) s.scores.push(score);
+    // 1. Process Logins (only if data exists)
+    if (loginData && loginData.length > 0) {
+        loginData.forEach((row) => {
+            const roll = row.rollnumber || row['rollnumber'];
+            const name = row.studentname || row['studentname'];
+            if (roll) {
+                const s = getStudent(roll, name);
+                s.logins++;
             }
-            s.testCount++;
-        }
-    });
+        });
+    }
+
+    // 2. Process GPS/Location (only if data exists)
+    if (gpsData && gpsData.length > 0) {
+        gpsData.forEach((row) => {
+            const roll = row.rollnumber || row['rollnumber'];
+            const name = row.studentname || row['studentname'];
+            if (roll) {
+                const s = getStudent(roll, name);
+                const status = String(row.status || '').toLowerCase();
+                if (status === 'verified') s.verified++;
+            }
+        });
+    }
+
+    // 3. Process Test Results (only if data exists)
+    if (resultData && resultData.length > 0) {
+        resultData.forEach((row) => {
+            const roll = row.rollnumber || row['rollnumber'];
+            const name = row.studentname || row['studentname'];
+            if (roll) {
+                const s = getStudent(roll, name);
+                const testName = row.testname || row['testname'] || '';
+
+                if (testName.toLowerCase().includes('simulator')) {
+                    // For simulator, extract profit from final ranking
+                    const ranking = row.finalranking || row['finalranking'] || '';
+                    const profitMatch = ranking.match(/Profit:\s*₹?([\d,]+)/);
+                    if (profitMatch) {
+                        const profit = parseFloat(profitMatch[1].replace(/,/g, '')) || 0;
+                        s.totalProfit += profit;
+                    }
+                } else {
+                    // For other tests, use score
+                    const score = parseFloat(row.score || 0);
+                    if (!isNaN(score)) s.scores.push(score);
+                }
+                s.testCount++;
+            }
+        });
+    }
 
     // Calculate Averages and Ranking Score
     const statsArray = Object.values(studentStats);
     statsArray.forEach(s => {
         s.avgScore = s.scores.length > 0 ? (s.scores.reduce((a, b) => a + b, 0) / s.scores.length) : 0;
         // Rank score: Average score + normalized profit bonus (1 pt per 100,000 profit)
-        s.rankScore = s.avgScore + (s.totalProfit / 100000); 
+        s.rankScore = s.avgScore + (s.totalProfit / 100000);
     });
 
     console.log(`Processed stats for ${statsArray.length} students.`);
 }
 
 function updateDashboardStats() {
-    document.getElementById('stat-total-logins').textContent = loginData.length;
-    document.getElementById('stat-active-students').textContent = Object.keys(studentStats).length;
-    
+    // Use summary from API if available, otherwise calculate
+    const summary = currentJsonData?.summary || {};
+    document.getElementById('stat-total-logins').textContent = summary.total_logins || loginData.length;
+    document.getElementById('stat-active-students').textContent = summary.unique_students || Object.keys(studentStats).length;
+
     const verifiedGps = gpsData.filter(r => (r.status || r.Status) === 'Verified').length;
     document.getElementById('stat-gps-verified').textContent = verifiedGps;
 
-    const allScores = Object.values(studentStats).flatMap(s => s.scores);
+    const allScores = resultData.map(r => parseFloat(r.score || 0)).filter(s => !isNaN(s));
     const avg = allScores.length > 0 ? (allScores.reduce((a,b)=>a+b, 0) / allScores.length) : 0;
     document.getElementById('stat-avg-score').textContent = Math.round(avg) + '%';
 
+    // Enhanced statistics
+    const last24h = new Date(Date.now() - 24 * 60 * 60 * 1000);
+    const logins24h = loginData.filter(r => new Date(r.timestamp) > last24h).length;
+    document.getElementById('stat-logins-24h').textContent = logins24h;
+
+    const highestScore = allScores.length > 0 ? Math.max(...allScores) : 0;
+    document.getElementById('stat-highest-score').textContent = Math.round(highestScore) + '%';
+
+    const totalGps = gpsData.length;
+    const gpsRate = totalGps > 0 ? Math.round((verifiedGps / totalGps) * 100) : 0;
+    document.getElementById('stat-gps-rate').textContent = gpsRate + '%';
+
+    const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    const activeThisWeek = new Set(
+        [...loginData, ...resultData, ...gpsData]
+            .filter(r => new Date(r.timestamp) > weekAgo)
+            .map(r => r.rollnumber)
+    ).size;
+    document.getElementById('stat-active-week').textContent = activeThisWeek;
+
+    // Generate activity feed
+    generateActivityFeed();
+
+    // Show/hide welcome message based on data availability
+    const welcomeMessage = document.getElementById('welcome-message');
+    const hasData = (loginData && loginData.length > 0) || (resultData && resultData.length > 0) || (gpsData && gpsData.length > 0);
+    welcomeMessage.style.display = hasData ? 'none' : 'block';
+
     // Sort for top performers
     const sorted = Object.values(studentStats).sort((a, b) => b.rankScore - a.rankScore);
-    
+
     const topList = document.getElementById('top-performers-list');
     if (sorted.length === 0) {
         topList.innerHTML = '<li class="rank-item"><div class="student-meta">No data yet</div></li>';
@@ -266,35 +273,110 @@ function updateDashboardStats() {
     initCharts();
 }
 
+function generateActivityFeed() {
+    const activityFeed = document.getElementById('activity-feed');
+    const allActivities = [];
+
+    // Collect all activities (only if data exists)
+    if (loginData && loginData.length > 0) {
+        loginData.forEach(item => {
+            allActivities.push({
+                type: 'login',
+                timestamp: new Date(item.timestamp),
+                student: item.studentname,
+                roll: item.rollnumber,
+                action: 'logged in successfully',
+                icon: 'login'
+            });
+        });
+    }
+
+    if (gpsData && gpsData.length > 0) {
+        gpsData.forEach(item => {
+            allActivities.push({
+                type: 'location',
+                timestamp: new Date(item.timestamp),
+                student: item.studentname,
+                roll: item.rollnumber,
+                action: `location ${item.status.toLowerCase()}`,
+                icon: 'location'
+            });
+        });
+    }
+
+    if (resultData && resultData.length > 0) {
+        resultData.forEach(item => {
+            allActivities.push({
+                type: 'test',
+                timestamp: new Date(item.timestamp),
+                student: item.studentname,
+                roll: item.rollnumber,
+                action: `completed ${item.testname}`,
+                icon: 'test'
+            });
+        });
+    }
+
+    // If no activities, show empty state
+    if (allActivities.length === 0) {
+        activityFeed.innerHTML = '<div class="activity-item"><div class="activity-content"><div class="student">No activity yet</div><div class="action">Student data will appear here once they start using the portal</div></div></div>';
+        return;
+    }
+
+    // Sort by timestamp (most recent first) and take latest 20
+    allActivities.sort((a, b) => b.timestamp - a.timestamp);
+    const recentActivities = allActivities.slice(0, 20);
+
+    activityFeed.innerHTML = recentActivities.map(activity => `
+        <div class="activity-item">
+            <div class="activity-icon ${activity.icon}">
+                <i data-feather="${activity.icon === 'login' ? 'user' : activity.icon === 'test' ? 'check-circle' : 'map-pin'}" style="width: 16px; height: 16px;"></i>
+            </div>
+            <div class="activity-content">
+                <div class="student">${activity.student}</div>
+                <div class="action">${activity.action}</div>
+            </div>
+            <div class="activity-time">${activity.timestamp.toLocaleTimeString()}</div>
+        </div>
+    `).join('');
+
+    // Re-initialize feather icons for the new content
+    feather.replace();
+}
+
 function initCharts() {
     // 1. Performance Trend Chart
     const ctxPerf = document.getElementById('performanceChart').getContext('2d');
     if (charts.perf) charts.perf.destroy();
-    
+
     // Group results by date
     const dateGroups = {};
-    resultData.forEach(r => {
-        const timestamp = r.timestamp || r.Timestamp;
-        if (!timestamp) return;
-        const date = new Date(timestamp).toLocaleDateString();
-        if (!dateGroups[date]) dateGroups[date] = [];
-        const score = parseFloat(r.percentage || r.Percentage || 0);
-        if (!isNaN(score)) dateGroups[date].push(score);
-    });
-    
+    if (resultData && resultData.length > 0) {
+        resultData.forEach(r => {
+            const timestamp = r.timestamp;
+            if (!timestamp) return;
+            const date = new Date(timestamp).toLocaleDateString();
+            if (!dateGroups[date]) dateGroups[date] = [];
+            const score = parseFloat(r.score || 0);
+            if (!isNaN(score)) dateGroups[date].push(score);
+        });
+    }
+
     const labels = Object.keys(dateGroups).sort();
-    const data = labels.map(l => {
+    const data = labels.length > 0 ? labels.map(l => {
         const scores = dateGroups[l];
         return scores.length > 0 ? (scores.reduce((a,b)=>a+b,0)/scores.length) : 0;
-    });
+    }) : [0];
+
+    const chartLabels = labels.length > 0 ? labels : ['No Data'];
 
     charts.perf = new Chart(ctxPerf, {
         type: 'line',
         data: {
-            labels,
+            labels: chartLabels,
             datasets: [{
                 label: 'Avg Daily Score %',
-                data,
+                data: data,
                 borderColor: '#d12026',
                 tension: 0.4,
                 fill: true,
@@ -304,40 +386,180 @@ function initCharts() {
         options: { responsive: true, plugins: { legend: { display: false } } }
     });
 
-    // 2. Participation Chart (Doughnut)
-    const ctxPart = document.getElementById('participationChart').getContext('2d');
-    if (charts.part) charts.part.destroy();
-    const mcqCount = resultData.filter(r => r._sheet === 'MCQResults').length;
-    const simCount = resultData.filter(r => r._sheet === 'SimulatorResults').length;
-    const caseCount = resultData.filter(r => r._sheet === 'CaseStudy_Test1').length;
+    // 2. Test Distribution Chart
+    const ctxDist = document.getElementById('testDistributionChart').getContext('2d');
+    if (charts.dist) charts.dist.destroy();
 
-    charts.part = new Chart(ctxPart, {
+    const testTypes = {};
+    if (resultData && resultData.length > 0) {
+        resultData.forEach(r => {
+            const testName = r.testname || 'Unknown';
+            testTypes[testName] = (testTypes[testName] || 0) + 1;
+        });
+    }
+
+    const testLabels = Object.keys(testTypes).length > 0 ? Object.keys(testTypes) : ['No Tests'];
+    const testData = Object.values(testTypes).length > 0 ? Object.values(testTypes) : [1];
+
+    charts.dist = new Chart(ctxDist, {
         type: 'doughnut',
         data: {
-            labels: ['MCQ', 'Simulator', 'Case Study'],
+            labels: testLabels,
             datasets: [{
-                data: [mcqCount, simCount, caseCount],
-                backgroundColor: ['#10b981', '#f59e0b', '#3b82f6']
+                data: testData,
+                backgroundColor: ['#10b981', '#f59e0b', '#3b82f6', '#8b5cf6', '#ef4444']
             }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'bottom' }
+            }
         }
     });
 
-    // 3. GPS Chart
-    const ctxGps = document.getElementById('gpsChart').getContext('2d');
-    if (charts.gps) charts.gps.destroy();
-    const verified = gpsData.filter(r => (r.status || r.Status) === 'Verified').length;
-    const denied = gpsData.filter(r => (r.status || r.Status) !== 'Verified').length;
+    // 3. Time Analytics Chart
+    const ctxTime = document.getElementById('timeAnalyticsChart').getContext('2d');
+    if (charts.time) charts.time.destroy();
 
-    charts.gps = new Chart(ctxGps, {
-        type: 'pie',
+    // Group by hour of day
+    const hourGroups = {};
+    if (resultData && resultData.length > 0) {
+        resultData.forEach(r => {
+            const timestamp = r.timestamp;
+            if (!timestamp) return;
+            const hour = new Date(timestamp).getHours();
+            if (!hourGroups[hour]) hourGroups[hour] = [];
+            const timeTaken = r.timetaken || '0m 0s';
+            // Extract minutes from time string
+            const minutes = parseFloat(timeTaken.split('m')[0]) || 0;
+            hourGroups[hour].push(minutes);
+        });
+    }
+
+    const hours = Array.from({length: 24}, (_, i) => i);
+    const avgTimes = hours.map(hour => {
+        const times = hourGroups[hour] || [];
+        return times.length > 0 ? (times.reduce((a,b)=>a+b,0)/times.length) : 0;
+    });
+
+    charts.time = new Chart(ctxTime, {
+        type: 'bar',
         data: {
-            labels: ['Verified', 'Outside/Denied'],
+            labels: hours.map(h => `${h}:00`),
             datasets: [{
-                data: [verified, denied],
-                backgroundColor: ['#10b981', '#ef4444']
+                label: 'Avg Time (minutes)',
+                data: avgTimes,
+                backgroundColor: 'rgba(139, 92, 246, 0.6)',
+                borderColor: '#8b5cf6',
+                borderWidth: 1
             }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: { beginAtZero: true }
+            },
+            plugins: { legend: { display: false } }
         }
     });
+
+    // 4. Participation Chart (Doughnut) - for analytics
+    const ctxPart = document.getElementById('participationChart');
+    if (ctxPart) {
+        if (charts.part) charts.part.destroy();
+        const mcqCount = resultData.filter(r => !r.testname?.toLowerCase().includes('simulator') && !r.testname?.toLowerCase().includes('case')).length;
+        const simCount = resultData.filter(r => r.testname?.toLowerCase().includes('simulator')).length;
+        const caseCount = resultData.filter(r => r.testname?.toLowerCase().includes('case')).length;
+
+        charts.part = new Chart(ctxPart, {
+            type: 'doughnut',
+            data: {
+                labels: ['MCQ Tests', 'Simulator', 'Case Study'],
+                datasets: [{
+                    data: [mcqCount, simCount, caseCount],
+                    backgroundColor: ['#10b981', '#f59e0b', '#3b82f6']
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'bottom' }
+                }
+            }
+        });
+    }
+
+    // 5. GPS Chart - for analytics
+    const ctxGps = document.getElementById('gpsChart');
+    if (ctxGps) {
+        if (charts.gps) charts.gps.destroy();
+        const verified = gpsData.filter(r => (r.status || '').toLowerCase() === 'verified').length;
+        const denied = gpsData.filter(r => (r.status || '').toLowerCase() !== 'verified').length;
+
+        charts.gps = new Chart(ctxGps, {
+            type: 'pie',
+            data: {
+                labels: ['Verified', 'Outside/Denied'],
+                datasets: [{
+                    data: [verified, denied],
+                    backgroundColor: ['#10b981', '#ef4444']
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'bottom' }
+                }
+            }
+        });
+    }
+
+    // 6. Engagement Timeline Chart
+    const ctxEngage = document.getElementById('engagementChart');
+    if (ctxEngage) {
+        if (charts.engage) charts.engage.destroy();
+
+        // Group activities by day for the last 7 days
+        const last7Days = [];
+        for (let i = 6; i >= 0; i--) {
+            const date = new Date();
+            date.setDate(date.getDate() - i);
+            last7Days.push(date.toLocaleDateString());
+        }
+
+        const activityCounts = {};
+        last7Days.forEach(day => activityCounts[day] = 0);
+
+        [...loginData, ...resultData, ...gpsData].forEach(item => {
+            const date = new Date(item.timestamp).toLocaleDateString();
+            if (activityCounts.hasOwnProperty(date)) {
+                activityCounts[date]++;
+            }
+        });
+
+        charts.engage = new Chart(ctxEngage, {
+            type: 'line',
+            data: {
+                labels: last7Days.map(d => new Date(d).toLocaleDateString('en-US', { weekday: 'short' })),
+                datasets: [{
+                    label: 'Daily Activities',
+                    data: last7Days.map(day => activityCounts[day]),
+                    borderColor: '#8b5cf6',
+                    backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: { beginAtZero: true }
+                },
+                plugins: { legend: { display: false } }
+            }
+        });
+    }
 }
 
 function renderActiveView() {
@@ -360,64 +582,142 @@ function renderTable() {
     const head = document.getElementById('admin-table-head');
     const body = document.getElementById('admin-table-body');
     const title = document.getElementById('table-title');
-    
+    const searchInput = document.getElementById('table-search');
+
     console.log(`Rendering table for tab: ${currentTab}`);
-    
+
     let data = [];
+    let headers = [];
+    let sortableColumns = [];
+
     if (currentTab === 'logins') {
-        title.textContent = "Recent Student Logins";
-        head.innerHTML = `<tr><th>Timestamp</th><th>Student</th><th>Roll</th><th>Selfie</th><th>Status</th></tr>`;
-        data = loginData;
+        title.textContent = "Student Login Details";
+        headers = ['Timestamp', 'Student Name', 'Roll Number', 'Status'];
+        sortableColumns = [0, 1, 2]; // Timestamp, Name, Roll
+        data = loginData.map(row => ({
+            timestamp: row.timestamp,
+            studentName: row.studentname,
+            rollNumber: row.rollnumber,
+            status: row.statustext || 'Success'
+        }));
     } else if (currentTab === 'gps') {
-        title.textContent = "GPS Attendance Logs";
-        head.innerHTML = `<tr><th>Timestamp</th><th>Student</th><th>Roll</th><th>Distance</th><th>Status</th></tr>`;
-        data = gpsData;
+        title.textContent = "GPS Location Verification";
+        headers = ['Timestamp', 'Student Name', 'Roll Number', 'Distance', 'Status'];
+        sortableColumns = [0, 1, 2, 3]; // Timestamp, Name, Roll, Distance
+        data = gpsData.map(row => ({
+            timestamp: row.timestamp,
+            studentName: row.studentname,
+            rollNumber: row.rollnumber,
+            distance: row.distancekm ? `${row.distancekm} km` : 'N/A',
+            status: row.status || 'Unknown'
+        }));
     } else if (currentTab === 'results') {
-        title.textContent = "Consolidated Test Results";
-        head.innerHTML = `<tr><th>Timestamp</th><th>Student</th><th>Test Type</th><th>Score/Profit</th><th>Performance</th></tr>`;
-        data = resultData;
+        title.textContent = "Test Results & Performance";
+        headers = ['Timestamp', 'Student Name', 'Roll Number', 'Test Name', 'Score', 'Time Taken', 'Final Ranking'];
+        sortableColumns = [0, 1, 2, 4, 5]; // Timestamp, Name, Roll, Score, Time
+        data = resultData.map(row => ({
+            timestamp: row.timestamp,
+            studentName: row.studentname,
+            rollNumber: row.rollnumber,
+            testName: row.testname,
+            score: row.score || 'N/A',
+            timeTaken: row.timetaken || 'N/A',
+            finalRanking: row.finalranking || 'N/A'
+        }));
     }
 
+    // Create table header with sorting
+    head.innerHTML = `<tr>${headers.map((header, index) =>
+        sortableColumns.includes(index)
+            ? `<th class="sortable" data-column="${index}">${header} <i data-feather="chevron-down" class="sort-icon"></i></th>`
+            : `<th>${header}</th>`
+    ).join('')}</tr>`;
+
+    // Add sorting functionality
+    document.querySelectorAll('.sortable').forEach(th => {
+        th.addEventListener('click', () => sortTable(th.dataset.column, data));
+    });
+
+    // Render table body
+    renderTableBody(data, headers.length);
+
+    // Add search functionality
+    searchInput.addEventListener('input', () => {
+        const searchTerm = searchInput.value.toLowerCase();
+        const filteredData = data.filter(row =>
+            Object.values(row).some(value =>
+                String(value).toLowerCase().includes(searchTerm)
+            )
+        );
+        renderTableBody(filteredData, headers.length);
+    });
+}
+
+function sortTable(columnIndex, data) {
+    const sortIcon = document.querySelector(`[data-column="${columnIndex}"] .sort-icon`);
+    const isAscending = sortIcon.classList.contains('asc');
+
+    // Reset all sort icons
+    document.querySelectorAll('.sort-icon').forEach(icon => {
+        icon.classList.remove('asc', 'desc');
+    });
+
+    // Set current sort direction
+    sortIcon.classList.add(isAscending ? 'desc' : 'asc');
+
+    // Sort data
+    data.sort((a, b) => {
+        const aVal = Object.values(a)[columnIndex];
+        const bVal = Object.values(b)[columnIndex];
+
+        // Handle different data types
+        if (columnIndex === 0) { // Timestamp
+            return isAscending
+                ? new Date(aVal) - new Date(bVal)
+                : new Date(bVal) - new Date(aVal);
+        } else if (typeof aVal === 'number' && typeof bVal === 'number') {
+            return isAscending ? aVal - bVal : bVal - aVal;
+        } else {
+            const aStr = String(aVal).toLowerCase();
+            const bStr = String(bVal).toLowerCase();
+            return isAscending
+                ? aStr.localeCompare(bStr)
+                : bStr.localeCompare(aStr);
+        }
+    });
+
+    // Re-render table body
+    renderTableBody(data, Object.keys(data[0] || {}).length);
+}
+
+function renderTableBody(data, colspan) {
+    const body = document.getElementById('admin-table-body');
+
     if (!data || data.length === 0) {
-        body.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text-muted)">No records found in this category.</td></tr>`;
+        body.innerHTML = `<tr><td colspan="${colspan}" style="text-align:center;padding:40px;color:var(--text-muted)">No records found in this category.</td></tr>`;
         return;
     }
 
     body.innerHTML = data.map(row => {
-        const timestampRaw = row.timestamp || row.Timestamp;
-        const timestamp = timestampRaw ? new Date(timestampRaw).toLocaleString() : 'N/A';
-        const studentName = row.studentname || row['Student Name'] || row.name || 'N/A';
-        const rollNumber = row.rollnumber || row['Roll Number'] || row.roll || 'N/A';
-
-        if (currentTab === 'logins') {
-            const selfieData = row.selfie || row.Selfie;
-            const selfie = selfieData && selfieData.length > 50 ? `<img src="${selfieData}" style="height:32px;border-radius:4px;cursor:pointer" onclick="window.open('${selfieData}')">` : 'None';
-            const status = row.status || row.Status || 'Login';
-            return `<tr><td>${timestamp}</td><td>${studentName}</td><td>${rollNumber}</td><td>${selfie}</td><td><span class="score-badge score-high">${status}</span></td></tr>`;
-        } else if (currentTab === 'gps') {
-            const distVal = row['distance(km)'] || row['Distance (km)'] || row.distance || 0;
-            const distKm = parseFloat(distVal);
-            const dist = (distKm * 1000).toFixed(0) + 'm';
-            const status = row.status || row.Status || 'N/A';
-            const statusClass = String(status).toLowerCase() === 'verified' ? 'score-high' : 'score-low';
-            return `<tr><td>${timestamp}</td><td>${studentName}</td><td>${rollNumber}</td><td>${dist}</td><td><span class="score-badge ${statusClass}">${status}</span></td></tr>`;
-        } else {
-            const isSim = row._sheet === 'SimulatorResults' || row.totalprofit !== undefined || row['Total Profit'] !== undefined;
-            const isCase = row._sheet === 'CaseStudy_Test1' || row.finance !== undefined;
-            const type = isSim ? 'Simulator' : (isCase ? 'Case Study' : 'MCQ');
-            
-            let scoreText = '';
-            if (isSim) {
-                const profit = row.totalprofit || row['Total Profit'] || 0;
-                scoreText = `<b>Simulator</b>: ₹${Number(profit).toLocaleString('en-IN')}`;
-            } else {
-                const score = row.score || row.Score || 0;
-                scoreText = `<b>${type}</b>: ${score}`;
+        const cells = Object.values(row).map(value => {
+            // Format timestamp
+            if (value && value.includes && value.includes('T')) {
+                return new Date(value).toLocaleString();
             }
+            // Format status badges
+            if (currentTab === 'logins' && typeof value === 'string' && value.toLowerCase().includes('success')) {
+                return `<span class="score-badge score-high">${value}</span>`;
+            }
+            if (currentTab === 'gps' && typeof value === 'string' && value.toLowerCase().includes('verified')) {
+                return `<span class="score-badge score-high">${value}</span>`;
+            }
+            if (currentTab === 'gps' && typeof value === 'string' && !value.toLowerCase().includes('verified')) {
+                return `<span class="score-badge score-low">${value}</span>`;
+            }
+            return value;
+        });
 
-            const perf = row.ranking || row.Ranking || row.percentage || row.Percentage || row.title || row.Title || 'N/A';
-            return `<tr><td>${timestamp}</td><td>${studentName}</td><td>${rollNumber}</td><td>${scoreText}</td><td><span class="score-badge score-high">${perf}</span></td></tr>`;
-        }
+        return `<tr>${cells.map(cell => `<td>${cell}</td>`).join('')}</tr>`;
     }).join('');
 }
 
@@ -485,12 +785,18 @@ document.getElementById('table-search').addEventListener('input', (e) => {
 // Authentication
 function checkAuth() {
     if (isAuthenticated) {
+        // Force hide overlay in case CSS class is not applied correctly
         authOverlay.classList.add('hidden');
+        authOverlay.style.display = 'none';
         mainContent.classList.remove('hidden');
+        mainContent.style.display = 'grid';
+        adminError.style.display = 'none';
         fetchData();
     } else {
         authOverlay.classList.remove('hidden');
+        authOverlay.style.display = 'grid';
         mainContent.classList.add('hidden');
+        mainContent.style.display = 'none';
     }
 }
 
