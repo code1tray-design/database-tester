@@ -1,0 +1,328 @@
+/* 
+   VIKSIT BHARAT - Startup Simulator CSS
+   Dedicated styling for the game interface
+*/
+
+:root {
+    --primary-color: #d12026;
+    --primary-hover: #b01a1e;
+    --bg-color: #f8f9fa;
+    --text-color: #2d3436;
+    --text-muted: #636e72;
+    --border-color: #dfe6e9;
+    --success: #27ae60;
+    --danger: #ef4444;
+    --warning: #f39c12;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body.game-body {
+    background-color: #fdfbf7;
+    margin: 0;
+    min-height: 100dvh;
+    font-family: 'Inter', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+    box-sizing: border-box;
+    overflow-y: auto;
+}
+
+.game-container {
+    display: flex;
+    width: 100%;
+    max-width: 1400px;
+    height: 850px;
+    max-height: calc(100vh - 4rem);
+    gap: 1.5rem;
+    position: relative;
+}
+
+/* Left Panel: Scenario & Decisions */
+.game-main {
+    flex: 1.6;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    min-width: 0;
+}
+
+.game-header {
+    background: #ffffff;
+    padding: 1.5rem 2rem;
+    border-radius: 1.25rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+.header-left {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.game-header h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.75rem;
+    color: var(--primary-color);
+    margin: 0;
+    line-height: 1;
+}
+
+.timer-bar {
+    width: 200px;
+    height: 6px;
+    background: rgba(0,0,0,0.05);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.timer-fill {
+    height: 100%;
+    background: var(--success);
+    width: 100%;
+    transition: width 1s linear;
+}
+
+.round-indicator {
+    background: #fff5f5;
+    color: var(--primary-color);
+    padding: 0.6rem 1.2rem;
+    border-radius: 2rem;
+    font-weight: 800;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+}
+
+.scenario-card {
+    background: #ffffff;
+    flex: 1;
+    padding: 3rem;
+    border-radius: 1.5rem;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+.scenario-title {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: var(--text-muted);
+    margin-bottom: 0.75rem;
+    font-weight: 700;
+}
+
+.scenario-text {
+    font-size: 1.35rem;
+    font-weight: 600;
+    line-height: 1.5;
+    margin-bottom: 2.5rem;
+    color: #1a1a1a;
+}
+
+.options-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+}
+
+.option-btn {
+    background: #fff;
+    border: 1px solid #edf2f7;
+    padding: 1.25rem 1.75rem;
+    border-radius: 1rem;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.option-btn:hover {
+    border-color: var(--primary-color);
+    background: #fffafa;
+    transform: translateX(8px);
+    box-shadow: 0 4px 12px rgba(209, 32, 38, 0.08);
+}
+
+.option-label {
+    font-weight: 800;
+    color: var(--primary-color);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.option-text {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #2d3748;
+}
+
+/* Performance Sidebar */
+.game-sidebar {
+    flex: 0.8;
+    background: #ffffff;
+    border-radius: 1.5rem;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.05);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    border: 1px solid rgba(0,0,0,0.05);
+    min-width: 320px;
+    overflow-y: auto;
+}
+
+.sidebar-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.4rem;
+    color: #1a1a1a;
+    margin-bottom: 0.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.metrics-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.metric-item {
+    padding: 0.85rem 1rem;
+    background: #f8fafc;
+    border-radius: 0.85rem;
+    border: 1px solid #f1f5f9;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.metric-item.pulse {
+    animation: metricPulse 0.5s ease;
+    border-color: var(--primary-color);
+}
+
+@keyframes metricPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+    100% { transform: scale(1); }
+}
+
+.metric-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.metric-name {
+    font-size: 0.6rem;
+    font-weight: 800;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.metric-value {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #1e293b;
+}
+
+.metric-change {
+    font-size: 0.75rem;
+    font-weight: 800;
+}
+
+.metric-change.positive { color: var(--success); }
+.metric-change.negative { color: var(--danger); }
+
+/* Overlays */
+.result-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    z-index: 1000;
+    padding: 2rem;
+    box-sizing: border-box;
+}
+
+.overlay-content {
+    background: white;
+    padding: 3rem;
+    border-radius: 2rem;
+    max-width: 600px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+.ranking-badge { font-size: 4rem; margin-bottom: 1rem; }
+.ranking-title { font-size: 2.5rem; font-weight: 800; margin-bottom: 1rem; }
+.score-summary { color: var(--text-muted); margin-bottom: 2rem; }
+
+.metric-card-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.metric-card {
+    background: #f8fafc;
+    padding: 1.5rem;
+    border-radius: 1rem;
+}
+
+.metric-card-label { font-size: 0.7rem; font-weight: 800; color: var(--text-muted); }
+.metric-card-value { font-size: 1.5rem; font-weight: 800; }
+
+.btn-primary {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 0.75rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-primary:hover {
+    background: var(--primary-hover);
+    transform: translateY(-2px);
+}
+
+#startup-registration-form input:focus {
+    border-color: var(--primary-color) !important;
+    box-shadow: 0 0 0 4px rgba(209, 32, 38, 0.1);
+}
+
+@media (max-width: 1024px) {
+    .game-container {
+        flex-direction: column;
+        height: auto;
+        max-height: none;
+    }
+    .game-sidebar {
+        min-width: 0;
+    }
+}

@@ -1,0 +1,62 @@
+/**
+ * Dedicated Google Apps Script for VIKSIT BHARAT Startup Simulator.
+ * 
+ * 1. Open your Google Sheet.
+ * 2. Extensions > Apps Script.
+ * 3. Paste this code.
+ * 4. Deploy > New Deployment > Web App.
+ * 5. Access: Anyone.
+ */
+
+function doPost(e) {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheetName = 'SimulatorResults';
+  var sheet = ss.getSheetByName(sheetName);
+  
+  if (!sheet) {
+    sheet = ss.insertSheet(sheetName);
+    sheet.appendRow([
+      'Timestamp', 
+      'Student Name', 
+      'Roll Number', 
+      'Final Score', 
+      'Ranking', 
+      'Duration',
+      'Final Cash',
+      'Market Share',
+      'ESG Score',
+      'Investor Confidence'
+    ]);
+    sheet.getRange(1, 1, 1, 10).setFontWeight('bold').setBackground('#d12026').setFontColor('white');
+  }
+
+  try {
+    var data = JSON.parse(e.postData.contents);
+    
+    // Check if the request is from the simulator
+    if (data.testName === "Viksit Bharat Simulator") {
+      sheet.appendRow([
+        new Date(),
+        data.studentName,
+        data.rollNumber,
+        data.score,
+        data.percentage, // Ranking
+        data.duration,
+        data.cash || 'N/A',
+        data.marketShare || 'N/A',
+        data.esgScore || 'N/A',
+        data.investorScore || 'N/A'
+      ]);
+      
+      return ContentService.createTextOutput(JSON.stringify({ 'result': 'success' }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+  } catch (error) {
+    return ContentService.createTextOutput(JSON.stringify({ 'result': 'error', 'error': error.toString() }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+function doGet(e) {
+  return ContentService.createTextOutput("Simulator Script Active").setMimeType(ContentService.MimeType.TEXT);
+}

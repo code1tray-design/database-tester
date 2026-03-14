@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>MINDCLASH — Sign In</title>
+
+<!-- Google Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+<style>
+  /* ── Reset ───────────────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  /* ── Page shell ─────────────────────────────────────────── */
+  html, body {
+    height: 100%;
+    background: #0a0a0f;
+    display: grid;
+    place-items: center;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  /* ── Outer card ─────────────────────────────────────────── */
+  .card {
+    display: flex;
+    width: min(1200px, 96vw);
+    min-height: 580px;
+    border-radius: 22px;
+    overflow: hidden;
+    box-shadow: 0 40px 120px rgba(0,0,0,.7);
+  }
+
+  /* ══════════════════════════════════════════════════════════
+     LEFT PANEL — abstract fluid art + quote
+     ══════════════════════════════════════════════════════════ */
+  .left {
+    flex: 0 0 50%;
+    position: relative;
+    background: #0d0015;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 36px 40px 44px;
+  }
+
+  /* Layered CSS gradient that mimics the flowing silk image */
+  .left::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 70% 60% at 30% 20%,  #c0165a 0%, transparent 60%),
+      radial-gradient(ellipse 60% 70% at 70% 10%,  #8b0057 0%, transparent 55%),
+      radial-gradient(ellipse 80% 50% at 20% 60%,  #1a0a6e 0%, transparent 65%),
+      radial-gradient(ellipse 60% 80% at 80% 80%,  #0066cc 0%, transparent 60%),
+      radial-gradient(ellipse 100% 100% at 50% 50%, #05001a 0%, #000000 100%);
+    z-index: 0;
+  }
+
+  /* Flowing streaks overlay */
+  .left::after {
+    content: '';
+    position: absolute;
+    inset: -50%;
+    background:
+      repeating-linear-gradient(
+        118deg,
+        transparent 0px,
+        transparent 30px,
+        rgba(200, 30, 100, .07) 31px,
+        rgba(200, 30, 100, .07) 32px,
+        transparent 33px,
+        transparent 70px,
+        rgba(80, 60, 200, .06) 71px,
+        rgba(80, 60, 200, .06) 72px
+      );
+    transform: rotate(-8deg);
+    z-index: 1;
+    animation: shiftStreaks 12s linear infinite alternate;
+  }
+
+  @keyframes shiftStreaks {
+    from { transform: rotate(-8deg) translateY(0); }
+    to   { transform: rotate(-8deg) translateY(60px); }
+  }
+
+  /* Glowing orbs for depth */
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(70px);
+    z-index: 2;
+    pointer-events: none;
+    animation: pulse 8s ease-in-out infinite alternate;
+  }
+  .orb-1 { width: 340px; height: 340px; top: -80px;  left: -60px;  background: rgba(220,20,80,.45); }
+  .orb-2 { width: 280px; height: 280px; top: 40%;    left: 30%;    background: rgba(100,30,200,.35); }
+  .orb-3 { width: 240px; height: 240px; bottom: -60px; left: 10%;  background: rgba(10,80,200,.50); }
+
+  @keyframes pulse {
+    from { opacity: .7; transform: scale(1); }
+    to   { opacity: 1;  transform: scale(1.08); }
+  }
+
+  /* Quote label */
+  .quote-label {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: rgba(255,255,255,.65);
+    font-size: .68rem;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+  .quote-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(255,255,255,.3);
+    max-width: 80px;
+  }
+
+  /* Bottom copy */
+  .left-bottom {
+    position: relative;
+    z-index: 10;
+  }
+  .left-bottom h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(2.6rem, 4.5vw, 3.6rem);
+    color: #fff;
+    line-height: 1.08;
+    margin-bottom: 18px;
+    text-shadow: 0 2px 24px rgba(0,0,0,.4);
+  }
+  .left-bottom p {
+    color: rgba(255,255,255,.58);
+    font-size: .88rem;
+    line-height: 1.6;
+    max-width: 320px;
+  }
+
+  /* ══════════════════════════════════════════════════════════
+     RIGHT PANEL — login form
+     ══════════════════════════════════════════════════════════ */
+  .right {
+    flex: 1;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: 36px 60px 36px;
+  }
+
+  /* Branding */
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    font-size: .95rem;
+    font-weight: 600;
+    color: #111;
+    letter-spacing: .01em;
+    align-self: flex-start;
+  }
+  .brand-icon {
+    width: 26px;
+    height: 26px;
+  }
+
+  /* Form wrapper */
+  .form-wrap {
+    width: 100%;
+    max-width: 380px;
+  }
+
+  .form-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2.3rem;
+    color: #111;
+    margin-bottom: 8px;
+    text-align: center;
+  }
+  .form-sub {
+    text-align: center;
+    color: #888;
+    font-size: .85rem;
+    margin-bottom: 32px;
+  }
+
+  /* Field */
+  .field { margin-bottom: 20px; }
+  .field label {
+    display: block;
+    font-size: .82rem;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 7px;
+  }
+  .input-wrap {
+    position: relative;
+  }
+  .input-wrap input {
+    width: 100%;
+    padding: 13px 46px 13px 16px;
+    background: #f4f5f8;
+    border: 1.5px solid transparent;
+    border-radius: 10px;
+    font-size: .88rem;
+    color: #111;
+    font-family: inherit;
+    transition: border-color .2s, background .2s;
+    outline: none;
+  }
+  .input-wrap input:focus {
+    background: #fff;
+    border-color: #111;
+  }
+  .input-wrap input::placeholder { color: #bbb; }
+
+  /* Buttons */
+  .btn-signin {
+    width: 100%;
+    padding: 14px;
+    background: #111;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: .9rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: 12px;
+    font-family: inherit;
+    transition: background .2s, transform .1s;
+    letter-spacing: .02em;
+  }
+  .btn-signin:hover  { background: #2a2a2a; }
+  .btn-signin:active { transform: scale(.98); }
+
+  .btn-instagram {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 14px;
+    background: #fff;
+    border: 1.5px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: .78rem;
+    color: #555;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: inherit;
+    text-decoration: none;
+    transition: background .2s, border-color .2s, color .2s;
+    margin-top: 14px;
+  }
+  .btn-instagram:hover { background: #fdf0f5; border-color: #dc2743; color: #dc2743; }
+  .ig-wrap { text-align: center; }
+
+  /* Error message */
+  .error-msg {
+    display: none;
+    background: #fff0f0;
+    border: 1px solid #ffcccc;
+    color: #cc0000;
+    font-size: .8rem;
+    border-radius: 8px;
+    padding: 9px 12px;
+    margin-bottom: 14px;
+    text-align: center;
+  }
+  .error-msg.visible { display: block; }
+
+  /* Footer */
+  .form-footer {
+    font-size: .83rem;
+    color: #888;
+    text-align: center;
+  }
+  .form-footer a {
+    color: #111;
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .form-footer a:hover { text-decoration: underline; }
+
+  /* Responsive */
+  @media (max-width: 720px) {
+    .card { flex-direction: column; border-radius: 16px; }
+    .left  { flex: 0 0 220px; }
+    .right { padding: 30px 28px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="card">
+
+  <!-- ─── LEFT PANEL ─────────────────────────────────────── -->
+  <div class="left">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+
+    <div class="quote-label">A Wise Quote</div>
+
+    <div class="left-bottom">
+      <h1>Get<br>Everything<br>You Want</h1>
+      <p>You can get everything you want if you work hard,
+         trust the process, and stick to the plan.</p>
+    </div>
+  </div>
+
+  <!-- ─── RIGHT PANEL ────────────────────────────────────── -->
+  <div class="right">
+
+    <!-- Branding -->
+    <div class="brand">
+      <!-- Simple wave/brain SVG logo mark -->
+      <svg class="brand-icon" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M3 13C3 7.477 7.477 3 13 3s10 4.477 10 10-4.477 10-10 10S3 18.523 3 13Z"
+              stroke="#111" stroke-width="1.5"/>
+        <path d="M7 13q2-4 6 0t6 0" stroke="#111" stroke-width="1.5" stroke-linecap="round"/>
+        <path d="M7 16q2-3 6 0t6 0" stroke="#111" stroke-width="1.5" stroke-linecap="round" stroke-opacity=".4"/>
+      </svg>
+      MINDCLASH
+    </div>
+
+    <!-- Form -->
+    <div class="form-wrap">
+      <h2 class="form-title">Welcome Back</h2>
+      <p class="form-sub">Enter your name and roll number to access your account</p>
+
+      <!-- Error banner -->
+      <div class="error-msg" id="errorMsg"></div>
+
+      <!-- Name — FIELD 1 -->
+      <div class="field">
+        <label for="nameInput">Name</label>
+        <div class="input-wrap">
+          <input
+            type="text"
+            id="nameInput"
+            placeholder="Enter your full name"
+            autocomplete="name"
+          />
+        </div>
+      </div>
+
+      <!-- Roll Number — FIELD 2 -->
+      <div class="field">
+        <label for="rollInput">Roll Number</label>
+        <div class="input-wrap">
+          <input
+            type="text"
+            id="rollInput"
+            placeholder="Enter your roll number"
+            autocomplete="username"
+          />
+        </div>
+      </div>
+
+      <!-- Sign In -->
+      <button class="btn-signin" id="signInBtn" onclick="onSignIn()">Sign In</button>
+
+      <!-- Instagram — ⚠️ Replace href with your actual Instagram URL -->
+      <div class="ig-wrap">
+        <a class="btn-instagram" href="https://www.instagram.com/YOUR_HANDLE" target="_blank" rel="noopener">
+        <!-- Instagram gradient icon -->
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="ig-grad" x1="0%" y1="100%" x2="100%" y2="0%">
+              <stop offset="0%"   stop-color="#f09433"/>
+              <stop offset="25%"  stop-color="#e6683c"/>
+              <stop offset="50%"  stop-color="#dc2743"/>
+              <stop offset="75%"  stop-color="#cc2366"/>
+              <stop offset="100%" stop-color="#bc1888"/>
+            </linearGradient>
+          </defs>
+          <rect x="2" y="2" width="20" height="20" rx="5.5" stroke="url(#ig-grad)" stroke-width="1.8"/>
+          <circle cx="12" cy="12" r="4.2" stroke="url(#ig-grad)" stroke-width="1.8"/>
+          <circle cx="17.5" cy="6.5" r="1.1" fill="url(#ig-grad)"/>
+        </svg>
+        Follow us on Instagram
+      </a>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <p class="form-footer">
+      Don't have an account? <a href="#">Sign Up</a>
+    </p>
+
+  </div><!-- .right -->
+</div><!-- .card -->
+
+<!-- ── auth.js must be loaded before this page's inline script ── -->
+<!--
+  USER CONFIG AREA — SCRIPT LOADING
+  Load auth.js (and optionally the Google Identity Services library):
+  <script src="auth.js"></script>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+-->
+<script src="auth.js"></script>
+
+<script>
+  // ── Allow Enter key to submit ───────────────────────────────
+  [document.getElementById('nameInput'), document.getElementById('rollInput')].forEach(el => {
+    el.addEventListener('keydown', e => { if (e.key === 'Enter') onSignIn(); });
+  });
+
+  // ── Sign-In handler ─────────────────────────────────────────
+  async function onSignIn() {
+    const name = document.getElementById('nameInput').value.trim();
+    const roll = document.getElementById('rollInput').value.trim();
+    const errEl = document.getElementById('errorMsg');
+    const btn   = document.getElementById('signInBtn');
+
+    if (!name || !roll) {
+      showError('Please enter both your name and roll number.');
+      return;
+    }
+
+    btn.textContent = 'Signing in…';
+    btn.disabled = true;
+    errEl.classList.remove('visible');
+
+    try {
+      const result = await window.MindClashAuth.handleLogin(name, roll);
+      if (!result.success) showError(result.message || 'Login failed.');
+    } catch (err) {
+      showError('Unexpected error. Please try again.');
+    } finally {
+      btn.textContent = 'Sign In';
+      btn.disabled = false;
+    }
+  }
+
+  function showError(msg) {
+    const el = document.getElementById('errorMsg');
+    el.textContent = msg;
+    el.classList.add('visible');
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Market Field Study Submission</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family: 'Inter',sans-serif;
+}
+
+body{
+background:
+radial-gradient(circle at 20% 20%,#3b1d77,transparent 40%),
+radial-gradient(circle at 80% 30%,#0b3cff,transparent 40%),
+radial-gradient(circle at 50% 90%,#ff00c8,transparent 50%),
+#050816;
+
+color:white;
+min-height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+padding:40px;
+}
+
+.container{
+
+width:950px;
+max-width:95%;
+
+background:rgba(255,255,255,0.05);
+backdrop-filter: blur(20px);
+
+border-radius:22px;
+
+padding:50px;
+
+border:1px solid rgba(255,255,255,0.1);
+
+box-shadow:
+0 20px 40px rgba(0,0,0,0.6),
+0 0 80px rgba(120,0,255,0.15);
+
+}
+
+h1{
+text-align:center;
+font-size:36px;
+font-weight:600;
+margin-bottom:35px;
+
+background:linear-gradient(90deg,#7a7cff,#ff58e9);
+	-webkit-background-clip:text;
+	background-clip:text;
+-webkit-text-fill-color:transparent;
+}
+
+label{
+font-size:14px;
+color:#cfd4ff;
+display:block;
+margin-top:10px;
+margin-bottom:8px;
+}
+
+input{
+width:100%;
+padding:14px 16px;
+
+border-radius:10px;
+
+border:1px solid rgba(255,255,255,0.15);
+
+background:rgba(255,255,255,0.05);
+
+color:white;
+
+font-size:14px;
+
+transition:all .25s ease;
+}
+
+input:focus{
+
+outline:none;
+
+border-color:#7c6cff;
+
+box-shadow:0 0 10px rgba(124,108,255,0.5);
+
+background:rgba(255,255,255,0.08);
+
+}
+
+.question{
+
+margin-top:18px;
+padding:18px;
+
+border-radius:14px;
+
+background:rgba(255,255,255,0.04);
+
+border:1px solid rgba(255,255,255,0.08);
+
+transition:.3s;
+}
+
+.question:hover{
+
+border-color:#7c6cff;
+
+background:rgba(255,255,255,0.06);
+
+}
+
+textarea{
+
+width:100%;
+margin-top:10px;
+
+padding:14px;
+
+border-radius:10px;
+
+border:1px solid rgba(255,255,255,0.15);
+
+background:rgba(0,0,0,0.3);
+
+color:white;
+
+font-size:14px;
+
+resize:vertical;
+
+min-height:90px;
+
+transition:.25s;
+
+}
+
+textarea:focus{
+
+outline:none;
+
+border-color:#ff58e9;
+
+box-shadow:0 0 10px rgba(255,88,233,.4);
+
+}
+
+input[type=file]{
+
+background:rgba(255,255,255,0.08);
+
+padding:12px;
+
+margin-top:10px;
+
+cursor:pointer;
+
+}
+
+button{
+
+width:100%;
+
+margin-top:25px;
+
+padding:16px;
+
+border:none;
+
+border-radius:12px;
+
+font-size:16px;
+
+font-weight:600;
+
+letter-spacing:.5px;
+
+cursor:pointer;
+
+background:linear-gradient(90deg,#7a7cff,#ff58e9);
+
+color:white;
+
+transition:.3s;
+
+box-shadow:
+0 10px 20px rgba(122,124,255,.4);
+
+}
+
+button:hover{
+
+transform:translateY(-2px);
+
+box-shadow:
+0 15px 35px rgba(255,88,233,.5);
+
+}
+
+button:active{
+
+transform:scale(.97);
+
+}
+
+@media(max-width:700px){
+
+.container{
+padding:30px;
+}
+
+h1{
+font-size:26px;
+}
+
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Punjab Market Field Study</h1>
+
+<label>Name</label>
+<input id="name">
+
+<label>Roll Number</label>
+<input id="roll">
+
+<div class="question">
+Q1. Which market did you visit and why?
+<textarea id="q1"></textarea>
+</div>
+
+<div class="question">
+Q2. Describe the type of businesses present in the market.
+<textarea id="q2"></textarea>
+</div>
+
+<div class="question">
+Q3. What were the most common products sold?
+<textarea id="q3"></textarea>
+</div>
+
+<div class="question">
+Q4. What payment methods were used by customers?
+<textarea id="q4"></textarea>
+</div>
+
+<div class="question">
+Q5. Identify 3 customer pain points.
+<textarea id="q5"></textarea>
+</div>
+
+<div class="question">
+Q6. What operational challenges did shopkeepers face?
+<textarea id="q6"></textarea>
+</div>
+
+<div class="question">
+Q7. Did the shops use any digital tools?
+<textarea id="q7"></textarea>
+</div>
+
+<div class="question">
+Q8. What cost inefficiencies did you observe?
+<textarea id="q8"></textarea>
+</div>
+
+<div class="question">
+Q9. How did shopkeepers manage inventory?
+<textarea id="q9"></textarea>
+</div>
+
+<div class="question">
+Q10. Were there any sustainability concerns?
+<textarea id="q10"></textarea>
+</div>
+
+<div class="question">
+Q11. What type of customers visited the market?
+<textarea id="q11"></textarea>
+</div>
+
+<div class="question">
+Q12. How could digital tools improve this market?
+<textarea id="q12"></textarea>
+</div>
+
+<div class="question">
+Q13. What business opportunity did you identify?
+<textarea id="q13"></textarea>
+</div>
+
+<div class="question">
+Q14. What improvements would you suggest?
+<textarea id="q14"></textarea>
+</div>
+
+<div class="question">
+Q15. What was your biggest learning from this visit?
+<textarea id="q15"></textarea>
+</div>
+
+<label>Upload Market Photo</label>
+<input type="file" id="image">
+
+<button onclick="submitForm()">Submit Report</button>
+
+</div>
+
+<script>
+
+const scriptURL="https://script.google.com/macros/s/AKfycbzaAzT2Hl2TdzQCeANCnoUjNn2sDWmGShrDtROI8Hk7WcUgUC_REbHvSeoH5MkGi-4SMQ/exec"
+
+async function submitForm(){
+
+const imageFile=document.getElementById("image").files[0]
+
+let imageData=""
+
+if(imageFile){
+
+const reader=new FileReader()
+
+reader.readAsDataURL(imageFile)
+
+reader.onload=async function(){
+
+imageData=reader.result
+
+sendData(imageData)
+
+}
+
+}else{
+
+sendData("")
+
+}
+
+}
+
+function sendData(imageData){
+
+const data={
+
+name:document.getElementById("name").value,
+roll:document.getElementById("roll").value,
+
+q1:q1.value,
+q2:q2.value,
+q3:q3.value,
+q4:q4.value,
+q5:q5.value,
+q6:q6.value,
+q7:q7.value,
+q8:q8.value,
+q9:q9.value,
+q10:q10.value,
+q11:q11.value,
+q12:q12.value,
+q13:q13.value,
+q14:q14.value,
+q15:q15.value,
+
+image:imageData
+
+}
+
+fetch(scriptURL,{
+method:"POST",
+body:JSON.stringify(data)
+})
+
+alert("Submission Saved!")
+
+}
+
+</script>
+
+</body>
+</html>

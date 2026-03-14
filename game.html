@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="VIKSIT BHARAT - Skill to Scale Startup Simulator. Experience entrepreneurship through interactive business decisions.">
+    <meta name="keywords" content="startup simulator, entrepreneurship, business game, Viksit Bharat, Chitkara University">
+    <meta name="author" content="Chitkara University">
+    <link rel="icon" href="logo.svg" type="image/svg+xml">
+    <title>VIKSIT BHARAT - Skill to Scale | Startup Simulator</title>
+    <!-- If using GitHub Pages with a project repository, replace 'repo-name' with your repository name -->
+    <!-- <base href="/repo-name/"> -->
+    <link rel="stylesheet" href="game.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Cormorant+Garamond:wght@600;700&display=swap" rel="stylesheet">
+</head>
+<body class="game-body">
+    <div class="game-container">
+        <!-- Main Game Area -->
+        <div class="game-main">
+            <header class="game-header">
+                <div class="header-left">
+                    <h1 id="startup-name">Skill to Scale</h1>
+                    <div class="timer-bar"><div id="timer-fill" class="timer-fill"></div></div>
+                </div>
+                <div class="round-indicator">ROUND <span id="current-round">1</span> / 18</div>
+            </header>
+
+            <main class="scenario-card">
+                <div class="scenario-title" id="scenario-type">Strategic Choice</div>
+                <div class="scenario-text" id="scenario-text">
+                    Initializing your Viksit Bharat Startup...
+                </div>
+                
+                <div class="options-grid" id="options-container">
+                    <!-- Options injected by JS -->
+                </div>
+            </main>
+        </div>
+
+        <!-- Performance Sidebar -->
+        <aside class="game-sidebar">
+            <h2 class="sidebar-title">Company Metrics</h2>
+            
+            <div class="metrics-list">
+                <div class="metric-item" id="metric-cash">
+                    <div class="metric-info">
+                        <span class="metric-name">Cash Reserve</span>
+                        <span class="metric-value" id="val-cash">₹10,00,000</span>
+                    </div>
+                    <span class="metric-change" id="change-cash"></span>
+                </div>
+
+                <div class="metric-item" id="metric-revenue">
+                    <div class="metric-info">
+                        <span class="metric-name">Revenue</span>
+                        <span class="metric-value" id="val-revenue">₹0</span>
+                    </div>
+                    <span class="metric-change" id="change-revenue"></span>
+                </div>
+
+                <div class="metric-item" id="metric-profit">
+                    <div class="metric-info">
+                        <span class="metric-name">Net Profit</span>
+                        <span class="metric-value" id="val-profit">₹0</span>
+                    </div>
+                    <span class="metric-change" id="change-profit"></span>
+                </div>
+
+                <div class="metric-item" id="metric-market">
+                    <div class="metric-info">
+                        <span class="metric-name">Market Share</span>
+                        <span class="metric-value" id="val-market">5%</span>
+                    </div>
+                    <span class="metric-change" id="change-market"></span>
+                </div>
+
+                <div class="metric-item" id="metric-reputation">
+                    <div class="metric-info">
+                        <span class="metric-name">Brand Reputation</span>
+                        <span class="metric-value" id="val-reputation">Neutral</span>
+                    </div>
+                    <span class="metric-change" id="change-reputation"></span>
+                </div>
+
+                <div class="metric-item" id="metric-morale">
+                    <div class="metric-info">
+                        <span class="metric-name">Employee Morale</span>
+                        <span class="metric-value" id="val-morale">Stable</span>
+                    </div>
+                    <span class="metric-change" id="change-morale"></span>
+                </div>
+
+                <div class="metric-item" id="metric-esg">
+                    <div class="metric-info">
+                        <span class="metric-name">ESG Score</span>
+                        <span class="metric-value" id="val-esg">5.0</span>
+                    </div>
+                    <span class="metric-change" id="change-esg"></span>
+                </div>
+
+                <div class="metric-item" id="metric-investor">
+                    <div class="metric-info">
+                        <span class="metric-name">Investor Confidence</span>
+                        <span class="metric-value" id="val-investor">Medium</span>
+                    </div>
+                    <span class="metric-change" id="change-investor"></span>
+                </div>
+
+                <div class="metric-item" id="metric-risk">
+                    <div class="metric-info">
+                        <span class="metric-name">Risk Level</span>
+                        <span class="metric-value" id="val-risk">Low</span>
+                    </div>
+                    <span class="metric-change" id="change-risk"></span>
+                </div>
+            </div>
+
+            <!-- Mini Graph -->
+            <div style="margin-top: 0.75rem; padding: 1rem; background: #f8fafc; border-radius: 1rem; border: 1px solid #edf2f7;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                    <span style="font-size: 0.6rem; color: var(--text-muted); text-transform: uppercase; font-weight: 800; letter-spacing: 0.5px;">Growth Trend</span>
+                    <div style="display: flex; gap: 6px;">
+                        <span style="width: 6px; height: 6px; background: var(--primary-color); border-radius: 50%;" title="Revenue"></span>
+                        <span style="width: 6px; height: 6px; background: #27ae60; border-radius: 50%;" title="ESG"></span>
+                        <span style="width: 6px; height: 6px; background: #4834d4; border-radius: 50%;" title="Market Share"></span>
+                    </div>
+                </div>
+                <div style="height: 60px; display: flex; align-items: flex-end; gap: 4px;" id="trend-bars">
+                    <!-- Bars injected by JS -->
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- Registration Overlay -->
+    <div id="registration-overlay" class="result-overlay" style="background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(8px); z-index: 1100; position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center;">
+        <div class="overlay-content" style="max-width: 450px;">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">🚀</div>
+            <h2 class="ranking-title" style="font-size: 1.75rem; margin-bottom: 0.5rem;">Startup Registration</h2>
+            <p class="score-summary" style="font-size: 0.95rem; margin-bottom: 2rem;">Register your venture to begin the simulator.</p>
+            
+            <form id="startup-registration-form" style="text-align: left; display: flex; flex-direction: column; gap: 1.25rem;">
+                <div class="input-group">
+                    <label for="reg-student-name" style="display: block; font-size: 0.75rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.5rem; letter-spacing: 0.5px;">Founder Name</label>
+                    <input type="text" id="reg-student-name" required placeholder="Enter your full name" style="width: 100%; padding: 0.85rem 1rem; border-radius: 0.75rem; border: 1px solid #edf2f7; font-size: 1rem; outline: none; transition: border-color 0.2s;">
+                </div>
+                <div class="input-group">
+                    <label for="reg-roll-number" style="display: block; font-size: 0.75rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.5rem; letter-spacing: 0.5px;">University Roll Number</label>
+                    <input type="text" id="reg-roll-number" required placeholder="Enter your roll number" style="width: 100%; padding: 0.85rem 1rem; border-radius: 0.75rem; border: 1px solid #edf2f7; font-size: 1rem; outline: none; transition: border-color 0.2s;">
+                </div>
+                <button type="submit" class="btn-primary" style="width: 100%; padding: 1rem; margin-top: 0.5rem;">Launch Venture</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Feedback Overlay -->
+    <div id="feedback-overlay" class="result-overlay" style="background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 900; position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: none; justify-content: center; align-items: center;">
+        <div class="overlay-content">
+            <div id="fb-badge" style="font-size: 3.5rem; margin-bottom: 1rem;">💡</div>
+            <h2 id="fb-title" class="ranking-title" style="font-size: 2rem;">Strategic Insight</h2>
+            <p id="fb-text" class="score-summary" style="font-size: 1.05rem; margin-bottom: 2rem;">
+                Feedback text goes here...
+            </p>
+            <div id="fb-impact" style="background: #f8fafc; padding: 1.25rem; border-radius: 1rem; margin-bottom: 2rem; text-align: left; font-size: 0.85rem; border: 1px solid #edf2f7;">
+                <!-- Impact details -->
+            </div>
+            <button class="btn-primary" id="fb-continue" style="width: 100%; padding: 1rem; border-radius: 0.75rem;">Proceed to Next Stage</button>
+        </div>
+    </div>
+
+    <!-- Result Overlay -->
+    <div id="result-overlay" class="result-overlay" style="background: rgba(255, 255, 255, 0.98); position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 1000; padding: 2rem;">
+        <div class="overlay-content">
+            <div class="ranking-badge" id="res-badge">🦄</div>
+            <h2 class="ranking-title" id="res-title">Future Unicorn</h2>
+            <p class="score-summary" id="res-summary">
+                Summary of your journey...
+            </p>
+            <div id="res-metrics" class="metric-card-grid">
+                <!-- Final metrics summary injected by JS -->
+            </div>
+            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                <button class="btn-primary" onclick="location.reload()" style="padding: 1rem 2rem; border-radius: 0.75rem; width: auto;">Launch New Venture</button>
+                <button class="btn-primary" style="background: #1e293b; padding: 1rem 2rem; border-radius: 0.75rem; width: auto;" onclick="window.location.href='dashboard.html'">Return to Dashboard</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
