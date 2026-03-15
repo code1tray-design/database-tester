@@ -1,6 +1,6 @@
 // Viksit Bharat Corporate Intelligence Challenge - Logic Engine
 // PASTE YOUR GOOGLE SCRIPT URL HERE
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxXF56GdVR4p3g8LdbPd8DdG2jEGWY6ZkuZ3BoInoFevawfreN9HD6DrKAJUwm4zZt8mA/exec";
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbznNb3DwMQw8ieUJW1TIECGDkK7AJ6ZvbXJErUg_UYcMi2xytOJpWdVlGc7hxyasgvwBw/exec";
 
 // State
 let state = {

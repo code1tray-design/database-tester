@@ -19,10 +19,10 @@ const COURSES = [
     meta:"18 Topics · May 2025"
   },
   {
-    title:"stage 1",
+    title:"COMTECH ",
     tag:"LEVEL 2",
     desc:"Market Field Study Submission.",
-    file:"test1.html",
+    file:"ComTech_Level2.html",
     icon:"📁",
     bg:"linear-gradient(135deg,#00082e 0%,#0a1f7a 100%)",
     badge:"HOT", bc:"bh",

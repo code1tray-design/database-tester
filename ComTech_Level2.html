@@ -1,0 +1,1629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>COMTECH 4.0 — Level 2: Create &amp; Incubate</title>
+<style>
+/* ── Embedded font fallback stack — no external calls ── */
+</style>
+<style>
+:root{
+  --navy:#080E1C;--gold:#F5A623;--orange:#E8530A;--teal:#00BFA6;
+  --purple:#7C3AED;--green:#22C55E;--red:#EF4444;--accent:#FF6B35;
+  --cyan:#06B6D4;--pink:#EC4899;
+  --mid:#1A2E50;--white:#EEF2FF;--gray:#94A3B8;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;overflow-x:hidden;}
+body{font-family:'Syne','Segoe UI',system-ui,sans-serif;background:var(--navy);color:var(--white);min-height:100vh;}
+
+/* BG ORBS */
+.bg-orbs{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
+.orb{position:absolute;border-radius:50%;filter:blur(90px);opacity:.1;animation:drift 14s ease-in-out infinite alternate;}
+.orb1{width:600px;height:600px;background:var(--gold);top:-200px;left:-200px;animation-duration:16s;}
+.orb2{width:500px;height:500px;background:var(--teal);bottom:-150px;right:-150px;animation-duration:13s;}
+.orb3{width:350px;height:350px;background:var(--purple);top:35%;left:35%;animation-duration:10s;}
+.orb4{width:300px;height:300px;background:var(--cyan);top:60%;left:10%;animation-duration:18s;}
+@keyframes drift{from{transform:translate(0,0) scale(1)}to{transform:translate(50px,35px) scale(1.12)}}
+
+/* PAGES */
+.page{display:none;position:relative;z-index:1;min-height:100vh;padding:1.5rem;align-items:center;justify-content:center;flex-direction:column;}
+.page.active{display:flex;}
+.page.fade{animation:fadeUp .38s ease both;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}
+
+/* PROGRESS BAR */
+.progress-bar{position:fixed;top:0;left:0;right:0;z-index:200;height:3px;background:rgba(255,255,255,.07);}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--teal),var(--gold));transition:width .5s ease;}
+
+/* STEP INDICATOR */
+.step-indicator{display:flex;gap:.4rem;justify-content:center;margin-bottom:1.5rem;flex-wrap:wrap;}
+.si{display:flex;align-items:center;gap:.3rem;}
+.si-dot{width:28px;height:28px;border-radius:50%;border:2px solid rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono','Courier New',monospace;font-size:.62rem;color:var(--gray);transition:all .3s;}
+.si-dot.done{background:var(--teal);border-color:var(--teal);color:#080E1C;font-weight:700;}
+.si-dot.active{background:rgba(245,166,35,.15);border-color:var(--gold);color:var(--gold);}
+.si-line{width:20px;height:2px;background:rgba(255,255,255,.1);border-radius:1px;}
+.si-line.done{background:var(--teal);}
+
+/* LANDING */
+#landingPage{background:radial-gradient(ellipse at 20% 20%,rgba(245,166,35,.14) 0%,transparent 55%),radial-gradient(ellipse at 80% 80%,rgba(0,191,166,.11) 0%,transparent 55%);}
+.logo{font-family:'Bebas Neue',Impact,'Arial Black',sans-serif;font-size:clamp(4rem,18vw,9rem);letter-spacing:.04em;background:linear-gradient(135deg,var(--gold),var(--orange) 50%,var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:.88;filter:drop-shadow(0 0 50px rgba(245,166,35,.45));animation:glow 3s ease-in-out infinite;}
+@keyframes glow{0%,100%{filter:drop-shadow(0 0 50px rgba(245,166,35,.4))}50%{filter:drop-shadow(0 0 80px rgba(245,166,35,.75))}}
+.level-badge{display:inline-flex;align-items:center;gap:.5rem;background:rgba(0,191,166,.12);border:1.5px solid rgba(0,191,166,.35);border-radius:100px;padding:.4rem 1.2rem;font-family:'JetBrains Mono','Courier New',monospace;font-size:.75rem;color:var(--teal);letter-spacing:.2em;margin-bottom:1rem;}
+.logo-title{font-family:'Bebas Neue',Impact,'Arial Black',sans-serif;font-size:clamp(1.8rem,7vw,4rem);letter-spacing:.06em;color:var(--white);line-height:1.1;margin-bottom:.5rem;}
+.logo-sub{font-size:.9rem;letter-spacing:.3em;text-transform:uppercase;color:var(--teal);margin-bottom:.5rem;font-weight:700;}
+.logo-desc{color:var(--gray);font-size:.88rem;max-width:460px;line-height:1.6;margin:0 auto 2rem;text-align:center;}
+
+.start-btn{background:linear-gradient(135deg,var(--gold),var(--orange));color:#080E1C;border:none;border-radius:12px;padding:.9rem 3rem;font-family:'Bebas Neue',Impact,'Arial Black',sans-serif;font-size:1.4rem;letter-spacing:.1em;cursor:pointer;box-shadow:0 6px 28px rgba(245,166,35,.4);transition:all .25s;}
+.start-btn:hover{transform:translateY(-3px);box-shadow:0 10px 38px rgba(245,166,35,.55);}
+.journey-steps{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;margin:1.5rem 0;}
+.js-item{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:10px;padding:.6rem 1rem;font-size:.78rem;color:var(--gray);font-family:'JetBrains Mono','Courier New',monospace;display:flex;align-items:center;gap:.4rem;}
+.ftag{font-family:'JetBrains Mono','Courier New',monospace;font-size:.6rem;color:rgba(255,255,255,.2);letter-spacing:.14em;margin-top:1.5rem;}
+
+/* CARD */
+.card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:2rem;max-width:520px;width:100%;backdrop-filter:blur(20px);}
+.ct{font-family:'Bebas Neue',Impact,'Arial Black',sans-serif;font-size:2rem;letter-spacing:.05em;color:var(--gold);margin-bottom:.25rem;}
+.cs{color:var(--gray);font-size:.84rem;margin-bottom:1.6rem;line-height:1.5;}
+.field{margin-bottom:1rem;}
+.field label{display:block;font-size:.7rem;font-weight:700;color:var(--teal);font-family:'JetBrains Mono','Courier New',monospace;letter-spacing:.1em;margin-bottom:.4rem;}
+.field input,.field select,.field textarea{width:100%;background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.13);border-radius:10px;padding:.72rem 1rem;color:var(--white);font-family:'Syne','Segoe UI',system-ui,sans-serif;font-size:.95rem;outline:none;transition:border-color .2s;}
+.field select{cursor:pointer;-webkit-appearance:none;}
+.field textarea{resize:vertical;min-height:90px;line-height:1.5;}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--gold);}
+.field input::placeholder,.field textarea::placeholder{color:rgba(255,255,255,.25);}
+.btn{width:100%;padding:.82rem;border:none;border-radius:11px;font-family:'Bebas Neue',Impact,'Arial Black',sans-serif;font-size:1.25rem;letter-spacing:.08em;cursor:pointer;transition:all .22s;display:flex;align-items:center;justify-content:center;gap:.5rem;}
+.btn-gold{background:linear-gradient(135deg,var(--gold),var(--orange));color:#080E1C;box-shadow:0 4px 22px rgba(245,166,35,.35);}
+.btn-gold:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(245,166,35,.52);}
+.btn-teal{background:linear-gradient(135deg,var(--teal),#00967a);color:#080E1C;box-shadow:0 4px 22px rgba(0,191,166,.3);}
+.btn-teal:hover{transform:translateY(-2px);}
+.btn-ghost{background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.15);color:var(--white);}
+.btn-ghost:hover{border-color:var(--gold);}
+.mt8{margin-top:.8rem;}
+.btn-purple{background:linear-gradient(135deg,var(--purple),#5B21B6);color:#fff;box-shadow:0 4px 22px rgba(124,58,237,.3);}
+.btn-purple:hover{transform:translateY(-2px);}
+
+/* TASK PAGES */
+.task-page{max-width:680px;width:100%;margin:0 auto;padding-bottom:2rem;}
+.task-header{text-align:center;margin-bottom:1.5rem;}
+.task-badge{font-family:'JetBrains Mono','Courier New',monospace;font-size:.65rem;letter-spacing:.35em;color:var(--teal);background:rgba(0,191,166,.09);border:1px solid rgba(0,191,166,.2);border-radius:100px;padding:.25rem .8rem;display:inline-block;margin-bottom:.7rem;}
+.task-title{font-family:'Bebas Neue',Impact,'Arial Black',sans-serif;font-size:clamp(2rem,7vw,3rem);letter-spacing:.04em;line-height:1.1;margin-bottom:.4rem;}
+.task-desc{color:var(--gray);font-size:.88rem;line-height:1.6;max-width:540px;margin:0 auto;}
+.task-card{background:rgba(255,255,255,.04);border:1.5px solid rgba(255,255,255,.09);border-radius:16px;padding:1.4rem;margin-bottom:1rem;position:relative;}
+.task-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:16px 0 0 16px;}
+.tc-gold::before{background:linear-gradient(180deg,var(--gold),var(--orange));}
+.tc-teal::before{background:linear-gradient(180deg,var(--teal),#00967a);}
+.tc-purple::before{background:linear-gradient(180deg,var(--purple),#5B21B6);}
+.tc-cyan::before{background:linear-gradient(180deg,var(--cyan),#0284C7);}
+.tc-pink::before{background:linear-gradient(180deg,var(--pink),#BE185D);}
+.tc-green::before{background:linear-gradient(180deg,var(--green),#15803D);}
+.task-card-title{font-family:'Bebas Neue',Impact,'Arial Black',sans-serif;font-size:1.1rem;letter-spacing:.05em;color:var(--gold);margin-bottom:.75rem;display:flex;align-items:center;gap:.5rem;}
+.hint-box{background:rgba(0,191,166,.07);border:1px solid rgba(0,191,166,.18);border-radius:10px;padding:.7rem .9rem;margin-bottom:.8rem;font-size:.78rem;color:var(--teal);line-height:1.55;}
+.hint-box strong{color:var(--white);}
+.char-count{font-family:'JetBrains Mono','Courier New',monospace;font-size:.6rem;color:var(--gray);text-align:right;margin-top:.3rem;}
+
+/* SWOT GRID */
+.swot-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-bottom:.8rem;}
+.swot-cell{border-radius:10px;overflow:hidden;}
+.swot-head{padding:.5rem .8rem;font-family:'Bebas Neue',Impact,'Arial Black',sans-serif;font-size:.95rem;letter-spacing:.05em;display:flex;align-items:center;gap:.4rem;}
+.swot-s .swot-head{background:rgba(34,197,94,.2);color:var(--green);}
+.swot-w .swot-head{background:rgba(239,68,68,.18);color:var(--red);}
+.swot-o .swot-head{background:rgba(245,166,35,.18);color:var(--gold);}
+.swot-t .swot-head{background:rgba(124,58,237,.2);color:#A78BFA;}
+.swot-cell textarea{border-radius:0 0 10px 10px;border-top:none;min-height:80px;}
+
+/* FINANCIAL TABLE */
+.fin-table{width:100%;border-collapse:collapse;font-size:.85rem;}
+.fin-table th{background:rgba(255,255,255,.06);padding:.55rem .75rem;text-align:left;font-family:'JetBrains Mono','Courier New',monospace;font-size:.62rem;color:var(--gray);border-bottom:1px solid rgba(255,255,255,.08);letter-spacing:.07em;}
+.fin-table td{padding:.5rem .7rem;border-bottom:1px solid rgba(255,255,255,.05);vertical-align:middle;}
+.fin-table input{background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.13);border-radius:7px;padding:.4rem .6rem;color:var(--white);font-family:'Syne','Segoe UI',system-ui,sans-serif;font-size:.85rem;outline:none;width:100%;transition:border-color .2s;}
+.fin-table input:focus{border-color:var(--gold);}
+.fin-total{background:rgba(245,166,35,.07);font-weight:700;color:var(--gold);}
+.fin-result{background:rgba(0,191,166,.07);border:1px solid rgba(0,191,166,.2);border-radius:10px;padding:.8rem 1rem;margin-top:.8rem;font-family:'JetBrains Mono','Courier New',monospace;font-size:.82rem;color:var(--teal);line-height:1.6;}
+
+/* AI EVAL SECTION */
+#evalPage{text-align:center;}
+.ai-orb{width:100px;height:100px;border-radius:50%;background:linear-gradient(135deg,rgba(124,58,237,.3),rgba(0,191,166,.2));border:2px solid rgba(124,58,237,.4);display:flex;align-items:center;justify-content:center;font-size:3rem;margin:0 auto 1.2rem;animation:pulse 2s ease-in-out infinite;}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(124,58,237,.3)}50%{box-shadow:0 0 0 20px rgba(124,58,237,0)}}
+.ai-loading{font-family:'JetBrains Mono','Courier New',monospace;font-size:.78rem;color:var(--teal);animation:blink 1s ease infinite alternate;}
+@keyframes blink{from{opacity:1}to{opacity:.3}}
+.eval-result{background:rgba(255,255,255,.04);border:1.5px solid rgba(255,255,255,.1);border-radius:16px;padding:1.5rem;max-width:640px;width:100%;text-align:left;margin:1rem auto;}
+.eval-score-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-bottom:1.2rem;}
+.eval-score-item{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:.7rem 1rem;text-align:center;}
+.esi-label{font-family:'JetBrains Mono','Courier New',monospace;font-size:.6rem;color:var(--gray);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.25rem;}
+.esi-score{font-family:'Bebas Neue',Impact,'Arial Black',sans-serif;font-size:2rem;line-height:1;}
+.esi-bar{height:4px;background:rgba(255,255,255,.08);border-radius:2px;margin-top:.4rem;overflow:hidden;}
+.esi-fill{height:100%;border-radius:2px;transition:width 1s ease;}
+.eval-feedback{background:rgba(0,191,166,.06);border:1px solid rgba(0,191,166,.18);border-radius:10px;padding:1rem;font-size:.85rem;color:var(--white);line-height:1.65;white-space:pre-wrap;}
+.overall-score{font-family:'Bebas Neue',Impact,'Arial Black',sans-serif;font-size:4.5rem;color:var(--gold);line-height:1;text-shadow:0 0 40px rgba(245,166,35,.4);}
+.overall-label{font-family:'JetBrains Mono','Courier New',monospace;font-size:.65rem;color:var(--gray);letter-spacing:.15em;margin-bottom:.5rem;}
+
+/* DONE PAGE */
+#donePage{text-align:center;}
+.done-icon{font-size:5rem;display:block;margin-bottom:1rem;}
+.done-title{font-family:'Bebas Neue',Impact,'Arial Black',sans-serif;font-size:2.8rem;color:var(--green);margin-bottom:.5rem;}
+.done-sub{color:var(--gray);font-size:.88rem;line-height:1.6;margin-bottom:1.5rem;max-width:440px;}
+.done-grid{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-bottom:1.2rem;max-width:400px;width:100%;}
+.done-stat{background:rgba(245,166,35,.07);border:1.5px solid rgba(245,166,35,.2);border-radius:12px;padding:.9rem 1.2rem;text-align:center;}
+.ds-v{font-family:'Bebas Neue',Impact,'Arial Black',sans-serif;font-size:2.2rem;color:var(--gold);line-height:1;}
+.ds-l{font-size:.65rem;font-family:'JetBrains Mono','Courier New',monospace;color:var(--gray);text-transform:uppercase;letter-spacing:.08em;margin-top:.15rem;}
+
+/* TOAST */
+.toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(100px);z-index:999;background:rgba(34,197,94,.9);color:#080E1C;padding:.75rem 1.5rem;border-radius:12px;font-family:'JetBrains Mono','Courier New',monospace;font-size:.8rem;font-weight:600;transition:transform .4s cubic-bezier(.34,1.56,.64,1);white-space:nowrap;pointer-events:none;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+.toast.error{background:rgba(239,68,68,.9);color:#fff;}
+
+/* NAV BTNS */
+.nav-row{display:flex;gap:.6rem;margin-top:1.2rem;}
+.nav-row .btn{flex:1;}
+
+/* JUDGING CRITERIA BAR */
+.criteria-bar{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1.2rem;justify-content:center;}
+.crit{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:8px;padding:.4rem .8rem;font-size:.7rem;font-family:'JetBrains Mono','Courier New',monospace;color:var(--gray);display:flex;align-items:center;gap:.35rem;}
+.crit-dot{width:7px;height:7px;border-radius:50%;}
+
+/* THEME INTRO */
+.theme-card{background:rgba(255,255,255,.05);border:1.5px solid rgba(245,166,35,.25);border-radius:16px;padding:1.3rem 1.5rem;max-width:520px;width:100%;text-align:center;margin-bottom:1.2rem;}
+.theme-emoji{font-size:3.5rem;display:block;margin-bottom:.6rem;animation:bob 1.2s ease-in-out infinite alternate;}
+@keyframes bob{from{transform:translateY(0)}to{transform:translateY(-10px)}}
+.theme-name{font-family:'Bebas Neue',Impact,'Arial Black',sans-serif;font-size:1.8rem;color:var(--gold);letter-spacing:.04em;margin-bottom:.4rem;}
+.theme-detail{font-size:.83rem;color:var(--gray);line-height:1.6;}
+
+/* HIDDEN IFRAME */
+iframe#gsIframe{display:none;width:0;height:0;border:none;}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-thumb{background:rgba(245,166,35,.25);border-radius:2px;}
+
+@media(max-width:480px){
+  .swot-grid{grid-template-columns:1fr;}
+  .eval-score-grid{grid-template-columns:1fr;}
+  .done-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+<div class="bg-orbs"><div class="orb orb1"></div><div class="orb orb2"></div><div class="orb orb3"></div><div class="orb orb4"></div></div>
+<div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+<div class="toast" id="toast"></div>
+<iframe id="gsIframe" name="_gs_iframe"></iframe>
+
+<!-- ═══════════════════ LOCATION TOKEN GATE ═══════════════════ -->
+<!-- Shown immediately on page load. Student must enter the      -->
+<!-- Location Token shown on the projector to unlock the form.  -->
+<!-- No internet call. Works fully offline.                      -->
+<div id="ipBlockOverlay" style="
+  position:fixed;inset:0;z-index:9999;
+  background:var(--navy);
+  display:flex;align-items:center;justify-content:center;
+  flex-direction:column;text-align:center;padding:2rem;">
+  <div id="ipCheckContent" style="max-width:440px;width:100%">
+    <div style="font-family:'Bebas Neue',Impact,'Arial Black',sans-serif;
+      font-size:clamp(3rem,12vw,6rem);letter-spacing:.04em;
+      background:linear-gradient(135deg,var(--gold),var(--orange));
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+      background-clip:text;margin-bottom:.3rem">COMTECH</div>
+    <div style="font-family:'Bebas Neue',Impact,'Arial Black',sans-serif;font-size:1.3rem;
+      letter-spacing:.3em;color:var(--teal);margin-bottom:1.5rem">LEVEL 2 — CREATE &amp; INCUBATE</div>
+
+    <div style="background:rgba(255,255,255,.04);border:1.5px solid rgba(255,255,255,.1);
+      border-radius:18px;padding:1.8rem 1.5rem;text-align:left">
+
+      <div style="font-family:'JetBrains Mono','Courier New',monospace;font-size:.65rem;
+        color:var(--teal);letter-spacing:.18em;margin-bottom:.4rem">STEP 1 OF 1</div>
+      <div style="font-family:'Bebas Neue',Impact,'Arial Black',sans-serif;font-size:1.6rem;
+        color:var(--white);letter-spacing:.04em;margin-bottom:.3rem">Enter Location Token</div>
+      <div style="font-family:'JetBrains Mono','Courier New',monospace;font-size:.72rem;
+        color:var(--gray);line-height:1.65;margin-bottom:1.1rem">
+        Look at the <strong style="color:var(--gold)">board / projector</strong> in your classroom.<br>
+        Your teacher has displayed a token. Type it below.
+      </div>
+
+      <input id="locationTokenInput" type="text"
+        placeholder="Type the token shown on the board"
+        maxlength="20" autocomplete="off" spellcheck="false"
+        style="width:100%;background:rgba(255,255,255,.08);
+          border:1.5px solid rgba(255,255,255,.15);border-radius:11px;
+          padding:.8rem 1rem;color:var(--white);
+          font-family:'JetBrains Mono','Courier New',monospace;
+          font-size:1.1rem;letter-spacing:.2em;text-transform:uppercase;
+          outline:none;margin-bottom:.7rem;text-align:center;"
+        oninput="this.value=this.value.toUpperCase()"
+        onkeydown="if(event.key==='Enter')checkLocationToken()">
+
+      <div id="tokenMsg" style="font-family:'JetBrains Mono','Courier New',monospace;
+        font-size:.7rem;min-height:1rem;margin-bottom:.7rem;text-align:center"></div>
+
+      <button onclick="checkLocationToken()" style="
+        width:100%;background:linear-gradient(135deg,var(--gold),var(--orange));
+        color:#080E1C;border:none;border-radius:11px;padding:.82rem;
+        font-family:'Bebas Neue',Impact,'Arial Black',sans-serif;
+        font-size:1.2rem;letter-spacing:.08em;cursor:pointer;
+        box-shadow:0 4px 22px rgba(245,166,35,.35)">
+        UNLOCK FORM →
+      </button>
+
+      <!-- Teacher override — collapsed by default -->
+      <details style="margin-top:1rem">
+        <summary style="font-family:'JetBrains Mono','Courier New',monospace;font-size:.62rem;
+          color:rgba(255,255,255,.25);cursor:pointer;list-style:none;text-align:center;
+          padding:.4rem">
+          ⚠️ Missed the token / arrived late? Ask your teacher
+        </summary>
+        <div style="margin-top:.7rem;padding-top:.7rem;border-top:1px solid rgba(255,255,255,.07)">
+          <div style="font-family:'JetBrains Mono','Courier New',monospace;font-size:.65rem;
+            color:var(--gray);margin-bottom:.6rem;line-height:1.6">
+            Teacher must physically type the override code on your device:
+          </div>
+          <div style="display:flex;gap:.5rem">
+            <input id="overrideInput" type="password"
+              placeholder="Teacher types code here"
+              maxlength="20"
+              style="flex:1;background:rgba(255,255,255,.07);
+                border:1.5px solid rgba(255,255,255,.13);border-radius:9px;
+                padding:.65rem .9rem;color:var(--white);
+                font-family:'JetBrains Mono','Courier New',monospace;
+                font-size:.9rem;letter-spacing:.15em;outline:none;"
+              onkeydown="if(event.key==='Enter')applyTeacherOverride()">
+            <button onclick="applyTeacherOverride()" style="
+              background:rgba(245,166,35,.12);border:1.5px solid rgba(245,166,35,.3);
+              border-radius:9px;padding:.65rem 1rem;color:var(--gold);
+              font-family:'Bebas Neue',Impact,'Arial Black',sans-serif;
+              font-size:1rem;letter-spacing:.06em;cursor:pointer;white-space:nowrap">
+              ✓ APPLY
+            </button>
+          </div>
+          <div id="overrideMsg" style="margin-top:.5rem;font-family:'JetBrains Mono','Courier New',monospace;font-size:.68rem;min-height:.9rem"></div>
+        </div>
+      </details>
+    </div>
+
+    <div style="margin-top:1rem;font-family:'JetBrains Mono','Courier New',monospace;
+      font-size:.55rem;color:rgba(255,255,255,.15);letter-spacing:.1em">
+      #ComTech4.0 · Wealth Club · Chitkara University · #SkillToScale
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ LANDING ═══════════════════ -->
+<div class="page active" id="landingPage">
+  <div style="text-align:center">
+    <div class="level-badge">⚙️ &nbsp;LEVEL 02 — CREATE & INCUBATE</div>
+    <div class="logo" style="font-size:clamp(3rem,14vw,7.5rem)">COMTECH</div>
+    <div class="logo" style="font-size:clamp(2rem,10vw,5rem);color:var(--white);-webkit-text-fill-color:initial;">4.0</div>
+    <div class="logo-sub" style="margin-top:.5rem">Wealth Club × Chitkara University</div>
+    <div class="logo-desc">Advanced Case Crafting &amp; Business Pitching. Transform your idea into a real business plan — with AI-powered analysis &amp; evaluation.</div>
+    <div class="journey-steps">
+      <div class="js-item">🔍 Problem Immersion</div>
+      <div class="js-item">💡 Design Thinking</div>
+      <div class="js-item">💹 Financial Modelling</div>
+      <div class="js-item">🚀 Prototype Plan</div>
+      <div class="js-item">🤖 AI Evaluation</div>
+    </div>
+    <button class="start-btn" onclick="gp('registerPage')">BEGIN YOUR JOURNEY →</button>
+    <div class="ftag" style="margin-top:1rem">#ComTech4.0 · #WealthClub · #SkillToScale · #CreateAndIncubate</div>
+  </div>
+</div>
+
+<!-- ═══════════════════ LOGIN PAGE ═══════════════════ -->
+<div class="page" id="registerPage">
+  <div class="card">
+    <div class="ct">🔐 Student Login</div>
+    <div class="cs">Enter your details to begin Level 2.</div>
+    
+    <div class="field">
+      <label>FULL NAME</label>
+      <input type="text" id="sName" placeholder="e.g. John Doe" maxlength="50" autocomplete="off">
+    </div>
+
+    <div class="field">
+      <label>ROLL NUMBER</label>
+      <input type="text" id="sRoll" placeholder="e.g. 22BCom041" maxlength="20" autocomplete="off">
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.8rem">
+      <div class="field">
+        <label>CLASS</label>
+        <input type="text" id="sClass" placeholder="e.g. B.Com" maxlength="20" autocomplete="off">
+      </div>
+      <div class="field">
+        <label>SECTION</label>
+        <input type="text" id="sSection" placeholder="e.g. 3A" maxlength="20" autocomplete="off">
+      </div>
+    </div>
+
+    <div class="field">
+      <label>THEME</label>
+      <select id="sTheme">
+        <option value="">— Select your theme —</option>
+        <option value="1">📈 1 — Invest Smart, Invest Right</option>
+        <option value="2">🌱 2 — Green Money</option>
+        <option value="3">🤖 3 — AI &amp; The New Business Frontier</option>
+        <option value="4">💡 4 — Pitch, Plan &amp; Profit</option>
+        <option value="5">🎯 5 — Brand It, Own It</option>
+        <option value="6">🔍 6 — Follow the Money</option>
+        <option value="7">🏭 7 — Make in India: MSMEs</option>
+        <option value="8">📱 8 — Digital Bharat: FinTech for All</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>BUSINESS IDEA NAME</label>
+      <input type="text" id="sBizName" placeholder="e.g. GreenPay — QR Payments" maxlength="80" autocomplete="off">
+    </div>
+
+    <button class="btn btn-gold" id="proceedBtn" onclick="startJourney()" style="margin-top:.8rem">
+      PROCEED TO LEVEL 2 ⚙️
+    </button>
+    
+    <button class="btn btn-ghost" onclick="gp('landingPage')" style="margin-top:.6rem">← BACK</button>
+  </div>
+</div>
+
+<!-- ═══════════════════ THEME INTRO ═══════════════════ -->
+<div class="page" id="themeIntroPage">
+  <div style="text-align:center;max-width:560px;width:100%">
+    <div class="step-indicator" id="stepIndicator"></div>
+    <div class="theme-card">
+      <span class="theme-emoji" id="themeEmoji">🌱</span>
+      <div class="theme-name" id="themeName">Your Theme</div>
+      <div class="theme-detail" id="themeDetail">Loading...</div>
+    </div>
+    <div class="task-card tc-gold" style="text-align:left">
+      <div class="task-card-title">⚙️ JUDGING CRITERIA — LEVEL 2</div>
+      <div class="criteria-bar">
+        <div class="crit"><span class="crit-dot" style="background:var(--teal)"></span> Content &amp; Research — 25%</div>
+        <div class="crit"><span class="crit-dot" style="background:var(--gold)"></span> Innovation — 25%</div>
+        <div class="crit"><span class="crit-dot" style="background:var(--purple)"></span> Financial Viability — 25%</div>
+        <div class="crit"><span class="crit-dot" style="background:var(--pink)"></span> Presentation — 25%</div>
+      </div>
+      <div style="font-size:.82rem;color:var(--gray);line-height:1.6;">You will complete 4 structured tasks. At the end, AI will evaluate your submission and give detailed feedback &amp; scores. All responses are auto-saved to the organiser's Google Sheet.</div>
+    </div>
+    <button class="btn btn-gold" onclick="gp('step1Page')" style="max-width:400px">START TASK 1: PROBLEM IMMERSION 🔍</button>
+  </div>
+</div>
+
+<!-- ═══════════════════ STEP 1 — PROBLEM IMMERSION ═══════════════════ -->
+<div class="page" id="step1Page">
+  <div class="task-page">
+    <div style="text-align:center;margin-bottom:1.5rem">
+      <div class="step-indicator" id="si1"></div>
+      <div class="task-badge">TASK 01 OF 04</div>
+      <div class="task-title" style="color:var(--teal)">🔍 Problem Immersion</div>
+      <div class="task-desc">Document your field research — customer interviews, pain points, and market gaps you discovered.</div>
+    </div>
+
+    <div class="task-card tc-teal">
+      <div class="task-card-title">📍 Field Visit Summary</div>
+      <div class="hint-box">Visit local markets, shops, or relevant businesses. Interview 5–10 customers or stakeholders. Identify real pain points related to your theme.</div>
+      <div class="field"><label>LOCATIONS VISITED</label><textarea id="q1_locations" placeholder="e.g. Rajpura market, 3 kirana stores, 2 pharmacies..." rows="2" oninput="cc('q1_locations',150)"></textarea><div class="char-count" id="cc_q1_locations">0/150</div></div>
+      <div class="field"><label>HOW MANY PEOPLE DID YOU INTERVIEW?</label><input type="number" id="q1_interviews" placeholder="e.g. 8" min="0" max="100"></div>
+    </div>
+
+    <div class="task-card tc-gold">
+      <div class="task-card-title">😣 Key Pain Points Identified</div>
+      <div class="hint-box"><strong>Describe 3 major problems</strong> your target customers face. Be specific — what frustrates them? What costs them time or money?</div>
+      <div class="field"><label>PAIN POINT 1</label><textarea id="q1_pain1" placeholder="e.g. Small shopkeepers lose 2-3 hours daily on manual cash reconciliation..." rows="2" oninput="cc('q1_pain1',200)"></textarea><div class="char-count" id="cc_q1_pain1">0/200</div></div>
+      <div class="field"><label>PAIN POINT 2</label><textarea id="q1_pain2" placeholder="e.g. No access to formal credit — forced to use moneylenders at 40% interest..." rows="2" oninput="cc('q1_pain2',200)"></textarea><div class="char-count" id="cc_q1_pain2">0/200</div></div>
+      <div class="field"><label>PAIN POINT 3</label><textarea id="q1_pain3" placeholder="e.g. Digital payment apps are too complex for 50+ age group shopkeepers..." rows="2" oninput="cc('q1_pain3',200)"></textarea><div class="char-count" id="cc_q1_pain3">0/200</div></div>
+    </div>
+
+    <div class="task-card tc-purple">
+      <div class="task-card-title">🎯 Problem Statement</div>
+      <div class="hint-box"><strong>Write a crisp problem statement:</strong> [Who] needs to [do what] but [obstacle] because [root cause].</div>
+      <div class="field"><label>YOUR CORE PROBLEM STATEMENT</label><textarea id="q1_problem" placeholder="e.g. Small kirana store owners in Punjab need a simple way to accept digital payments but struggle because existing UPI apps assume smartphone literacy they don't have..." rows="3" oninput="cc('q1_problem',300)"></textarea><div class="char-count" id="cc_q1_problem">0/300</div></div>
+      <div class="field"><label>TARGET CUSTOMER SEGMENT</label><input type="text" id="q1_segment" placeholder="e.g. Kirana store owners aged 40-60 in Tier 2/3 Punjab towns" maxlength="150"></div>
+    </div>
+
+    <div class="nav-row">
+      <button class="btn btn-ghost" onclick="gp('themeIntroPage')" style="flex:.4">← BACK</button>
+      <button class="btn btn-teal" onclick="validateAndNext('step1Page','step2Page',1)">NEXT: DESIGN THINKING 💡 →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ STEP 2 — DESIGN THINKING ═══════════════════ -->
+<div class="page" id="step2Page">
+  <div class="task-page">
+    <div style="text-align:center;margin-bottom:1.5rem">
+      <div class="step-indicator" id="si2"></div>
+      <div class="task-badge">TASK 02 OF 04</div>
+      <div class="task-title" style="color:var(--gold)">💡 Design Thinking</div>
+      <div class="task-desc">Apply design thinking frameworks — SWOT, Lean Canvas, and USP identification.</div>
+    </div>
+
+    <div class="task-card tc-gold">
+      <div class="task-card-title">📊 SWOT ANALYSIS — <span id="bizNameSwot" style="color:var(--teal);font-size:.9rem"></span></div>
+      <div class="hint-box">Be honest and specific. Weaknesses and Threats are just as important as Strengths.</div>
+      <div class="swot-grid">
+        <div class="swot-cell swot-s">
+          <div class="swot-head">💪 STRENGTHS</div>
+          <textarea class="field" id="swot_s" placeholder="What do you do better than others? Unique skills, resources, advantages..." style="width:100%;border-radius:0 0 10px 10px;border-top:none;min-height:80px;padding:.7rem;background:rgba(34,197,94,.05);border:1.5px solid rgba(34,197,94,.2);color:var(--white);font-family:'Segoe UI',system-ui,sans-serif;font-size:.84rem;outline:none;" oninput="cc('swot_s',200)"></textarea>
+        </div>
+        <div class="swot-cell swot-w">
+          <div class="swot-head">⚠️ WEAKNESSES</div>
+          <textarea id="swot_w" placeholder="Gaps, resource limits, skills you lack..." style="width:100%;border-radius:0 0 10px 10px;border-top:none;min-height:80px;padding:.7rem;background:rgba(239,68,68,.05);border:1.5px solid rgba(239,68,68,.2);color:var(--white);font-family:'Segoe UI',system-ui,sans-serif;font-size:.84rem;outline:none;resize:vertical;" oninput="cc('swot_w',200)"></textarea>
+        </div>
+        <div class="swot-cell swot-o">
+          <div class="swot-head">🌟 OPPORTUNITIES</div>
+          <textarea id="swot_o" placeholder="Market trends, government schemes, gaps competitors miss..." style="width:100%;border-radius:0 0 10px 10px;border-top:none;min-height:80px;padding:.7rem;background:rgba(245,166,35,.05);border:1.5px solid rgba(245,166,35,.2);color:var(--white);font-family:'Segoe UI',system-ui,sans-serif;font-size:.84rem;outline:none;resize:vertical;" oninput="cc('swot_o',200)"></textarea>
+        </div>
+        <div class="swot-cell swot-t">
+          <div class="swot-head">🌩️ THREATS</div>
+          <textarea id="swot_t" placeholder="Competitors, regulatory risks, economic factors..." style="width:100%;border-radius:0 0 10px 10px;border-top:none;min-height:80px;padding:.7rem;background:rgba(124,58,237,.05);border:1.5px solid rgba(124,58,237,.2);color:var(--white);font-family:'Segoe UI',system-ui,sans-serif;font-size:.84rem;outline:none;resize:vertical;" oninput="cc('swot_t',200)"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="task-card tc-teal">
+      <div class="task-card-title">🎨 LEAN CANVAS (Business Model)</div>
+      <div class="hint-box">Fill each canvas block briefly. Focus on <strong>your theme</strong> and the customer pain you identified in Task 1.</div>
+      <div class="field"><label>UNIQUE VALUE PROPOSITION (USP)</label><textarea id="lc_uvp" placeholder="What single clear benefit do you deliver? e.g. 'Bhasha-first UPI voice interface for shopkeepers who can't read English'" rows="2" oninput="cc('lc_uvp',200)"></textarea><div class="char-count" id="cc_lc_uvp">0/200</div></div>
+      <div class="field"><label>SOLUTION (Your Product/Service)</label><textarea id="lc_solution" placeholder="Describe your MVP solution in 2-3 lines..." rows="2" oninput="cc('lc_solution',200)"></textarea><div class="char-count" id="cc_lc_solution">0/200</div></div>
+      <div class="field"><label>REVENUE STREAMS (How will you earn?)</label><textarea id="lc_revenue" placeholder="e.g. Subscription ₹199/mo, transaction fee 0.5%, white-label SaaS..." rows="2" oninput="cc('lc_revenue',200)"></textarea><div class="char-count" id="cc_lc_revenue">0/200</div></div>
+      <div class="field"><label>UNFAIR ADVANTAGE (What can't be copied?)</label><textarea id="lc_advantage" placeholder="e.g. First-mover in voice UPI in Punjabi, exclusive CA partnerships, patent pending algo..." rows="2" oninput="cc('lc_advantage',200)"></textarea><div class="char-count" id="cc_lc_advantage">0/200</div></div>
+      <div class="field"><label>KEY METRICS (How will you measure success?)</label><input type="text" id="lc_metrics" placeholder="e.g. Monthly active users, transaction volume, CAC, retention rate" maxlength="200"></div>
+    </div>
+
+    <div class="task-card tc-purple">
+      <div class="task-card-title">🔎 PESTLE Snapshot</div>
+      <div class="hint-box">One sentence each. How do these external factors affect your business?</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem">
+        <div class="field"><label>🏛️ POLITICAL</label><input type="text" id="pestle_p" placeholder="e.g. Govt push for Digital India" maxlength="120"></div>
+        <div class="field"><label>💰 ECONOMIC</label><input type="text" id="pestle_e" placeholder="e.g. Rising SME credit demand" maxlength="120"></div>
+        <div class="field"><label>👥 SOCIAL</label><input type="text" id="pestle_s" placeholder="e.g. Growing smartphone adoption" maxlength="120"></div>
+        <div class="field"><label>🔬 TECHNOLOGICAL</label><input type="text" id="pestle_t" placeholder="e.g. UPI infrastructure ready" maxlength="120"></div>
+        <div class="field"><label>⚖️ LEGAL</label><input type="text" id="pestle_l" placeholder="e.g. RBI fintech regulations" maxlength="120"></div>
+        <div class="field"><label>🌍 ENVIRONMENTAL</label><input type="text" id="pestle_env" placeholder="e.g. Paperless = green impact" maxlength="120"></div>
+      </div>
+    </div>
+
+    <div class="nav-row">
+      <button class="btn btn-ghost" onclick="gp('step1Page')" style="flex:.4">← BACK</button>
+      <button class="btn btn-gold" onclick="validateAndNext('step2Page','step3Page',2)">NEXT: FINANCIAL MODELLING 💹 →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ STEP 3 — FINANCIAL MODELLING ═══════════════════ -->
+<div class="page" id="step3Page">
+  <div class="task-page">
+    <div style="text-align:center;margin-bottom:1.5rem">
+      <div class="step-indicator" id="si3"></div>
+      <div class="task-badge">TASK 03 OF 04</div>
+      <div class="task-title" style="color:var(--purple)">💹 Financial Modelling</div>
+      <div class="task-desc">Enter your startup costs and projections. AI will calculate break-even, ROI, and validate your numbers.</div>
+    </div>
+
+    <div class="task-card tc-purple">
+      <div class="task-card-title">🏗️ STARTUP COSTS (One-Time)</div>
+      <table class="fin-table">
+        <thead><tr><th>COST ITEM</th><th>AMOUNT (₹)</th></tr></thead>
+        <tbody>
+          <tr><td><input type="text" id="c_item1" placeholder="e.g. Product Development / App" style="background:transparent;border:none;color:var(--white);font-size:.85rem;font-family:'Segoe UI',system-ui,sans-serif;width:100%;outline:none;"></td><td><input type="number" id="c_amt1" placeholder="0" min="0" oninput="calcFinancials()"></td></tr>
+          <tr><td><input type="text" id="c_item2" placeholder="e.g. Equipment / Infrastructure" style="background:transparent;border:none;color:var(--white);font-size:.85rem;font-family:'Segoe UI',system-ui,sans-serif;width:100%;outline:none;"></td><td><input type="number" id="c_amt2" placeholder="0" min="0" oninput="calcFinancials()"></td></tr>
+          <tr><td><input type="text" id="c_item3" placeholder="e.g. Marketing Launch" style="background:transparent;border:none;color:var(--white);font-size:.85rem;font-family:'Segoe UI',system-ui,sans-serif;width:100%;outline:none;"></td><td><input type="number" id="c_amt3" placeholder="0" min="0" oninput="calcFinancials()"></td></tr>
+          <tr><td><input type="text" id="c_item4" placeholder="e.g. Legal / Registration" style="background:transparent;border:none;color:var(--white);font-size:.85rem;font-family:'Segoe UI',system-ui,sans-serif;width:100%;outline:none;"></td><td><input type="number" id="c_amt4" placeholder="0" min="0" oninput="calcFinancials()"></td></tr>
+          <tr><td><input type="text" id="c_item5" placeholder="e.g. Working Capital" style="background:transparent;border:none;color:var(--white);font-size:.85rem;font-family:'Segoe UI',system-ui,sans-serif;width:100%;outline:none;"></td><td><input type="number" id="c_amt5" placeholder="0" min="0" oninput="calcFinancials()"></td></tr>
+          <tr class="fin-total"><td style="font-family:'JetBrains Mono','Courier New',monospace;font-size:.72rem;letter-spacing:.07em;">TOTAL STARTUP COST</td><td id="totalStartup" style="font-family:'Bebas Neue',monospace;font-size:1.2rem;">₹0</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="task-card tc-cyan">
+      <div class="task-card-title">📊 MONTHLY FINANCIALS</div>
+      <table class="fin-table">
+        <thead><tr><th>ITEM</th><th>AMOUNT (₹/month)</th></tr></thead>
+        <tbody>
+          <tr><td style="color:var(--green)">Monthly Revenue (expected)</td><td><input type="number" id="m_revenue" placeholder="0" min="0" oninput="calcFinancials()"></td></tr>
+          <tr><td style="color:var(--red)">Monthly Fixed Costs (rent, salaries)</td><td><input type="number" id="m_fixed" placeholder="0" min="0" oninput="calcFinancials()"></td></tr>
+          <tr><td style="color:var(--red)">Monthly Variable Costs</td><td><input type="number" id="m_variable" placeholder="0" min="0" oninput="calcFinancials()"></td></tr>
+        </tbody>
+      </table>
+      <div class="fin-result" id="finResult">💡 Fill in the numbers above — AI will calculate your break-even, monthly profit, and ROI automatically.</div>
+    </div>
+
+    <div class="task-card tc-green">
+      <div class="task-card-title">📈 3-YEAR P&amp;L PROJECTION</div>
+      <div class="hint-box">Describe your expected growth. AI will review if these are realistic for your theme.</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.6rem">
+        <div class="field"><label>YEAR 1 REVENUE (₹)</label><input type="number" id="yr1_rev" placeholder="0" min="0" oninput="calcPL()"></div>
+        <div class="field"><label>YEAR 2 REVENUE (₹)</label><input type="number" id="yr2_rev" placeholder="0" min="0" oninput="calcPL()"></div>
+        <div class="field"><label>YEAR 3 REVENUE (₹)</label><input type="number" id="yr3_rev" placeholder="0" min="0" oninput="calcPL()"></div>
+      </div>
+      <div class="fin-result" id="plResult">💡 Enter 3-year revenue projections to see growth rate analysis.</div>
+      <div class="field" style="margin-top:.8rem"><label>FUNDING MODEL</label>
+        <select id="funding_model" style="width:100%;background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.13);border-radius:10px;padding:.72rem 1rem;color:var(--white);font-family:'Segoe UI',system-ui,sans-serif;font-size:.95rem;outline:none;">
+          <option value="">Select funding approach</option>
+          <option value="Bootstrapped">Bootstrapped (Self-funded)</option>
+          <option value="Angel Investment">Angel Investment</option>
+          <option value="Bank Loan / MSME Credit">Bank Loan / MSME Credit</option>
+          <option value="Govt Grant / Startup India">Govt Grant / Startup India</option>
+          <option value="Equity + Debt Mix">Equity + Debt Mix</option>
+          <option value="Crowdfunding">Crowdfunding</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="nav-row">
+      <button class="btn btn-ghost" onclick="gp('step2Page')" style="flex:.4">← BACK</button>
+      <button class="btn btn-purple" onclick="validateAndNext('step3Page','step4Page',3)">NEXT: PROTOTYPE PLAN 🚀 →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ STEP 4 — PROTOTYPE & MARKET TESTING ═══════════════════ -->
+<div class="page" id="step4Page">
+  <div class="task-page">
+    <div style="text-align:center;margin-bottom:1.5rem">
+      <div class="step-indicator" id="si4"></div>
+      <div class="task-badge">TASK 04 OF 04</div>
+      <div class="task-title" style="color:var(--accent)">🚀 Prototype &amp; Market Testing</div>
+      <div class="task-desc">Describe your MVP, pilot plan, and digital marketing strategy.</div>
+    </div>
+
+    <div class="task-card tc-gold">
+      <div class="task-card-title">🏗️ MVP DESCRIPTION</div>
+      <div class="hint-box"><strong>MVP = Minimum Viable Product.</strong> The simplest version of your product that can be tested with real users. Think: what's the ONE core feature?</div>
+      <div class="field"><label>WHAT IS YOUR MVP?</label><textarea id="mvp_desc" placeholder="Describe the simplest working version. e.g. A WhatsApp chatbot that lets shopkeepers voice-record daily sales in Punjabi and auto-updates a Google Sheet..." rows="3" oninput="cc('mvp_desc',350)"></textarea><div class="char-count" id="cc_mvp_desc">0/350</div></div>
+      <div class="field"><label>HOW WILL YOU BUILD IT? (TOOLS / TECH)</label><textarea id="mvp_tech" placeholder="e.g. No-code using Bubble.io + WhatsApp API, or Excel-based prototype, or physical service mockup..." rows="2" oninput="cc('mvp_tech',200)"></textarea><div class="char-count" id="cc_mvp_tech">0/200</div></div>
+    </div>
+
+    <div class="task-card tc-cyan">
+      <div class="task-card-title">🧪 PILOT PLAN (20 Users)</div>
+      <div class="hint-box">Plan a pilot with <strong>at least 20 people</strong>. How will you recruit them? What will you test? How will you collect feedback?</div>
+      <div class="field"><label>HOW WILL YOU FIND YOUR 20 PILOT USERS?</label><textarea id="pilot_recruit" placeholder="e.g. Approach 5 shops in Rajpura market, 10 classmates as mock customers, post in college WhatsApp group..." rows="2" oninput="cc('pilot_recruit',200)"></textarea><div class="char-count" id="cc_pilot_recruit">0/200</div></div>
+      <div class="field"><label>WHAT WILL YOU MEASURE IN THE PILOT?</label><textarea id="pilot_measure" placeholder="e.g. Time saved per transaction, NPS score, willingness to pay, repeat usage in 1 week..." rows="2" oninput="cc('pilot_measure',200)"></textarea><div class="char-count" id="cc_pilot_measure">0/200</div></div>
+    </div>
+
+    <div class="task-card tc-pink">
+      <div class="task-card-title">📱 DIGITAL MARKETING STRATEGY</div>
+      <div class="hint-box">For Level 3, you'll need <strong>Instagram reach proof</strong>. Plan your social strategy now.</div>
+      <div class="field"><label>INSTAGRAM / WHATSAPP STRATEGY</label><textarea id="mkt_social" placeholder="e.g. Create @GreenPay_India on Instagram. Post 3 reels/week: one problem video, one solution demo, one customer testimonial. Target hashtags: #StartupIndia #WealthClub #ComTech40..." rows="3" oninput="cc('mkt_social',300)"></textarea><div class="char-count" id="cc_mkt_social">0/300</div></div>
+      <div class="field"><label>TARGET HASHTAGS (comma separated)</label><input type="text" id="mkt_hashtags" placeholder="e.g. #ComTech40, #WealthClub, #StartupIndia, #DigitalBharat, #FinTech" maxlength="200"></div>
+      <div class="field"><label>INDUSTRY MENTOR VISITED (Name &amp; Role)</label><input type="text" id="mentor_name" placeholder="e.g. CA Ramesh Gupta — Rajpura, or Bank Manager at SBI Chandigarh" maxlength="150"></div>
+      <div class="field"><label>KEY FEEDBACK FROM MENTOR</label><textarea id="mentor_feedback" placeholder="What did your mentor say about your business plan? What changes did they suggest?" rows="2" oninput="cc('mentor_feedback',250)"></textarea><div class="char-count" id="cc_mentor_feedback">0/250</div></div>
+    </div>
+
+    <div class="task-card tc-teal">
+      <div class="task-card-title">🎤 PITCH SUMMARY (Elevator Pitch)</div>
+      <div class="hint-box">If you had <strong>60 seconds</strong> in front of a judge — what would you say? Cover: Problem → Solution → Why You → Call to Action.</div>
+      <div class="field"><label>YOUR 60-SECOND ELEVATOR PITCH</label><textarea id="pitch_summary" placeholder="e.g. '5 crore kirana stores in India lose ₹500 crore daily to manual errors. GreenPay is a voice-first UPI app in regional languages. Unlike Paytm, we designed for 50+ year old store owners. We've already tested with 25 stores in Rajpura — 90% say they'll pay ₹99/month. We need ₹5 lakh seed funding to scale to Punjab in 6 months.'" rows="5" oninput="cc('pitch_summary',500)"></textarea><div class="char-count" id="cc_pitch_summary">0/500</div></div>
+    </div>
+
+    <div class="nav-row">
+      <button class="btn btn-ghost" onclick="gp('step3Page')" style="flex:.4">← BACK</button>
+      <button class="btn btn-gold" onclick="validateAndNext('step4Page','evalPage',4)">GET AI EVALUATION 🤖 →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ AI EVALUATION ═══════════════════ -->
+<div class="page" id="evalPage">
+  <div style="max-width:680px;width:100%;text-align:center">
+    <div class="step-indicator" id="si5"></div>
+    <div class="task-badge">LOCAL EVALUATION ENGINE</div>
+    <div class="ai-orb" id="aiOrb">🤖</div>
+    <div class="task-title" style="color:var(--purple)">Evaluating Your Submission</div>
+    <div class="ai-loading" id="aiStatusText">Analysing your business plan against judging criteria...</div>
+
+    <div class="eval-result" id="evalResult" style="display:none">
+      <!-- AI WRITING DETECTION BADGE -->
+      <div id="aiDetectBadge" style="display:none;margin-bottom:1rem;padding:.8rem 1rem;border-radius:12px;font-size:.8rem;line-height:1.6;font-family:'JetBrains Mono','Courier New',monospace;"></div>
+      <!-- FINANCIAL ANALYSIS STRIP -->
+      <div id="finSummaryStrip" style="display:none;background:rgba(6,182,212,.07);border:1px solid rgba(6,182,212,.2);border-radius:12px;padding:.8rem 1rem;margin-bottom:1rem;font-family:'JetBrains Mono','Courier New',monospace;font-size:.75rem;color:var(--cyan);line-height:1.8;white-space:pre-wrap;"></div>
+      <div style="text-align:center;margin-bottom:1.2rem">
+        <div class="overall-label">OVERALL SCORE</div>
+        <div class="overall-score" id="overallScore">—</div>
+        <div style="font-size:.78rem;color:var(--gray);margin-top:.3rem" id="scoreLabel">out of 100</div>
+      </div>
+      <div class="eval-score-grid">
+        <div class="eval-score-item">
+          <div class="esi-label">Content &amp; Research</div>
+          <div class="esi-score" id="sc_research" style="color:var(--teal)">—</div>
+          <div class="esi-bar"><div class="esi-fill" id="bar_research" style="width:0%;background:var(--teal)"></div></div>
+        </div>
+        <div class="eval-score-item">
+          <div class="esi-label">Innovation</div>
+          <div class="esi-score" id="sc_innovation" style="color:var(--gold)">—</div>
+          <div class="esi-bar"><div class="esi-fill" id="bar_innovation" style="width:0%;background:var(--gold)"></div></div>
+        </div>
+        <div class="eval-score-item">
+          <div class="esi-label">Financial Viability</div>
+          <div class="esi-score" id="sc_financial" style="color:var(--purple)">—</div>
+          <div class="esi-bar"><div class="esi-fill" id="bar_financial" style="width:0%;background:var(--purple)"></div></div>
+        </div>
+        <div class="eval-score-item">
+          <div class="esi-label">Presentation</div>
+          <div class="esi-score" id="sc_presentation" style="color:var(--pink)">—</div>
+          <div class="esi-bar"><div class="esi-fill" id="bar_presentation" style="width:0%;background:var(--pink)"></div></div>
+        </div>
+      </div>
+      <div style="font-family:'JetBrains Mono','Courier New',monospace;font-size:.65rem;color:var(--teal);letter-spacing:.1em;margin-bottom:.5rem">AI FEEDBACK &amp; RECOMMENDATIONS</div>
+      <div class="eval-feedback" id="evalFeedback"></div>
+    </div>
+
+    <div id="evalActions" style="display:none;margin-top:1.2rem">
+      <button class="btn btn-gold" onclick="submitToSheets()" style="max-width:440px;margin:0 auto .8rem;display:flex">SUBMIT &amp; SAVE RESULTS 📊</button>
+      <button class="btn btn-ghost" onclick="gp('step4Page')" style="max-width:440px;margin:0 auto;display:flex">← EDIT MY ANSWERS</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ DONE ═══════════════════ -->
+<div class="page" id="donePage">
+  <div style="text-align:center;display:flex;flex-direction:column;align-items:center">
+    <span class="done-icon">🎉</span>
+    <div class="done-title">SUBMISSION COMPLETE!</div>
+    <div class="done-sub" id="doneSubText">Your Level 2 business plan has been submitted and saved to the organiser's Google Sheet.</div>
+    <div class="done-grid" id="doneGrid">
+      <div class="done-stat"><div class="ds-v" id="d_score">—</div><div class="ds-l">AI Score</div></div>
+      <div class="done-stat"><div class="ds-v" id="d_name">—</div><div class="ds-l">Student</div></div>
+      <div class="done-stat"><div class="ds-v" id="d_theme">—</div><div class="ds-l">Theme No.</div></div>
+      <div class="done-stat"><div class="ds-v" id="d_tasks">4/4</div><div class="ds-l">Tasks Done</div></div>
+    </div>
+    <div style="background:rgba(0,191,166,.07);border:1px solid rgba(0,191,166,.2);border-radius:12px;padding:1rem 1.5rem;max-width:400px;font-size:.82rem;color:var(--teal);line-height:1.65;margin-bottom:1.2rem">
+      ✅ Your responses are saved in the organiser's Google Sheet<br>
+      📸 Take a screenshot of your score as proof<br>
+      🎤 Prepare your 60-second elevator pitch for evaluation day<br>
+      🏆 Judging dates: 8, 10, 13, 15, 17 April 2026
+    </div>
+    <button class="start-btn" onclick="gp('landingPage')">← BACK TO HOME</button>
+    <div class="ftag" style="margin-top:1.5rem">#ComTech4.0 · #WealthClub · #ViksitBharat · #SkillToScale</div>
+  </div>
+</div>
+
+<!-- HIDDEN FORM FOR GOOGLE SHEETS -->
+<form id="gsForm" method="POST" target="_gs_iframe" style="display:none">
+  <input name="timestamp" id="hf_timestamp">
+  <input name="name" id="hf_name">
+  <input name="roll" id="hf_roll">
+  <input name="class" id="hf_class">
+  <input name="section" id="hf_section">
+  <input name="theme" id="hf_theme">
+  <input name="biz_name" id="hf_biz_name">
+  <input name="ai_score" id="hf_ai_score">
+  <input name="sc_research" id="hf_sc_research">
+  <input name="sc_innovation" id="hf_sc_innovation">
+  <input name="sc_financial" id="hf_sc_financial">
+  <input name="sc_presentation" id="hf_sc_presentation">
+  <input name="locations" id="hf_locations">
+  <input name="interviews" id="hf_interviews">
+  <input name="pain1" id="hf_pain1">
+  <input name="pain2" id="hf_pain2">
+  <input name="pain3" id="hf_pain3">
+  <input name="problem_stmt" id="hf_problem_stmt">
+  <input name="target_segment" id="hf_target_segment">
+  <input name="swot_s" id="hf_swot_s">
+  <input name="swot_w" id="hf_swot_w">
+  <input name="swot_o" id="hf_swot_o">
+  <input name="swot_t" id="hf_swot_t">
+  <input name="uvp" id="hf_uvp">
+  <input name="solution" id="hf_solution">
+  <input name="revenue_streams" id="hf_revenue_streams">
+  <input name="advantage" id="hf_advantage">
+  <input name="metrics" id="hf_metrics">
+  <input name="pestle" id="hf_pestle">
+  <input name="startup_cost" id="hf_startup_cost">
+  <input name="monthly_revenue" id="hf_monthly_revenue">
+  <input name="monthly_costs" id="hf_monthly_costs">
+  <input name="pl_yr1" id="hf_pl_yr1">
+  <input name="pl_yr2" id="hf_pl_yr2">
+  <input name="pl_yr3" id="hf_pl_yr3">
+  <input name="funding_model" id="hf_funding_model">
+  <input name="mvp_desc" id="hf_mvp_desc">
+  <input name="mvp_tech" id="hf_mvp_tech">
+  <input name="pilot_recruit" id="hf_pilot_recruit">
+  <input name="pilot_measure" id="hf_pilot_measure">
+  <input name="mkt_social" id="hf_mkt_social">
+  <input name="mkt_hashtags" id="hf_mkt_hashtags">
+  <input name="mentor_name" id="hf_mentor_name">
+  <input name="mentor_feedback" id="hf_mentor_feedback">
+  <input name="pitch_summary" id="hf_pitch_summary">
+  <input name="ai_feedback" id="hf_ai_feedback">
+  <input name="device_id" id="hf_device_id">
+  <input name="ai_detected" id="hf_ai_detected">
+  <input name="ai_suspicion_pct" id="hf_ai_suspicion_pct">
+  <input name="break_even_months" id="hf_break_even_months">
+  <input name="monthly_profit" id="hf_monthly_profit">
+  <input name="gross_margin_pct" id="hf_gross_margin_pct">
+  <input name="roi_year1_pct" id="hf_roi_year1_pct">
+  <input name="growth_y1_y2_pct" id="hf_growth_y1_y2_pct">
+  <input name="growth_y2_y3_pct" id="hf_growth_y2_y3_pct">
+</form>
+
+<script>
+// ═══ CONFIG ═══
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyybHgWvVbNkyChf0ezgHXvYl6am9RN7ZAKroaP9ze7eb1UwZkvxikt3NW1beTzT7IiPw/exec";
+
+// ══════════════════════════════════════════════════════════
+//  SECURITY CONFIG — SET THESE BEFORE EACH SESSION
+// ══════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════
+//  SECURITY CONFIG — SET THESE BEFORE EACH SESSION
+//  No internet or external API needed for any of these.s
+// ══════════════════════════════════════════════════════════
+
+// STEP 1 — LOCATION TOKEN
+//   A secret word/code known only to people physically in the room.
+//   Your mam shows it on projector at the START of session.
+//   Every student types it to unlock the form.
+//   Change it for every session. Example: "CHITKARA2025"
+const LOCATION_TOKEN = "c";
+
+// STEP 2 — TEACHER OVERRIDE CODE
+//   ONLY for students who missed seeing the projector or arrived late.
+//   Teacher walks to their device and types this personally.
+//   NEVER write this on the board. Keep it different from Location Token.
+const TEACHER_OVERRIDE = "MAM2026";
+// ── Device lock — prevents one device submitting for multiple students ──
+const DEVICE_ID = (()=>{
+  let id = localStorage.getItem('ct_device_id');
+  if(!id){ id = Math.random().toString(36).slice(2,10).toUpperCase(); localStorage.setItem('ct_device_id',id); }
+  return id;
+})();
+
+// ═══ THEME DATA ═══
+const THEMES = {
+  "1":{ emoji:"📈", name:"Invest Smart, Invest Right", detail:"Financial literacy, mutual funds, stock market tools or fintech investment products for retail investors in India." },
+  "2":{ emoji:"🌱", name:"Green Money — Sustainability Meets Finance", detail:"Green bonds, ESG investing, sustainable MSMEs, carbon credits or climate-linked financial products." },
+  "3":{ emoji:"🤖", name:"AI & The New Business Frontier", detail:"AI-powered tools for SMEs, automation, AI in accounting, HR-tech or EdTech using ML/AI." },
+  "4":{ emoji:"💡", name:"Pitch, Plan & Profit", detail:"Business plan creation, startup ideation, pitch strategy or mentorship platforms for first-time entrepreneurs." },
+  "5":{ emoji:"🎯", name:"Brand It, Own It", detail:"Personal branding, D2C brands, rural brand building, social-media monetisation or the influencer economy." },
+  "6":{ emoji:"🔍", name:"Follow the Money — Forensics & Fraud Busting", detail:"Forensic accounting, fraud detection, Benford's Law, whistleblower platforms or compliance tech." },
+  "7":{ emoji:"🏭", name:"Make in India: MSMEs & Rural Wealth", detail:"MSME credit access, rural supply chains, SHG empowerment, agri-fintech or manufacturing startup ideas." },
+  "8":{ emoji:"📱", name:"Digital Bharat: FinTech for All", detail:"UPI innovations, digital banking for the unbanked, Jan Dhan integration, voice payments or CBDC." }
+};
+
+let student  = {};
+let evalData = {};
+let finCalc  = {};
+
+// ═══ NAVIGATION ═══
+function gp(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active','fade'));
+  const target=document.getElementById(id);
+  target.classList.add('active','fade');
+  window.scrollTo(0,0);
+  updateProgress(id);
+  updateStepIndicators(id);
+}
+function updateProgress(id){
+  const steps=['landingPage','registerPage','themeIntroPage','step1Page','step2Page','step3Page','step4Page','evalPage','donePage'];
+  const idx=steps.indexOf(id);
+  document.getElementById('progressFill').style.width=Math.round(idx/(steps.length-1)*100)+'%';
+}
+function updateStepIndicators(id){
+  const map={step1Page:1,step2Page:2,step3Page:3,step4Page:4,evalPage:5};
+  const cur=map[id]||0;
+  ['si1','si2','si3','si4','si5'].forEach(siId=>{
+    const el=document.getElementById(siId);
+    if(!el)return;
+    const lbl=['🔍','💡','💹','🚀','🤖'];
+    let h='';
+    for(let i=1;i<=5;i++){
+      const done=i<cur,active=i===cur;
+      h+=`<div class="si"><div class="si-dot ${done?'done':active?'active':''}">${done?'✓':lbl[i-1]}</div></div>`;
+      if(i<5)h+=`<div class="si-line ${done?'done':''}"></div>`;
+    }
+    el.innerHTML=h;
+  });
+}
+
+// ═══ CHAR COUNTER ═══
+function cc(id,max){
+  const el=document.getElementById(id),cnt=document.getElementById('cc_'+id);
+  if(!el||!cnt)return;
+  const len=el.value.length;
+  cnt.textContent=len+'/'+max;
+  cnt.style.color=len>max*0.9?'var(--gold)':'var(--gray)';
+}
+
+// ═══ START JOURNEY (called after simplified login) ═══
+function startJourney(){
+  const name    = document.getElementById('sName').value.trim();
+  const roll    = document.getElementById('sRoll').value.trim().toUpperCase();
+  const sClass  = document.getElementById('sClass').value.trim();
+  const section = document.getElementById('sSection').value.trim();
+  const theme   = document.getElementById('sTheme').value;
+  const biz     = document.getElementById('sBizName').value.trim();
+
+  if(!name || !roll || !sClass || !section || !theme){
+    showToast('⚠️ Please fill all fields','error'); return;
+  }
+
+  student = {
+    name,
+    roll,
+    sClass,
+    section,
+    theme,
+    biz: biz || '',
+    verified: true // Set to true as we've simplified the process
+  };
+
+  document.getElementById('bizNameSwot').textContent = student.biz || 'Your Business';
+  const t = THEMES[student.theme] || THEMES['1'];
+  document.getElementById('themeEmoji').textContent  = t.emoji;
+  document.getElementById('themeName').textContent   = t.name;
+  document.getElementById('themeDetail').textContent = t.detail;
+  gp('themeIntroPage');
+}
+
+// ═══ VALIDATE & NEXT ═══
+function validateAndNext(from,to,step){
+  const checks={
+    step1Page:[['q1_locations','Locations visited'],['q1_pain1','Pain Point 1'],['q1_pain2','Pain Point 2'],['q1_problem','Problem Statement'],['q1_segment','Target Segment']],
+    step2Page:[['swot_s','SWOT Strengths'],['swot_w','SWOT Weaknesses'],['swot_o','SWOT Opportunities'],['swot_t','SWOT Threats'],['lc_uvp','Unique Value Proposition'],['lc_solution','Solution']],
+    step3Page:[],
+    step4Page:[['mvp_desc','MVP Description'],['pilot_recruit','Pilot Recruit Plan'],['pitch_summary','Elevator Pitch']]
+  };
+  for(const [id,label] of (checks[from]||[])){
+    const el=document.getElementById(id);
+    if(el&&el.value.trim().length<5){showToast(`⚠️ Fill properly: ${label}`,'error');el.focus();return;}
+  }
+  gp(to);
+  if(to==='evalPage')runAIEvaluation();
+}
+
+// ═══ NUMBER FORMATTER ═══
+function fmt(n){
+  const abs=Math.abs(n),sign=n<0?'-':'';
+  if(abs>=10000000)return sign+(abs/10000000).toFixed(1).replace(/\.0$/,'')+' Cr';
+  if(abs>=100000) return sign+(abs/100000).toFixed(1).replace(/\.0$/,'')+' L';
+  if(abs>=1000)   return sign+Math.round(abs/1000)+'K';
+  return sign+Math.round(abs).toLocaleString('en-IN');
+}
+
+// ═══ FINANCIAL CALCULATIONS ═══
+function calcFinancials(){
+  // Startup costs total
+  const costAmts=[1,2,3,4,5].map(i=>parseFloat(document.getElementById('c_amt'+i)?.value)||0);
+  const totalStartup=costAmts.reduce((a,b)=>a+b,0);
+  document.getElementById('totalStartup').textContent='₹'+fmt(totalStartup);
+  finCalc.totalStartup=totalStartup;
+
+  // Monthly P&L
+  const rev     =parseFloat(document.getElementById('m_revenue')?.value) ||0;
+  const fixed   =parseFloat(document.getElementById('m_fixed')?.value)   ||0;
+  const variable=parseFloat(document.getElementById('m_variable')?.value)||0;
+  const totalCost=fixed+variable;
+  const profit=rev-totalCost;
+  const netMgn  =rev>0?profit/rev*100:0;
+  const grossMgn=rev>0?(rev-variable)/rev*100:0;
+
+  // Break-even (months) = Startup Cost / Monthly Profit  [only if profitable]
+  const beMonths=(profit>0&&totalStartup>0)?Math.ceil(totalStartup/profit):null;
+  // ROI Year 1 = (12 months profit / startup cost) x 100
+  const roiY1=(profit>0&&totalStartup>0)?Math.round(profit*12/totalStartup*100):null;
+
+  finCalc={...finCalc,totalStartup,monthlyRevenue:rev,totalMonthlyCost:totalCost,
+    monthlyProfit:profit,netMgnPct:Math.round(netMgn),grossMgnPct:Math.round(grossMgn),
+    beMonths,roiY1};
+
+  let res='';
+  if(rev>0||totalCost>0){
+    res +=`Revenue (monthly)    : ₹${fmt(rev)}\n`;
+    res +=`Fixed Costs          : ₹${fmt(fixed)}\n`;
+    res +=`Variable Costs       : ₹${fmt(variable)}\n`;
+    res +=`Total Monthly Costs  : ₹${fmt(totalCost)}\n`;
+    res +=`${profit>=0?'💚 Monthly Profit':'❌ Monthly Loss  '} : ₹${fmt(Math.abs(profit))}  `
+         +`(Net Margin: ${Math.round(netMgn)}%  |  Gross Margin: ${Math.round(grossMgn)}%)\n`;
+    if(beMonths!==null) res+=`⏱ Break-even         : ${beMonths} months after launch\n`;
+    else if(profit<=0)  res+=`⚠️  Break-even         : Not possible — revenue must exceed ₹${fmt(totalCost)}/month\n`;
+    if(roiY1!==null)    res+=`💰 ROI (Year 1)       : ${roiY1}%`;
+  } else {
+    res='💡 Enter revenue and costs — break-even, margins and ROI will appear here.';
+  }
+  document.getElementById('finResult').textContent=res;
+}
+
+function calcPL(){
+  const y1=parseFloat(document.getElementById('yr1_rev')?.value)||0;
+  const y2=parseFloat(document.getElementById('yr2_rev')?.value)||0;
+  const y3=parseFloat(document.getElementById('yr3_rev')?.value)||0;
+  finCalc={...finCalc,yr1:y1,yr2:y2,yr3:y3};
+  if(!y1&&!y2&&!y3){
+    document.getElementById('plResult').textContent='💡 Enter 3-year revenue projections above.';
+    return;
+  }
+  const g12=y1>0?(y2-y1)/y1*100:0;
+  const g23=y2>0?(y3-y2)/y2*100:0;
+  const cagr=(y1>0&&y3>0)?(Math.pow(y3/y1,0.5)-1)*100:null;
+  finCalc.growthY1Y2=Math.round(g12);
+  finCalc.growthY2Y3=Math.round(g23);
+
+  let txt=`Year 1 Revenue : ₹${fmt(y1)}\n`
+         +`Year 2 Revenue : ₹${fmt(y2)}  (${g12>=0?'+':''}${Math.round(g12)}% vs Y1)\n`
+         +`Year 3 Revenue : ₹${fmt(y3)}  (${g23>=0?'+':''}${Math.round(g23)}% vs Y2)\n`;
+  if(cagr!==null) txt+=`3-Year CAGR    : ${cagr.toFixed(1)}% per year\n`;
+
+  if(g12>500||g23>500)    txt+='⚡ WARNING: >500% growth in one year — judges will ask for market-size proof.';
+  else if(g12<0&&y1>0)    txt+='⚠️  Year 2 lower than Year 1 — explain the dip in your pitch.';
+  else if(y3>y1*30)       txt+='⚠️  Year 3 projection is very aggressive — back with comparable startup data.';
+  else                     txt+='✅ Growth trajectory looks reasonable — be ready to justify each year\'s figure.';
+  document.getElementById('plResult').textContent=txt;
+}
+
+// ═══ AI WRITING DETECTION ═══
+function detectAIWriting(){
+  const fields=[
+    'q1_pain1','q1_pain2','q1_pain3','q1_problem',
+    'swot_s','swot_w','swot_o','swot_t',
+    'lc_uvp','lc_solution','lc_revenue','lc_advantage',
+    'mvp_desc','pilot_recruit','mkt_social','mentor_feedback','pitch_summary'
+  ].map(id=>document.getElementById(id)?.value||'');
+
+  const combined=fields.join(' ').toLowerCase();
+  const words=combined.split(/\s+/).filter(w=>w.length>2);
+  if(words.length<30)return{suspicionPct:0,verdict:'INSUFFICIENT',detail:'Not enough text to analyse.'};
+
+  // Signal 1: AI buzzword density
+  const buzzwords=[
+    'leverage','leveraging','innovative','innovation','cutting-edge','cutting edge',
+    'transformative','transforming','synergy','synergistic','paradigm',
+    'holistic','holistically','robust','scalable','scalability',
+    'ecosystem','stakeholders','stakeholder','empower','empowering',
+    'seamless','seamlessly','streamline','streamlining','streamlined',
+    'comprehensive','dynamic','strategic','strategically',
+    'sustainable competitive advantage','value proposition',
+    'pain point','disruption','disruptive','monetize','monetization','monetise',
+    'key performance indicators','go-to-market','go to market',
+    'product-market fit','ideation','ideate','traction',
+    'actionable insights','data-driven','data driven',
+    'user-centric','end-to-end','next-generation',
+    'forward-thinking','thought leader','low-hanging fruit',
+    'move the needle','in conclusion','to summarize','in summary',
+    'it is worth noting','it is important to note',
+    'by leveraging','through strategic','ensure','ensures','ensuring',
+    'utilize','utilizing','utilization','facilitate','facilitating'
+  ];
+  let buzzCount=0;
+  const foundBuzz=[];
+  for(const b of buzzwords){
+    if(combined.includes(b)){buzzCount++;if(foundBuzz.length<5)foundBuzz.push(b);}
+  }
+  const buzzSignal=Math.min(buzzCount/12,1);
+
+  // Signal 2: sentence length uniformity (low variance = AI)
+  const sentences=combined.split(/[.!?]+/).filter(s=>s.trim().split(/\s+/).length>4);
+  let uniformSignal=0;
+  if(sentences.length>=5){
+    const lens=sentences.map(s=>s.trim().split(/\s+/).length);
+    const avg=lens.reduce((a,b)=>a+b,0)/lens.length;
+    const stdDev=Math.sqrt(lens.reduce((a,b)=>a+Math.pow(b-avg,2),0)/lens.length);
+    const cv=stdDev/avg;
+    uniformSignal=cv<0.22?0.85:cv<0.38?0.42:0;
+  }
+
+  // Signal 3: formal transitions
+  const transitions=['furthermore','moreover','additionally','consequently','therefore',
+    'thus','hence','nevertheless','nonetheless','in addition','as a result',
+    'in conclusion','to summarize','on the other hand','first and foremost',
+    'last but not least','it should be noted','it is important'];
+  let transCount=0;
+  for(const tr of transitions)if(combined.includes(tr))transCount++;
+  const transSignal=Math.min(transCount/4,1);
+
+  // Signal 4: authentic student markers (REDUCE suspicion)
+  const authentic=['i visited','i talked','i met','i found','my friend','our college',
+    'i think','i believe','we plan','we will','we can','basically','actually',
+    'kirana','dukaan','punjab','chandigarh','rajpura','ludhiana','amritsar',
+    'jio','paytm','phonepe','bhim','jan dhan','rupees','lakh','crore',
+    'sir','madam','my business','my idea','our idea'];
+  let authCount=0;
+  for(const a of authentic)if(combined.includes(a))authCount++;
+  const authBoost=Math.min(authCount/5,1);
+
+  // Composite
+  const raw=(buzzSignal*0.45+uniformSignal*0.22+transSignal*0.20+0.13*0)-(authBoost*0.22);
+  const suspicionPct=Math.round(Math.max(0,Math.min(1,raw))*100);
+
+  let verdict,detail;
+  if(suspicionPct>=72){
+    verdict='HIGH';
+    detail=`${suspicionPct}% suspicion. Detected ${buzzCount} AI-typical phrases: "${foundBuzz.join('", "')}". Scores penalised 30–40%.`;
+  } else if(suspicionPct>=42){
+    verdict='MEDIUM';
+    detail=`${suspicionPct}% suspicion. Partial AI-use patterns detected. Scores penalised 15–20%.`;
+  } else if(suspicionPct>=18){
+    verdict='LOW';
+    detail=`${suspicionPct}% — writing appears mostly original. No significant penalty.`;
+  } else {
+    verdict='CLEAN';
+    detail=`${suspicionPct}% — writing appears genuine and student-authored. No penalty.`;
+  }
+  return{suspicionPct,verdict,detail,foundBuzz,buzzCount};
+}
+
+// ═══ FIELD QUALITY CHECK ═══
+function fieldQuality(text){
+  if(!text||text.trim().length<5)return 0;
+  const t=text.trim(),words=t.split(/\s+/).filter(w=>w.length>0);
+  if(/(.)\1{4,}/.test(t))return 0;
+  if(/[bcdfghjklmnpqrstvwxyz]{6,}/i.test(t))return 0;
+  if(words.length<=1)return 0;
+  if(words.length<=3)return 1;
+  if(words.length<=8)return 2;
+  return 3;
+}
+
+// ═══ AI EVALUATION ═══
+function runAIEvaluation(){
+  document.getElementById('evalResult').style.display='none';
+  document.getElementById('evalActions').style.display='none';
+  document.getElementById('aiDetectBadge').style.display='none';
+  document.getElementById('finSummaryStrip').style.display='none';
+  document.getElementById('aiOrb').style.animation='pulse 1s ease-in-out infinite';
+  document.getElementById('aiOrb').textContent='🤖';
+
+  const statuses=[
+    'Scanning for AI-generated content...',
+    'Checking financial model integrity...',
+    'Evaluating field depth and specificity...',
+    'Analysing Design Thinking frameworks...',
+    'Computing your scores...'
+  ];
+  let si=0;
+  const interval=setInterval(()=>{
+    if(si<statuses.length)document.getElementById('aiStatusText').textContent=statuses[si++];
+  },1600);
+
+  const aiDetect=detectAIWriting();
+  const keyFields=['q1_locations','q1_pain1','q1_pain2','q1_pain3','q1_problem',
+    'swot_s','swot_w','lc_uvp','lc_solution','mvp_desc','pitch_summary']
+    .map(id=>document.getElementById(id)?.value);
+  const qualScores=keyFields.map(fieldQuality);
+  const poorCount=qualScores.filter(s=>s===0).length;
+  const briefCount=qualScores.filter(s=>s<=1).length;
+
+  const startup=[1,2,3,4,5].map(i=>{
+    const item=document.getElementById('c_item'+i)?.value||'';
+    const amt=document.getElementById('c_amt'+i)?.value||'0';
+    return item?`${item}: ₹${amt}`:'';
+  }).filter(Boolean).join(', ');
+
+  const t=THEMES[student.theme]||{name:'Unknown'};
+  const rev=parseFloat(document.getElementById('m_revenue')?.value)||0;
+  const fixed=parseFloat(document.getElementById('m_fixed')?.value)||0;
+  const variable=parseFloat(document.getElementById('m_variable')?.value)||0;
+  const totalCost=fixed+variable;
+  const profit=rev-totalCost;
+  const y1=parseFloat(document.getElementById('yr1_rev')?.value)||0;
+  const y2=parseFloat(document.getElementById('yr2_rev')?.value)||0;
+  const y3=parseFloat(document.getElementById('yr3_rev')?.value)||0;
+
+  clearInterval(interval);
+  document.getElementById('aiStatusText').textContent='Computing your scores...';
+  const localScores = localEvaluationEngine(aiDetect, poorCount, briefCount,
+    rev, fixed, variable, y1, y2, y3, startup);
+  evalData = {...localScores, aiDetect};
+  showEvalResults(localScores, aiDetect);
+}
+
+// ═══════════════════════════════════════════════════
+//  LOCAL EVALUATION ENGINE
+//  Runs when AI API is unavailable.
+//  Scores each criterion independently using rule-based
+//  analysis of actual field content — NOT a flat number.
+// ═══════════════════════════════════════════════════
+function localEvaluationEngine(aiDetect, poorCount, briefCount, rev, fixed, variable, y1, y2, y3, startup){
+
+  // ── Helper: score a single text field 0–10 ──
+  function scoreText(text, domainKeywords, minWords){
+    if(!text || text.trim().length < 4) return 0;
+    const t = text.trim().toLowerCase();
+    const words = t.split(/\s+/).filter(w=>w.length>1);
+
+    // Gibberish / mash check
+    if(/(.)\1{4,}/.test(t)) return 0;
+    if(/[bcdfghjklmnpqrstvwxyz]{6,}/i.test(t)) return 0;
+    if(words.length <= 1) return 0;
+
+    // Word count baseline score (0–4)
+    let score = 0;
+    if(words.length >= minWords*1.5) score = 4;
+    else if(words.length >= minWords) score = 3;
+    else if(words.length >= minWords*0.6) score = 2;
+    else if(words.length >= 4) score = 1;
+    else return 1;
+
+    // Domain keyword bonus (0–4)
+    let kwHits = 0;
+    for(const kw of domainKeywords){
+      if(t.includes(kw)) kwHits++;
+    }
+    score += Math.min(kwHits, 4); // max +4
+
+    // Specificity bonus: numbers, percentages, proper nouns, ₹ signs (0–2)
+    const hasNumbers   = /\d+/.test(t);
+    const hasPercent   = /\d+\s*%/.test(t);
+    const hasRupee     = /₹|\brunees?\b|\blakh\b|\bcrore\b|\b\d+k\b/i.test(t);
+    const hasLocation  = /punjab|chandigarh|delhi|mumbai|rajpura|ludhiana|amritsar|india/i.test(t);
+    const hasPersonal  = /\bi\b|\bwe\b|\bmy\b|\bour\b|\bi visited\b|\bi met\b/i.test(t);
+    if(hasNumbers) score += 0.5;
+    if(hasPercent) score += 0.5;
+    if(hasRupee)   score += 0.5;
+    if(hasLocation || hasPersonal) score += 0.5;
+
+    return Math.min(Math.round(score), 10);
+  }
+
+  // ── CRITERION 1: CONTENT & RESEARCH (out of 25) ──
+  // Based on: locations, interview count, 3 pain points, problem statement, target segment
+  const kw_research = ['market','customer','interview','visit','shop','store','problem',
+    'pain','issue','gap','user','people','survey','observe','find','discover',
+    'local','area','region','segment','target','need','demand','feedback'];
+
+  const s_locations  = scoreText(document.getElementById('q1_locations')?.value, kw_research, 5);
+  const s_pain1      = scoreText(document.getElementById('q1_pain1')?.value, kw_research, 12);
+  const s_pain2      = scoreText(document.getElementById('q1_pain2')?.value, kw_research, 12);
+  const s_pain3      = scoreText(document.getElementById('q1_pain3')?.value, kw_research, 10);
+  const s_problem    = scoreText(document.getElementById('q1_problem')?.value, kw_research, 15);
+  const s_segment    = scoreText(document.getElementById('q1_segment')?.value, kw_research, 6);
+
+  // Interview count bonus
+  const interviews = parseInt(document.getElementById('q1_interviews')?.value)||0;
+  const interviewBonus = interviews>=10?2 : interviews>=5?1 : interviews>=1?0.5 : -1;
+
+  const rawResearch = (s_locations*0.8 + s_pain1*1.2 + s_pain2*1.0 + s_pain3*0.9 + s_problem*1.4 + s_segment*0.7 + interviewBonus);
+  // rawResearch max ~(8+12+10+9+14+7+2) = 62 normalised to 25
+  const research = Math.round(Math.min(25, Math.max(0, rawResearch / 62 * 25)));
+
+  // ── CRITERION 2: INNOVATION (out of 25) ──
+  // Based on: UVP, Solution, Unfair Advantage, SWOT Opportunities, Revenue Streams
+  const kw_innov = ['unique','original','new','novel','different','first','only','better',
+    'creative','innovative','solution','solve','fix','address','improve','disrupt',
+    'advantage','benefit','value','offer','provide','create','build','design',
+    'patent','exclusive','proprietary','partnership','technology','platform','app',
+    'digital','mobile','voice','ai','ml','blockchain','fintech','model'];
+
+  const s_uvp       = scoreText(document.getElementById('lc_uvp')?.value, kw_innov, 12);
+  const s_solution  = scoreText(document.getElementById('lc_solution')?.value, kw_innov, 12);
+  const s_advantage = scoreText(document.getElementById('lc_advantage')?.value, kw_innov, 10);
+  const s_revenue   = scoreText(document.getElementById('lc_revenue')?.value, kw_innov, 8);
+  const s_swot_o    = scoreText(document.getElementById('swot_o')?.value, kw_innov, 10);
+
+  // Originality check: does UVP mention competitor or comparison?
+  const uvpText = (document.getElementById('lc_uvp')?.value||'').toLowerCase();
+  const hasComparison = /unlike|better than|compared to|vs |versus|instead of|replac/.test(uvpText);
+  const originalityBonus = hasComparison ? 1.5 : 0;
+
+  const rawInnov = (s_uvp*1.5 + s_solution*1.3 + s_advantage*1.2 + s_revenue*0.9 + s_swot_o*0.8 + originalityBonus);
+  // max ~(15+13+12+9+8+1.5) = 58.5
+  const innovation = Math.round(Math.min(25, Math.max(0, rawInnov / 58.5 * 25)));
+
+  // ── CRITERION 3: FINANCIAL VIABILITY (out of 25) ──
+  // Rule-based on actual numbers — most objective criterion
+  let finScore = 0;
+  const finNotes = [];
+
+  // Sub-score A: Startup costs entered (0–5)
+  const totalStartup = finCalc.totalStartup || 0;
+  const costItemsFilled = [1,2,3,4,5].filter(i=>document.getElementById('c_item'+i)?.value?.trim()).length;
+  if(costItemsFilled >= 4)      { finScore += 5; finNotes.push('startup costs well-detailed'); }
+  else if(costItemsFilled >= 2) { finScore += 3; finNotes.push('startup costs partially filled'); }
+  else if(totalStartup > 0)     { finScore += 1; finNotes.push('minimal startup cost entry'); }
+  else                          { finNotes.push('startup costs not entered'); }
+
+  // Sub-score B: Monthly revenue and costs logic (0–7)
+  if(rev > 0 && (fixed > 0 || variable > 0)){
+    finScore += 3; // basic numbers present
+    // Is the margin realistic? (5–70% is reasonable for most student businesses)
+    const margin = (rev - fixed - variable) / rev * 100;
+    if(margin >= 5 && margin <= 70)  { finScore += 3; finNotes.push(`realistic ${Math.round(margin)}% net margin`); }
+    else if(margin > 70)              { finScore += 1; finNotes.push('margin seems too high — will be questioned'); }
+    else if(margin < 0)               { finNotes.push('monthly loss — break-even plan needed'); }
+    // Revenue vs startup cost sanity: monthly rev should not be >10x startup in month 1
+    if(totalStartup > 0 && rev > totalStartup * 10) finScore -= 1;
+  } else if(rev > 0 || (fixed + variable) > 0){
+    finScore += 1; finNotes.push('incomplete monthly financials');
+  } else {
+    finNotes.push('no monthly figures entered');
+  }
+
+  // Sub-score C: 3-year projections logic (0–8)
+  if(y1 > 0 && y2 > 0 && y3 > 0){
+    finScore += 3;
+    const g12 = (y2 - y1) / y1 * 100;
+    const g23 = (y3 - y2) / y2 * 100;
+    // Growth should be positive and under 500% per year to be credible
+    if(g12 > 0 && g12 < 300 && g23 > 0 && g23 < 300){ finScore += 4; finNotes.push('realistic 3-year growth trajectory'); }
+    else if(g12 > 500 || g23 > 500)                   { finScore += 1; finNotes.push('growth >500% — unrealistic without justification'); }
+    else if(g12 < 0)                                   { finScore += 1; finNotes.push('Year 2 lower than Year 1 — needs explanation'); }
+    else                                               { finScore += 2; }
+    // Consistency: Y1 revenue should be close to 12x monthly revenue
+    if(rev > 0 && y1 > 0){
+      const impliedMonthly = y1 / 12;
+      const ratio = impliedMonthly / rev;
+      if(ratio > 0.3 && ratio < 5) finScore += 1; // consistent
+    }
+  } else if(y1 > 0){
+    finScore += 1; finNotes.push('only Year 1 filled');
+  } else {
+    finNotes.push('no projections entered');
+  }
+
+  // Sub-score D: Funding model selected (0–3)
+  const fundingVal = document.getElementById('funding_model')?.value;
+  if(fundingVal && fundingVal !== '') finScore += 3;
+
+  // Sub-score E: SWOT threats and weaknesses show financial awareness (0–2)
+  const swotW = (document.getElementById('swot_w')?.value||'').toLowerCase();
+  const swotT = (document.getElementById('swot_t')?.value||'').toLowerCase();
+  const finAwareness = /cost|capital|fund|cash|revenue|profit|invest|money|budget|credit|loan|debt/.test(swotW+swotT);
+  if(finAwareness) finScore += 2;
+
+  const financial = Math.round(Math.min(25, Math.max(0, finScore)));
+
+  // ── CRITERION 4: PRESENTATION (out of 25) ──
+  // Based on: elevator pitch, MVP, pilot plan, marketing, mentor feedback
+  const kw_pres = ['customer','problem','solution','market','revenue','growth','team',
+    'product','service','users','target','strategy','plan','goal','achieve',
+    'scale','launch','pilot','test','feedback','mentor','digital','social',
+    'instagram','whatsapp','brand','story','pitch','invest','fund'];
+
+  const s_pitch    = scoreText(document.getElementById('pitch_summary')?.value, kw_pres, 40);
+  const s_mvp      = scoreText(document.getElementById('mvp_desc')?.value, kw_pres, 20);
+  const s_pilot_r  = scoreText(document.getElementById('pilot_recruit')?.value, kw_pres, 12);
+  const s_pilot_m  = scoreText(document.getElementById('pilot_measure')?.value, kw_pres, 10);
+  const s_mkt      = scoreText(document.getElementById('mkt_social')?.value, kw_pres, 15);
+  const s_mentor   = scoreText(document.getElementById('mentor_feedback')?.value, kw_pres, 10);
+
+  // Pitch structure check: does pitch have hook + problem + solution + CTA?
+  const pitchText = (document.getElementById('pitch_summary')?.value||'').toLowerCase();
+  const pitchWords = pitchText.split(/\s+/).length;
+  const hasHook     = /crore|lakh|million|\d+\s*%|every|daily|million|billion/.test(pitchText);
+  const hasSolution = /our|we offer|we provide|we built|we created|solution|product|service|app|platform/.test(pitchText);
+  const hasCTA      = /invest|fund|need|looking|join|partner|support|scale|help/.test(pitchText);
+  const structBonus = (hasHook?1:0) + (hasSolution?1:0) + (hasCTA?1:0);
+
+  // Hashtag presence
+  const hashtagVal = document.getElementById('mkt_hashtags')?.value||'';
+  const hashtagCount = (hashtagVal.match(/#\w+/g)||[]).length;
+  const hashtagBonus = Math.min(hashtagCount, 4) * 0.3;
+
+  const rawPres = (s_pitch*1.6 + s_mvp*1.2 + s_pilot_r*0.9 + s_pilot_m*0.8 + s_mkt*1.0 + s_mentor*0.8 + structBonus + hashtagBonus);
+  // max ~(16+12+9+8+10+8+3+1.2) = 67.2
+  const presentation = Math.round(Math.min(25, Math.max(0, rawPres / 67.2 * 25)));
+
+  // ── APPLY AI PENALTY ──
+  const aiPenalty = aiDetect.verdict==='HIGH' ? 0.62 : aiDetect.verdict==='MEDIUM' ? 0.80 : 1.0;
+  const r_final = Math.round(research    * aiPenalty);
+  const i_final = Math.round(innovation  * aiPenalty);
+  const f_final = Math.round(financial   * aiPenalty);
+  const p_final = Math.round(presentation* aiPenalty);
+  const overall = r_final + i_final + f_final + p_final;
+
+  // ── GENERATE SPECIFIC FEEDBACK ──
+  const feedbackParts = [];
+
+  // What scored lowest?
+  const criteriaMap = [
+    {name:'Content & Research', score:r_final, raw:research},
+    {name:'Innovation',         score:i_final, raw:innovation},
+    {name:'Financial Viability',score:f_final, raw:financial},
+    {name:'Presentation',       score:p_final, raw:presentation}
+  ];
+  criteriaMap.sort((a,b)=>a.score-b.score);
+  const weakest  = criteriaMap[0];
+  const strongest = criteriaMap[3];
+
+  feedbackParts.push(`[Local Engine] ${strongest.name} was your strongest area (${strongest.score}/25).`);
+
+  // Research-specific feedback
+  if(r_final < 10){
+    const locVal = document.getElementById('q1_locations')?.value||'';
+    if(!locVal.trim()) feedbackParts.push('Locations visited was left blank — this scores 0 for research.');
+    else if(interviews < 3) feedbackParts.push(`Only ${interviews} interviews reported — aim for at least 5–10 real customer conversations.`);
+    else feedbackParts.push('Pain points lack specific detail — replace generic statements with real quotes or observations from your field visits.');
+  }
+
+  // Innovation-specific feedback
+  if(i_final < 10){
+    const uvpVal = document.getElementById('lc_uvp')?.value||'';
+    if(uvpVal.trim().split(/\s+/).length < 8) feedbackParts.push('UVP is too short to be meaningful — explain specifically what makes your solution different from existing options.');
+    else feedbackParts.push('Your solution lacks a clear unfair advantage. Add what competitors cannot easily copy (e.g. a network, a patent, a local relationship, first-mover advantage).');
+  }
+
+  // Financial-specific feedback
+  if(f_final < 10){
+    if(rev === 0) feedbackParts.push('No monthly revenue figure was entered — financial score is near zero without at least estimated revenue and cost numbers.');
+    else if(y1 === 0) feedbackParts.push('3-year projections are missing — even rough estimates of Year 1/2/3 revenue are required for this criterion.');
+    else if(finNotes.length > 0) feedbackParts.push(`Financial note: ${finNotes[0]}.`);
+  }
+
+  // Presentation-specific feedback
+  if(p_final < 10){
+    if(pitchWords < 30) feedbackParts.push('Elevator pitch is too short — it needs at least 4–5 sentences covering the problem, your solution, why you, and a clear ask.');
+    else if(!hasHook) feedbackParts.push('Start your pitch with a powerful statistic or number (e.g. "₹X crore is lost daily because...") — this grabs judge attention immediately.');
+  }
+
+  // AI penalty note
+  if(aiDetect.verdict === 'HIGH')  feedbackParts.push(`AI-writing penalty applied (${aiDetect.suspicionPct}% suspicion) — all scores reduced by ~38%. Write answers in your own words.`);
+  else if(aiDetect.verdict === 'MEDIUM') feedbackParts.push(`Possible AI-use detected (${aiDetect.suspicionPct}% suspicion) — scores reduced by 20%. Use your own voice and local examples.`);
+
+  // Closing line
+  if(overall >= 60)      feedbackParts.push('Overall a solid submission — refine the weak areas above before evaluation day.');
+  else if(overall >= 35) feedbackParts.push('Significant gaps remain. Revisit and resubmit with more detailed, original answers before the deadline.');
+  else                   feedbackParts.push('Most sections need a complete redo — go back to Tasks 1–4 and fill every field with real, specific content.');
+
+  return {
+    research:  r_final,
+    innovation: i_final,
+    financial:  f_final,
+    presentation: p_final,
+    overall,
+    feedback: feedbackParts.slice(0,6).join(' ')
+  };
+}
+
+// ═══ SHOW EVAL RESULTS ═══
+function showEvalResults(scores,aiDetect){
+  document.getElementById('aiOrb').style.animation='none';
+  document.getElementById('aiOrb').textContent='✨';
+  document.getElementById('aiStatusText').textContent='✅ Evaluation complete!';
+
+  // AI Detection badge
+  const badge=document.getElementById('aiDetectBadge');
+  if(aiDetect&&aiDetect.verdict!=='INSUFFICIENT'){
+    badge.style.display='block';
+    const styles={
+      HIGH:  {bg:'rgba(239,68,68,.15)',  border:'1.5px solid rgba(239,68,68,.4)',  color:'#FCA5A5', icon:'🚨 AI WRITING DETECTED — '},
+      MEDIUM:{bg:'rgba(245,166,35,.1)',  border:'1.5px solid rgba(245,166,35,.3)', color:'var(--gold)', icon:'⚠️ POSSIBLE AI USE — '},
+      LOW:   {bg:'rgba(6,182,212,.07)',  border:'1px solid rgba(6,182,212,.2)',    color:'var(--cyan)', icon:'🔍 LOW AI SIGNAL — '},
+      CLEAN: {bg:'rgba(34,197,94,.07)',  border:'1px solid rgba(34,197,94,.2)',    color:'var(--green)',icon:'✅ AUTHENTIC WRITING — '}
+    };
+    const st=styles[aiDetect.verdict]||styles.CLEAN;
+    badge.style.background=st.bg; badge.style.border=st.border; badge.style.color=st.color;
+    badge.textContent=st.icon+aiDetect.detail;
+  }
+
+  // Financial summary strip
+  const strip=document.getElementById('finSummaryStrip');
+  const rev=parseFloat(document.getElementById('m_revenue')?.value)||0;
+  const fixed=parseFloat(document.getElementById('m_fixed')?.value)||0;
+  const variable=parseFloat(document.getElementById('m_variable')?.value)||0;
+  const profit=rev-(fixed+variable);
+  const y1=parseFloat(document.getElementById('yr1_rev')?.value)||0;
+  const y3=parseFloat(document.getElementById('yr3_rev')?.value)||0;
+  if(rev>0||(fixed+variable)>0){
+    strip.style.display='block';
+    const be=(profit>0&&finCalc.totalStartup>0)?Math.ceil(finCalc.totalStartup/profit):null;
+    const roi=(profit>0&&finCalc.totalStartup>0)?Math.round(profit*12/finCalc.totalStartup*100):null;
+    const cagr=(y1>0&&y3>0)?((Math.pow(y3/y1,0.5)-1)*100).toFixed(1):null;
+    let fin='📊 FINANCIAL SNAPSHOT\n';
+    fin+=`Monthly Profit : ₹${fmt(profit)} (${rev>0?Math.round(profit/rev*100):0}% net margin)\n`;
+    if(be)  fin+=`Break-even     : ${be} months\n`;
+    if(roi) fin+=`ROI (Year 1)   : ${roi}%\n`;
+    if(cagr)fin+=`3-Year CAGR    : ${cagr}%`;
+    strip.textContent=fin;
+  }
+
+  // Scores
+  document.getElementById('overallScore').textContent=scores.overall;
+  ['research','innovation','financial','presentation'].forEach(k=>{
+    document.getElementById('sc_'+k).textContent=scores[k]+'/25';
+    setTimeout(()=>{document.getElementById('bar_'+k).style.width=(scores[k]/25*100)+'%';},120);
+  });
+  document.getElementById('evalFeedback').textContent=scores.feedback;
+  document.getElementById('evalResult').style.display='block';
+  document.getElementById('evalActions').style.display='block';
+}
+
+// ═══ SUBMIT TO GOOGLE SHEETS ═══
+async function submitToSheets(){
+  // Lock device to this roll number permanently after submission
+  if(student.roll) localStorage.setItem('ct_submitted_roll', student.roll);
+  
+  // Validate URL is set
+  if(!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.includes("YOUR_URL_HERE")){
+    showToast('⚠️ Google Sheets URL not set — check Code.gs instructions','error');
+    return;
+  }
+
+  const t=THEMES[student.theme]||{name:'Unknown'};
+  const ai=evalData.aiDetect||{};
+  const set=(id,val)=>{const el=document.getElementById(id);if(el)el.value=val;};
+
+  // Populate hidden form fields
+  const rev     =parseFloat(document.getElementById('m_revenue')?.value) ||0;
+  const fixed   =parseFloat(document.getElementById('m_fixed')?.value)   ||0;
+  const variable=parseFloat(document.getElementById('m_variable')?.value)||0;
+  const totalCost=fixed+variable;
+  const profit=rev-totalCost;
+  const y1=parseFloat(document.getElementById('yr1_rev')?.value)||0;
+  const y2=parseFloat(document.getElementById('yr2_rev')?.value)||0;
+  const y3=parseFloat(document.getElementById('yr3_rev')?.value)||0;
+  const g12=y1>0?Math.round((y2-y1)/y1*100):0;
+  const g23=y2>0?Math.round((y3-y2)/y2*100):0;
+  const be=(profit>0&&finCalc.totalStartup>0)?Math.ceil(finCalc.totalStartup/profit):'';
+  const roi=(profit>0&&finCalc.totalStartup>0)?Math.round(profit*12/finCalc.totalStartup*100):'';
+  const grossMgn=rev>0?Math.round((rev-variable)/rev*100):'';
+  const startup=[1,2,3,4,5].map(i=>{const it=document.getElementById('c_item'+i)?.value||'',am=document.getElementById('c_amt'+i)?.value||'0';return it?`${it}:₹${am}`:''}).filter(Boolean).join('|');
+  const pestle=`P:${document.getElementById('pestle_p')?.value||''}|E:${document.getElementById('pestle_e')?.value||''}|S:${document.getElementById('pestle_s')?.value||''}|T:${document.getElementById('pestle_t')?.value||''}|L:${document.getElementById('pestle_l')?.value||''}|Env:${document.getElementById('pestle_env')?.value||''}`;
+
+  set('hf_timestamp',       new Date().toLocaleString('en-IN'));
+    document.getElementById('hf_name').value    = student.name;
+    document.getElementById('hf_roll').value    = student.roll;
+    document.getElementById('hf_class').value   = student.sClass;
+    document.getElementById('hf_section').value = student.section;
+    document.getElementById('hf_theme').value   = t.name;
+  set('hf_biz_name',        student.biz||'');
+  set('hf_ai_score',        evalData.overall||'');
+  set('hf_sc_research',     evalData.research||'');
+  set('hf_sc_innovation',   evalData.innovation||'');
+  set('hf_sc_financial',    evalData.financial||'');
+  set('hf_sc_presentation', evalData.presentation||'');
+  set('hf_ai_detected',     ai.verdict||'UNKNOWN');
+  set('hf_device_id',       DEVICE_ID||'');
+  set('hf_ai_suspicion_pct',ai.suspicionPct||'');
+  set('hf_break_even_months',be);
+  set('hf_monthly_profit',  Math.round(profit));
+  set('hf_gross_margin_pct',grossMgn);
+  set('hf_roi_year1_pct',   roi);
+  set('hf_growth_y1_y2_pct',g12);
+  set('hf_growth_y2_y3_pct',g23);
+  set('hf_locations',       document.getElementById('q1_locations')?.value||'');
+  set('hf_interviews',      document.getElementById('q1_interviews')?.value||'');
+  set('hf_pain1',           document.getElementById('q1_pain1')?.value||'');
+  set('hf_pain2',           document.getElementById('q1_pain2')?.value||'');
+  set('hf_pain3',           document.getElementById('q1_pain3')?.value||'');
+  set('hf_problem_stmt',    document.getElementById('q1_problem')?.value||'');
+  set('hf_target_segment',  document.getElementById('q1_segment')?.value||'');
+  set('hf_swot_s',          document.getElementById('swot_s')?.value||'');
+  set('hf_swot_w',          document.getElementById('swot_w')?.value||'');
+  set('hf_swot_o',          document.getElementById('swot_o')?.value||'');
+  set('hf_swot_t',          document.getElementById('swot_t')?.value||'');
+  set('hf_uvp',             document.getElementById('lc_uvp')?.value||'');
+  set('hf_solution',        document.getElementById('lc_solution')?.value||'');
+  set('hf_revenue_streams', document.getElementById('lc_revenue')?.value||'');
+  set('hf_advantage',       document.getElementById('lc_advantage')?.value||'');
+  set('hf_metrics',         document.getElementById('lc_metrics')?.value||'');
+  set('hf_pestle',          pestle);
+  set('hf_startup_cost',    startup);
+  set('hf_monthly_revenue', rev);
+  set('hf_monthly_costs',   totalCost);
+  set('hf_pl_yr1',          y1);
+  set('hf_pl_yr2',          y2);
+  set('hf_pl_yr3',          y3);
+  set('hf_funding_model',   document.getElementById('funding_model')?.value||'');
+  set('hf_mvp_desc',        document.getElementById('mvp_desc')?.value||'');
+  set('hf_mvp_tech',        document.getElementById('mvp_tech')?.value||'');
+  set('hf_pilot_recruit',   document.getElementById('pilot_recruit')?.value||'');
+  set('hf_pilot_measure',   document.getElementById('pilot_measure')?.value||'');
+  set('hf_mkt_social',      document.getElementById('mkt_social')?.value||'');
+  set('hf_mkt_hashtags',    document.getElementById('mkt_hashtags')?.value||'');
+  set('hf_mentor_name',     document.getElementById('mentor_name')?.value||'');
+  set('hf_mentor_feedback', document.getElementById('mentor_feedback')?.value||'');
+  set('hf_pitch_summary',   document.getElementById('pitch_summary')?.value||'');
+  set('hf_ai_feedback',     evalData.feedback||'');
+
+  // Submit via fetch for better reliability and control
+  try {
+    const form = document.getElementById('gsForm');
+    const formData = new FormData(form);
+    
+    // Convert FormData to URLSearchParams for x-www-form-urlencoded POST
+    const params = new URLSearchParams();
+    for (const pair of formData.entries()) {
+      params.append(pair[0], pair[1]);
+    }
+
+    showToast('⏳ Saving to Google Sheets...');
+    
+    // Use mode: 'no-cors' to allow sending to GAS without complex CORS headers
+    // Note: This won't allow reading the response, but the data will be sent.
+    await fetch(GOOGLE_SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      cache: 'no-cache',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: params.toString()
+    });
+
+    showToast('✅ Submitted & saved to Google Sheets!');
+    fillDonePage();
+    setTimeout(()=>gp('donePage'),1100);
+  } catch (error) {
+    console.error('Submission error:', error);
+    showToast('⚠️ Error saving to Sheets. Check internet.', 'error');
+  }
+}
+
+function fillDonePage(){
+  document.getElementById('d_score').textContent=(evalData.overall||'—')+'/100';
+  document.getElementById('d_name').textContent=student.name?.split(' ')[0]||'—';
+  document.getElementById('d_theme').textContent='#'+student.theme;
+  const ai=evalData.aiDetect||{};
+  if(ai.verdict==='HIGH')
+    document.getElementById('doneSubText').textContent='⚠️ AI-writing detected. Scores were penalised. Prepare original answers for evaluation day.';
+}
+
+// ═══════════════════════════════════════════════════
+//  LOCATION TOKEN CHECK — fully offline, no external call
+// ═══════════════════════════════════════════════════
+function checkLocationToken(){
+  const input   = document.getElementById('locationTokenInput');
+  const msg     = document.getElementById('tokenMsg');
+  const entered = (input?.value||'').trim().toUpperCase();
+
+  if(!entered){
+    msg.style.color='var(--red)';
+    msg.textContent='⚠️ Type the token shown on the board first.';
+    return;
+  }
+
+  // Demo mode — token not configured yet
+  if(LOCATION_TOKEN === "WEALTH2025"){
+    sessionStorage.setItem('ct_token_ok','1');
+    document.getElementById('ipBlockOverlay').style.display='none';
+    return;
+  }
+
+  if(entered === LOCATION_TOKEN.toUpperCase()){
+    // ✅ Correct — unlock
+    sessionStorage.setItem('ct_token_ok','1');
+    document.getElementById('ipBlockOverlay').style.display='none';
+    showToast('✅ Token accepted — enter your Roll Number to begin');
+  } else {
+    // ❌ Wrong token
+    msg.style.color='var(--red)';
+    msg.textContent='❌ Wrong token. Check the board and try again.';
+    input.value='';
+    input.focus();
+  }
+}
+
+// ═══ TEACHER OVERRIDE ═══
+function applyTeacherOverride(){
+  const input   = document.getElementById('overrideInput');
+  const msg     = document.getElementById('overrideMsg');
+  const entered = (input?.value||'').trim();
+
+  if(!entered){
+    if(msg){ msg.style.color='var(--red)'; msg.textContent='⚠️ Enter the override code first.'; }
+    return;
+  }
+
+  if(TEACHER_OVERRIDE !== "MAM2026" && entered === TEACHER_OVERRIDE){
+    sessionStorage.setItem('ct_token_ok','1');
+    document.getElementById('ipBlockOverlay').style.display='none';
+    showToast('✅ Teacher override accepted — you may proceed');
+  } else {
+    if(msg){ msg.style.color='var(--red)'; msg.textContent='❌ Wrong code. Ask your teacher to try again.'; }
+    if(input){ input.value=''; input.focus(); }
+  }
+}
+
+// Show gate on load — check sessionStorage first so reload doesn't re-ask
+window.addEventListener('DOMContentLoaded',()=>{
+  if(sessionStorage.getItem('ct_token_ok')==='1'){
+    document.getElementById('ipBlockOverlay').style.display='none';
+  } else {
+    document.getElementById('ipBlockOverlay').style.display='flex';
+    setTimeout(()=>document.getElementById('locationTokenInput')?.focus(),300);
+  }
+});
+
+// ═══ TOAST ═══
+function showToast(msg,type='success'){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.className='toast'+(type==='error'?' error':'');
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3200);
+}
+</script>
+
+<!-- ═══════════════════════════════════════════════════════════════
+  📋 GOOGLE APPS SCRIPT — A complete implementation is provided in Code.gs
+  Extensions → Apps Script → paste content from Code.gs → Save → Deploy → Web App
+  Execute as: Me | Access: Anyone | Create New Version each update
+  ═══════════════════════════════════════════════════════════════ -->
+
+</body>
+</html>
