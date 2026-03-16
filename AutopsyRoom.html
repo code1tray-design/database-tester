@@ -1,0 +1,1677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>THE AUTOPSY ROOM — COMTECH 4.0</title>
+<style>
+/* ═══ IMPORTS ═══ */
+@import url('https://fonts.googleapis.com/css2?family=Special+Elite&family=Oswald:wght@400;500;600;700&family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap');
+
+/* ═══ ROOT ═══ */
+:root{
+  --ink:#0a0806;--paper:#f0e6d0;--aged:#d4c5a0;--redink:#8b0000;
+  --redlight:#c0392b;--amber:#b8860b;--rust:#8b4513;
+  --dark:#111008;--darker:#080604;--cream:#f5ead8;
+  --stamp-red:#cc0000;--folder:#8b6914;
+  --white:#f5ead8;--gray:#6b5a3e;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+
+body{
+  font-family:'Courier Prime',monospace;
+  background:var(--darker);
+  color:var(--paper);
+  min-height:100vh;
+  overflow-x:hidden;
+  cursor:crosshair;
+}
+
+/* GRAIN OVERLAY */
+body::before{
+  content:'';position:fixed;inset:0;z-index:999;pointer-events:none;
+  opacity:.035;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-size:128px 128px;
+}
+
+/* VIGNETTE */
+body::after{
+  content:'';position:fixed;inset:0;z-index:1;pointer-events:none;
+  background:radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,.75) 100%);
+}
+
+/* ═══ PAGES ═══ */
+.page{
+  display:none;position:relative;z-index:2;
+  min-height:100vh;padding:2rem 1.5rem;
+  align-items:center;justify-content:center;flex-direction:column;
+}
+.page.active{display:flex;}
+.page.fade-in{animation:fadeUp .5s ease both;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+/* ═══ TYPOGRAPHY ═══ */
+.typewriter-font{font-family:'Special Elite',cursive;}
+.oswald{font-family:'Oswald',sans-serif;}
+.courier{font-family:'Courier Prime',monospace;}
+
+/* ═══ INTRO PAGE ═══ */
+#introPage{
+  background:var(--darker);
+  background-image:
+    repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(255,255,255,.012) 2px,rgba(255,255,255,.012) 4px),
+    repeating-linear-gradient(90deg,transparent,transparent 2px,rgba(255,255,255,.008) 2px,rgba(255,255,255,.008) 4px);
+}
+
+.intro-tape{
+  position:absolute;top:0;left:0;right:0;
+  background:repeating-linear-gradient(90deg,var(--stamp-red) 0px,var(--stamp-red) 30px,#000 30px,#000 31px);
+  height:8px;
+}
+
+.case-number{
+  font-family:'Courier Prime',monospace;font-size:.7rem;
+  letter-spacing:.4em;color:var(--amber);opacity:.7;
+  margin-bottom:2rem;text-transform:uppercase;
+}
+
+.dept-header{
+  font-family:'Oswald',sans-serif;font-size:.75rem;
+  letter-spacing:.5em;color:var(--aged);
+  margin-bottom:.5rem;text-align:center;
+  border-top:1px solid rgba(180,150,80,.3);
+  border-bottom:1px solid rgba(180,150,80,.3);
+  padding:.4rem 0;
+}
+
+.intro-logo{
+  font-family:'Special Elite',cursive;
+  font-size:clamp(3.5rem,15vw,8rem);
+  color:var(--paper);
+  line-height:.9;text-align:center;
+  text-shadow:4px 4px 0 rgba(139,0,0,.4), 8px 8px 0 rgba(0,0,0,.5);
+  letter-spacing:-.02em;
+  margin:1rem 0;
+  position:relative;
+}
+
+.intro-logo .the{
+  font-size:clamp(1.2rem,4vw,2.5rem);
+  display:block;letter-spacing:.6em;color:var(--amber);
+  text-shadow:none;margin-bottom:.3rem;
+  font-family:'Oswald',sans-serif;font-weight:400;
+}
+
+.intro-logo .room{
+  font-size:clamp(2rem,10vw,5.5rem);
+  color:var(--stamp-red);display:block;
+  text-shadow:3px 3px 0 rgba(0,0,0,.6);
+}
+
+/* RED UNDERLINE STAMP */
+.red-rule{
+  height:4px;background:var(--stamp-red);width:100%;max-width:400px;
+  margin:.8rem auto;
+  box-shadow:0 2px 8px rgba(139,0,0,.5);
+}
+
+.intro-tagline{
+  font-family:'Courier Prime',monospace;font-size:.85rem;
+  color:var(--aged);letter-spacing:.15em;text-align:center;
+  margin-bottom:2.5rem;font-style:italic;
+}
+
+/* FORM CARD */
+.register-card{
+  background:var(--paper);
+  color:var(--ink);
+  max-width:480px;width:100%;
+  padding:2rem;
+  border:2px solid var(--rust);
+  position:relative;
+  box-shadow:6px 6px 0 rgba(0,0,0,.5), inset 0 0 40px rgba(139,100,20,.1);
+}
+
+.register-card::before{
+  content:'CASE REGISTRATION FORM';
+  position:absolute;top:-1px;left:50%;transform:translateX(-50%) translateY(-50%);
+  background:var(--stamp-red);color:var(--paper);
+  font-family:'Oswald',sans-serif;font-size:.65rem;letter-spacing:.3em;
+  padding:.25rem 1rem;white-space:nowrap;
+}
+
+.form-row{margin-bottom:1.2rem;}
+
+.form-row label{
+  display:block;font-family:'Courier Prime',monospace;font-size:.65rem;
+  letter-spacing:.2em;color:var(--rust);text-transform:uppercase;
+  margin-bottom:.35rem;
+}
+
+.form-row input,.form-row select{
+  width:100%;background:transparent;
+  border:none;border-bottom:1.5px solid var(--rust);
+  padding:.45rem 0;
+  font-family:'Special Elite',cursive;font-size:1rem;
+  color:var(--ink);outline:none;
+  transition:border-color .2s;
+}
+.form-row input:focus,.form-row select:focus{border-color:var(--stamp-red);}
+.form-row input::placeholder{color:#b0a080;font-size:.85rem;}
+.form-row select{cursor:pointer;-webkit-appearance:none;background:transparent;}
+.form-row select option{background:var(--paper);color:var(--ink);}
+
+.begin-btn{
+  width:100%;
+  background:var(--stamp-red);
+  color:var(--paper);
+  border:none;
+  padding:.9rem;
+  font-family:'Oswald',sans-serif;font-size:1.2rem;letter-spacing:.25em;
+  cursor:pointer;margin-top:.5rem;
+  transition:all .2s;
+  position:relative;overflow:hidden;
+}
+.begin-btn::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,transparent 40%,rgba(255,255,255,.1) 50%,transparent 60%);
+  transform:translateX(-100%);transition:transform .4s;
+}
+.begin-btn:hover{background:#a00000;transform:translateY(-2px);box-shadow:0 4px 20px rgba(139,0,0,.4);}
+.begin-btn:hover::before{transform:translateX(100%);}
+
+/* BOTTOM STAMP */
+.classified-stamp{
+  position:absolute;bottom:-20px;right:20px;
+  font-family:'Oswald',sans-serif;font-size:1.6rem;letter-spacing:.2em;
+  color:var(--stamp-red);border:3px solid var(--stamp-red);
+  padding:.2rem .8rem;opacity:.6;
+  transform:rotate(-8deg);text-transform:uppercase;
+}
+
+/* ═══ CASE SELECT PAGE ═══ */
+#caseSelectPage{
+  background:radial-gradient(ellipse at 30% 20%,rgba(139,100,20,.15),transparent 60%),
+             radial-gradient(ellipse at 70% 80%,rgba(139,0,0,.1),transparent 60%),
+             var(--darker);
+}
+
+.desk-surface{
+  position:relative;max-width:900px;width:100%;
+  padding:2rem 0;
+}
+
+.section-header{
+  font-family:'Oswald',sans-serif;font-size:.7rem;letter-spacing:.5em;
+  color:var(--amber);text-transform:uppercase;text-align:center;
+  margin-bottom:.3rem;
+}
+
+.section-title{
+  font-family:'Special Elite',cursive;font-size:clamp(2rem,6vw,3.5rem);
+  text-align:center;color:var(--paper);margin-bottom:.5rem;
+  text-shadow:2px 2px 0 rgba(0,0,0,.5);
+}
+
+.section-sub{
+  font-family:'Courier Prime',monospace;font-size:.78rem;
+  color:var(--aged);text-align:center;margin-bottom:2.5rem;
+  font-style:italic;letter-spacing:.05em;
+}
+
+/* CASE FILES ON DESK */
+.case-files-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.5rem;
+  perspective:1000px;
+}
+
+.case-file{
+  background:var(--paper);
+  border:1.5px solid var(--rust);
+  cursor:pointer;
+  position:relative;
+  transition:all .3s cubic-bezier(.34,1.56,.64,1);
+  box-shadow:4px 4px 0 rgba(0,0,0,.4);
+  overflow:hidden;
+}
+.case-file:hover{
+  transform:translateY(-8px) rotate(-1deg);
+  box-shadow:8px 12px 0 rgba(0,0,0,.5);
+}
+.case-file:nth-child(2):hover{transform:translateY(-8px) rotate(0.5deg);}
+.case-file:nth-child(3):hover{transform:translateY(-8px) rotate(1deg);}
+
+/* FILE TAB */
+.file-tab{
+  background:var(--folder);
+  height:28px;
+  display:flex;align-items:center;padding:0 1rem;
+  font-family:'Courier Prime',monospace;font-size:.62rem;
+  letter-spacing:.2em;color:var(--paper);text-transform:uppercase;
+}
+.file-tab.red{background:var(--stamp-red);}
+.file-tab.dark{background:#3a2a0a;}
+
+.file-body{padding:1.2rem;}
+
+.file-case-no{
+  font-family:'Courier Prime',monospace;font-size:.6rem;
+  letter-spacing:.2em;color:var(--rust);margin-bottom:.5rem;
+}
+
+.file-company{
+  font-family:'Special Elite',cursive;font-size:1.5rem;
+  color:var(--ink);line-height:1.1;margin-bottom:.3rem;
+}
+
+.file-tagline{
+  font-family:'Courier Prime',monospace;font-size:.72rem;
+  color:#5a4a2e;font-style:italic;margin-bottom:1rem;
+  border-top:1px solid var(--aged);padding-top:.5rem;
+}
+
+.file-stats{margin-bottom:1rem;}
+
+.stat-row{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:.3rem 0;border-bottom:1px dotted var(--aged);
+  font-family:'Courier Prime',monospace;font-size:.7rem;color:var(--ink);
+}
+.stat-row .label{color:var(--rust);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;}
+.stat-row .val{font-weight:700;}
+.stat-row .val.red{color:var(--stamp-red);}
+.stat-row .val.green{color:#2d6a1e;}
+
+/* DECEASED STAMP */
+.deceased-stamp{
+  position:absolute;top:50%;right:15px;transform:translateY(-50%) rotate(15deg);
+  font-family:'Oswald',sans-serif;font-size:1.1rem;letter-spacing:.15em;
+  color:var(--stamp-red);border:2.5px solid var(--stamp-red);
+  padding:.2rem .6rem;opacity:.55;text-transform:uppercase;
+  box-shadow:0 0 0 1px rgba(139,0,0,.2);
+}
+
+.file-open-hint{
+  background:var(--ink);color:var(--paper);
+  text-align:center;padding:.5rem;
+  font-family:'Oswald',sans-serif;font-size:.7rem;letter-spacing:.25em;
+  opacity:0;transition:opacity .2s;
+}
+.case-file:hover .file-open-hint{opacity:1;}
+
+/* ═══ EVIDENCE ROOM ═══ */
+#evidenceRoom{
+  background:
+    linear-gradient(rgba(8,6,4,.92),rgba(8,6,4,.92)),
+    repeating-linear-gradient(45deg,rgba(139,100,20,.05) 0,rgba(139,100,20,.05) 1px,transparent 0,transparent 50%);
+  background-size:auto,20px 20px;
+}
+
+.evidence-header{
+  text-align:center;max-width:700px;width:100%;margin-bottom:2rem;
+}
+
+.case-banner{
+  background:var(--stamp-red);
+  color:var(--paper);
+  font-family:'Oswald',sans-serif;font-size:.7rem;letter-spacing:.4em;
+  padding:.4rem 2rem;display:inline-block;margin-bottom:1rem;
+}
+
+/* EVIDENCE ENVELOPE GRID */
+.evidence-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+  gap:1rem;max-width:900px;width:100%;margin-bottom:2rem;
+}
+
+.envelope{
+  background:var(--paper);
+  border:1.5px solid var(--rust);
+  padding:0;cursor:pointer;
+  position:relative;transition:all .3s;
+  box-shadow:3px 3px 0 rgba(0,0,0,.4);
+  overflow:hidden;
+}
+.envelope:hover{transform:translateY(-4px);box-shadow:5px 7px 0 rgba(0,0,0,.5);}
+.envelope.opened{border-color:var(--amber);box-shadow:3px 3px 0 rgba(184,134,11,.4);}
+.envelope.opened .env-seal{background:var(--amber);}
+
+.env-top{
+  height:6px;
+  background:repeating-linear-gradient(90deg,var(--stamp-red),var(--stamp-red) 8px,var(--paper) 8px,var(--paper) 16px);
+}
+
+.env-icon{
+  font-size:2rem;display:block;text-align:center;
+  padding:1.2rem 0 .5rem;
+}
+
+.env-label{
+  font-family:'Courier Prime',monospace;font-size:.65rem;
+  letter-spacing:.12em;color:var(--rust);
+  text-align:center;text-transform:uppercase;
+  padding:0 .5rem .3rem;line-height:1.4;
+}
+
+.env-seal{
+  background:var(--stamp-red);
+  text-align:center;padding:.4rem;
+  font-family:'Oswald',sans-serif;font-size:.6rem;letter-spacing:.2em;
+  color:var(--paper);text-transform:uppercase;
+  transition:background .2s;
+}
+.envelope.opened .env-seal::before{content:'✓ ';}
+
+/* EVIDENCE VIEWER */
+.evidence-viewer{
+  max-width:700px;width:100%;
+  background:var(--paper);color:var(--ink);
+  border:2px solid var(--rust);
+  padding:0;margin-bottom:1.5rem;
+  box-shadow:6px 6px 0 rgba(0,0,0,.5);
+  display:none;
+  animation:slideDown .3s ease;
+}
+.evidence-viewer.show{display:block;}
+@keyframes slideDown{from{opacity:0;transform:translateY(-15px)}to{opacity:1;transform:translateY(0)}}
+
+.ev-header{
+  background:var(--ink);color:var(--paper);
+  padding:.6rem 1.2rem;
+  display:flex;justify-content:space-between;align-items:center;
+  font-family:'Courier Prime',monospace;font-size:.65rem;letter-spacing:.2em;
+}
+.ev-close{cursor:pointer;color:var(--stamp-red);font-size:1.1rem;font-weight:700;}
+.ev-body{padding:1.5rem;}
+
+.ev-title{
+  font-family:'Special Elite',cursive;font-size:1.3rem;
+  color:var(--ink);margin-bottom:1rem;
+  border-bottom:2px solid var(--rust);padding-bottom:.5rem;
+}
+
+.ev-content{
+  font-family:'Courier Prime',monospace;font-size:.82rem;
+  line-height:1.75;color:#2a1e0a;
+}
+
+/* NEWSPAPER STYLE */
+.headline-block{
+  border:1.5px solid var(--ink);margin-bottom:.8rem;
+  overflow:hidden;
+}
+.headline-paper{
+  background:#e8d8b0;padding:.6rem .8rem;
+  border-bottom:1px solid var(--aged);
+  font-family:'Oswald',sans-serif;font-size:.58rem;letter-spacing:.3em;color:var(--rust);
+}
+.headline-text{
+  padding:.6rem .8rem;
+  font-family:'Special Elite',cursive;font-size:.95rem;line-height:1.4;color:var(--ink);
+}
+.headline-sub{
+  padding:0 .8rem .6rem;
+  font-family:'Courier Prime',monospace;font-size:.7rem;color:#5a4a2e;font-style:italic;
+}
+
+/* FINANCIAL TABLE */
+.autops-table{width:100%;border-collapse:collapse;font-size:.75rem;}
+.autops-table th{
+  background:var(--ink);color:var(--paper);
+  padding:.4rem .7rem;font-family:'Oswald',sans-serif;letter-spacing:.15em;
+  font-size:.62rem;text-align:left;
+}
+.autops-table td{
+  padding:.4rem .7rem;border-bottom:1px solid var(--aged);
+  font-family:'Courier Prime',monospace;
+}
+.autops-table tr:nth-child(even) td{background:rgba(180,150,80,.08);}
+.autops-table .fatal{color:var(--stamp-red);font-weight:700;}
+
+/* COMPLAINT CARD */
+.complaint{
+  background:#f8f0e0;border-left:3px solid var(--stamp-red);
+  padding:.7rem .9rem;margin-bottom:.7rem;
+  font-family:'Courier Prime',monospace;font-size:.78rem;
+  color:#2a1e0a;font-style:italic;line-height:1.5;
+}
+.complaint .source{
+  font-style:normal;font-size:.62rem;letter-spacing:.1em;
+  color:var(--rust);margin-top:.3rem;text-transform:uppercase;
+}
+
+/* ═══ ANALYSIS PAGE ═══ */
+#analysisPage{
+  background:var(--darker);
+  align-items:flex-start;
+  padding-top:2rem;
+}
+
+.analysis-container{max-width:780px;width:100%;margin:0 auto;padding-bottom:3rem;}
+
+.task-header-block{
+  border-left:4px solid var(--stamp-red);
+  padding:.5rem 0 .5rem 1rem;
+  margin-bottom:1.5rem;
+}
+.task-num{
+  font-family:'Courier Prime',monospace;font-size:.62rem;
+  letter-spacing:.3em;color:var(--amber);text-transform:uppercase;
+}
+.task-name{
+  font-family:'Special Elite',cursive;font-size:1.6rem;color:var(--paper);
+  margin:.2rem 0;
+}
+.task-instr{
+  font-family:'Courier Prime',monospace;font-size:.75rem;color:var(--aged);
+  line-height:1.5;font-style:italic;
+}
+
+/* ANALYSIS CARD */
+.a-card{
+  background:rgba(240,230,208,.04);
+  border:1px solid rgba(184,134,11,.25);
+  padding:1.5rem;margin-bottom:1.2rem;
+  position:relative;
+}
+.a-card::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:3px;
+  background:var(--stamp-red);
+}
+
+.a-card-title{
+  font-family:'Oswald',sans-serif;font-size:.85rem;letter-spacing:.2em;
+  color:var(--amber);margin-bottom:1rem;text-transform:uppercase;
+  display:flex;align-items:center;gap:.5rem;
+}
+
+/* SWOT GRID */
+.swot-grid{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-bottom:.5rem;}
+.swot-cell{overflow:hidden;}
+.swot-head{
+  padding:.4rem .8rem;
+  font-family:'Oswald',sans-serif;font-size:.72rem;letter-spacing:.12em;
+  display:flex;align-items:center;gap:.4rem;
+}
+.sw-s .swot-head{background:rgba(45,106,30,.3);color:#7dcf6a;}
+.sw-w .swot-head{background:rgba(139,0,0,.25);color:#e87070;}
+.sw-o .swot-head{background:rgba(184,134,11,.2);color:#e8c060;}
+.sw-t .swot-head{background:rgba(100,50,150,.2);color:#b090e0;}
+
+.swot-cell textarea{
+  width:100%;background:rgba(240,230,208,.06);
+  border:1px solid rgba(184,134,11,.2);border-top:none;
+  padding:.7rem;color:var(--paper);
+  font-family:'Courier Prime',monospace;font-size:.78rem;
+  line-height:1.5;resize:vertical;min-height:90px;outline:none;
+  transition:border-color .2s;
+}
+.swot-cell textarea:focus{border-color:var(--amber);}
+
+/* PESTLE CHECKBOXES */
+.pestle-grid{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;}
+.pestle-item{
+  background:rgba(240,230,208,.04);
+  border:1px solid rgba(184,134,11,.2);
+  padding:.7rem;cursor:pointer;
+  transition:all .2s;display:flex;align-items:flex-start;gap:.6rem;
+}
+.pestle-item:hover{border-color:var(--amber);background:rgba(184,134,11,.07);}
+.pestle-item.selected{border-color:var(--stamp-red);background:rgba(139,0,0,.12);}
+.pestle-check{
+  width:16px;height:16px;flex-shrink:0;
+  border:1.5px solid var(--amber);margin-top:2px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.6rem;color:var(--stamp-red);transition:all .2s;
+}
+.pestle-item.selected .pestle-check{background:var(--stamp-red);border-color:var(--stamp-red);color:var(--paper);}
+.pestle-label{font-family:'Oswald',sans-serif;font-size:.72rem;letter-spacing:.1em;color:var(--amber);}
+.pestle-desc{font-family:'Courier Prime',monospace;font-size:.68rem;color:var(--aged);margin-top:.15rem;line-height:1.4;}
+
+/* FATAL NUMBERS */
+.fatal-numbers{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.8rem;}
+.fatal-box{
+  background:rgba(139,0,0,.08);border:1px solid rgba(139,0,0,.3);
+  padding:1rem;text-align:center;
+}
+.fatal-box label{
+  display:block;font-family:'Oswald',sans-serif;font-size:.6rem;
+  letter-spacing:.15em;color:var(--stamp-red);margin-bottom:.5rem;
+  text-transform:uppercase;
+}
+.fatal-box input{
+  width:100%;background:transparent;border:none;border-bottom:1.5px solid rgba(139,0,0,.4);
+  text-align:center;font-family:'Special Elite',cursive;font-size:1.1rem;
+  color:var(--paper);outline:none;padding:.3rem 0;
+}
+.fatal-box input::placeholder{color:rgba(240,230,208,.3);font-size:.8rem;}
+
+/* LONG TEXT FIELDS */
+.analysis-textarea{
+  width:100%;background:rgba(240,230,208,.04);
+  border:1px solid rgba(184,134,11,.25);
+  padding:.9rem 1rem;color:var(--paper);
+  font-family:'Courier Prime',monospace;font-size:.82rem;
+  line-height:1.7;resize:vertical;min-height:100px;outline:none;
+  transition:border-color .2s;
+}
+.analysis-textarea:focus{border-color:var(--amber);}
+.analysis-textarea::placeholder{color:rgba(240,230,208,.25);font-style:italic;}
+
+.char-note{
+  font-family:'Courier Prime',monospace;font-size:.62rem;
+  color:var(--amber);text-align:right;margin-top:.3rem;opacity:.6;
+}
+
+/* CAUSE OF DEATH — special styling */
+.cod-container{
+  background:rgba(139,0,0,.06);border:2px solid rgba(139,0,0,.35);
+  padding:1.2rem;position:relative;
+}
+.cod-stamp{
+  position:absolute;top:-1px;right:15px;transform:translateY(-50%);
+  background:var(--stamp-red);color:var(--paper);
+  font-family:'Oswald',sans-serif;font-size:.6rem;letter-spacing:.2em;
+  padding:.2rem .8rem;
+}
+
+/* PROGRESS BAR */
+.progress-strip{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  height:4px;background:rgba(255,255,255,.08);
+}
+.progress-fill{
+  height:100%;background:linear-gradient(90deg,var(--stamp-red),var(--amber));
+  transition:width .5s ease;
+}
+
+/* SUBMIT BTN */
+.submit-btn{
+  width:100%;background:var(--stamp-red);
+  color:var(--paper);border:none;
+  padding:1rem;margin-top:1.5rem;
+  font-family:'Oswald',sans-serif;font-size:1.3rem;letter-spacing:.3em;
+  cursor:pointer;position:relative;overflow:hidden;
+  transition:all .2s;
+  box-shadow:4px 4px 0 rgba(0,0,0,.4);
+}
+.submit-btn:hover{background:#a00000;transform:translateY(-2px);}
+.submit-btn span{font-size:.7rem;display:block;letter-spacing:.4em;opacity:.7;margin-top:.2rem;}
+
+/* BACK BTN */
+.back-btn{
+  background:transparent;border:1px solid rgba(184,134,11,.3);
+  color:var(--aged);padding:.5rem 1.2rem;cursor:pointer;
+  font-family:'Oswald',sans-serif;font-size:.75rem;letter-spacing:.2em;
+  margin-bottom:1.5rem;transition:all .2s;
+}
+.back-btn:hover{border-color:var(--amber);color:var(--amber);}
+
+/* ═══ VERDICT PAGE ═══ */
+#verdictPage{
+  background:var(--darker);
+  background-image:radial-gradient(ellipse at center,rgba(139,0,0,.12),transparent 65%);
+}
+
+/* STAMP ANIMATION */
+@keyframes stampIn{
+  0%{transform:translateY(-60px) rotate(-15deg) scale(1.5);opacity:0;}
+  60%{transform:translateY(5px) rotate(-3deg) scale(.95);}
+  80%{transform:translateY(-3px) rotate(-2deg) scale(1.02);}
+  100%{transform:translateY(0) rotate(-5deg) scale(1);opacity:.85;}
+}
+
+.verdict-stamp{
+  font-family:'Oswald',sans-serif;font-size:clamp(2.5rem,10vw,5rem);
+  letter-spacing:.3em;color:var(--stamp-red);
+  border:6px solid var(--stamp-red);
+  padding:.5rem 1.5rem;display:inline-block;
+  transform:rotate(-5deg);opacity:0;
+  text-shadow:3px 3px 0 rgba(0,0,0,.3);
+  box-shadow:inset 0 0 30px rgba(139,0,0,.2);
+  animation:stampIn .6s ease forwards;
+  animation-delay:.3s;
+}
+
+.report-container{
+  max-width:680px;width:100%;
+  background:var(--paper);color:var(--ink);
+  border:2px solid var(--rust);
+  margin:1.5rem 0;
+  box-shadow:8px 8px 0 rgba(0,0,0,.5);
+}
+
+.report-top{
+  background:var(--ink);padding:.8rem 1.5rem;
+  display:flex;justify-content:space-between;align-items:center;
+}
+.report-top-title{
+  font-family:'Oswald',sans-serif;font-size:.7rem;letter-spacing:.4em;color:var(--paper);
+}
+.report-top-date{
+  font-family:'Courier Prime',monospace;font-size:.65rem;color:var(--aged);
+}
+
+.report-body{padding:1.5rem;}
+
+.report-section{
+  margin-bottom:1.2rem;padding-bottom:1rem;
+  border-bottom:1px dotted var(--aged);
+}
+.report-section:last-child{border-bottom:none;}
+
+.r-label{
+  font-family:'Oswald',sans-serif;font-size:.6rem;letter-spacing:.25em;
+  color:var(--rust);text-transform:uppercase;margin-bottom:.3rem;
+}
+.r-value{
+  font-family:'Courier Prime',monospace;font-size:.82rem;
+  color:var(--ink);line-height:1.5;
+}
+.r-value.big{
+  font-family:'Special Elite',cursive;font-size:1.1rem;
+  color:var(--stamp-red);
+}
+
+/* SCORE BOX */
+.score-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.7rem;margin-bottom:1.2rem;}
+.score-box{
+  background:rgba(240,230,208,.5);border:1px solid var(--aged);
+  padding:.7rem .5rem;text-align:center;
+}
+.score-box .s-label{font-family:'Courier Prime',monospace;font-size:.58rem;color:var(--rust);letter-spacing:.08em;}
+.score-box .s-val{font-family:'Oswald',sans-serif;font-size:1.6rem;color:var(--stamp-red);line-height:1;}
+.score-box .s-max{font-family:'Courier Prime',monospace;font-size:.6rem;color:#8a7a5a;}
+
+.final-score{
+  background:var(--ink);padding:1rem;text-align:center;
+  font-family:'Special Elite',cursive;font-size:2.5rem;
+  color:var(--paper);
+  border-top:3px solid var(--stamp-red);
+}
+.final-score span{font-size:.85rem;display:block;color:var(--aged);font-family:'Courier Prime',monospace;font-size:.7rem;letter-spacing:.2em;margin-bottom:.3rem;}
+
+/* ANALYST PROFILE */
+.analyst-type{
+  background:rgba(139,0,0,.08);border:1.5px solid rgba(139,0,0,.3);
+  padding:1rem;margin:.8rem 0;text-align:center;
+}
+.at-label{font-family:'Courier Prime',monospace;font-size:.62rem;letter-spacing:.2em;color:var(--rust);}
+.at-type{font-family:'Special Elite',cursive;font-size:1.5rem;color:var(--stamp-red);}
+.at-desc{font-family:'Courier Prime',monospace;font-size:.72rem;color:var(--ink);margin-top:.3rem;font-style:italic;}
+
+.share-btn{
+  width:100%;background:var(--rust);color:var(--paper);border:none;
+  padding:.8rem;font-family:'Oswald',sans-serif;font-size:1rem;letter-spacing:.25em;
+  cursor:pointer;margin-top:.5rem;transition:all .2s;
+}
+.share-btn:hover{background:#6b3410;transform:translateY(-2px);}
+
+/* ═══ TOAST ═══ */
+.toast{
+  position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(80px);
+  z-index:500;background:var(--ink);color:var(--paper);
+  border:1px solid var(--amber);
+  padding:.7rem 1.5rem;
+  font-family:'Courier Prime',monospace;font-size:.78rem;
+  letter-spacing:.1em;
+  box-shadow:4px 4px 0 rgba(0,0,0,.4);
+  transition:transform .4s cubic-bezier(.34,1.56,.64,1);
+  white-space:nowrap;pointer-events:none;
+}
+.toast.show{transform:translateX(-50%) translateY(0);}
+.toast.err{border-color:var(--stamp-red);color:#ff8080;}
+
+/* ═══ HIDDEN FORM ═══ */
+iframe#gsFrame{display:none;width:0;height:0;border:none;}
+
+/* RESPONSIVE */
+@media(max-width:520px){
+  .swot-grid,.pestle-grid,.fatal-numbers,.score-grid{grid-template-columns:1fr;}
+  .case-files-grid{grid-template-columns:1fr;}
+  .evidence-grid{grid-template-columns:repeat(3,1fr);}
+}
+</style>
+</head>
+<body>
+
+<div class="progress-strip"><div class="progress-fill" id="pFill" style="width:0%"></div></div>
+<div class="toast" id="toast"></div>
+<iframe id="gsFrame" name="_ar_frame"></iframe>
+
+<!-- ═══════════ INTRO ═══════════ -->
+<div class="page active fade-in" id="introPage">
+  <div class="intro-tape"></div>
+  <div style="text-align:center;width:100%;max-width:600px;padding-top:2rem">
+    <div class="case-number">CASE FILE NO. CT4-2026-L02 &nbsp;·&nbsp; CLASSIFICATION: ACADEMIC</div>
+    <div class="dept-header">DEPARTMENT OF BUSINESS FORENSICS &nbsp;·&nbsp; COMTECH 4.0 &nbsp;·&nbsp; WEALTH CLUB</div>
+
+    <div class="intro-logo">
+      <span class="the">THE</span>
+      AUTOPSY<br>
+      <span class="room">ROOM</span>
+    </div>
+
+    <div class="red-rule"></div>
+    <div class="intro-tagline">
+      "Every failed business left evidence. Your job is to find it."
+    </div>
+
+    <div class="register-card" style="margin:0 auto">
+      <div class="form-row">
+        <label>Analyst Name</label>
+        <input type="text" id="iName" placeholder="Your full name" maxlength="50" autocomplete="off">
+      </div>
+      <div class="form-row">
+        <label>Roll Number</label>
+        <input type="text" id="iRoll" placeholder="e.g. 22BCom041" maxlength="20" autocomplete="off">
+      </div>
+      <div class="form-row">
+        <label>Section</label>
+        <input type="text" id="iSection" placeholder="e.g. B.Com 3A" maxlength="25" autocomplete="off">
+      </div>
+      <button class="begin-btn" onclick="beginCase()">
+        OPEN THE CASE FILES →
+      </button>
+      <div class="classified-stamp">LEVEL 2</div>
+    </div>
+
+    <div style="margin-top:1.5rem;font-family:'Courier Prime',monospace;font-size:.62rem;color:rgba(240,230,208,.3);letter-spacing:.2em">
+      #ComTech4.0 · Wealth Club · Chitkara University · #SkillToScale
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ CASE SELECT ═══════════ -->
+<div class="page" id="caseSelectPage">
+  <div class="desk-surface">
+    <div class="section-header">CHOOSE YOUR CASE</div>
+    <div class="section-title">Three Companies. Three Deaths.</div>
+    <div class="section-sub">Select one case file to investigate. Study all evidence before making your diagnosis.</div>
+
+    <div class="case-files-grid">
+
+      <!-- SNAPDEAL -->
+      <div class="case-file" onclick="selectCase('snapdeal')">
+        <div class="file-tab red">CASE 001 — DECEASED</div>
+        <div class="file-body">
+          <div class="file-case-no">CASE NO. AR-001 · E-COMMERCE SECTOR · 2016</div>
+          <div class="file-company">Snapdeal</div>
+          <div class="file-tagline">"India's homegrown e-commerce giant that chose pride over survival"</div>
+          <div class="file-stats">
+            <div class="stat-row"><span class="label">Peak Valuation</span><span class="val">$6.5 Billion</span></div>
+            <div class="stat-row"><span class="label">Final Net Loss</span><span class="val red">₹2,960 Crore</span></div>
+            <div class="stat-row"><span class="label">Time of Death</span><span class="val">2016–2018</span></div>
+            <div class="stat-row"><span class="label">Manner</span><span class="val red">Price War + Mismanagement</span></div>
+          </div>
+          <div class="deceased-stamp">DECEASED</div>
+        </div>
+        <div class="file-open-hint">CLICK TO OPEN CASE FILE</div>
+      </div>
+
+      <!-- CAFE COFFEE DAY -->
+      <div class="case-file" onclick="selectCase('ccd')">
+        <div class="file-tab dark">CASE 002 — DECEASED</div>
+        <div class="file-body">
+          <div class="file-case-no">CASE NO. AR-002 · F&B SECTOR · 2019</div>
+          <div class="file-company">Cafe Coffee Day</div>
+          <div class="file-tagline">"A million cups of coffee, buried under ₹6,547 crore of debt"</div>
+          <div class="file-stats">
+            <div class="stat-row"><span class="label">Outlets at Peak</span><span class="val">1,752 Cafes</span></div>
+            <div class="stat-row"><span class="label">Total Debt</span><span class="val red">₹6,547 Crore</span></div>
+            <div class="stat-row"><span class="label">Time of Death</span><span class="val">July 2019</span></div>
+            <div class="stat-row"><span class="label">Manner</span><span class="val red">Debt Spiral + Founder Death</span></div>
+          </div>
+          <div class="deceased-stamp">DECEASED</div>
+        </div>
+        <div class="file-open-hint">CLICK TO OPEN CASE FILE</div>
+      </div>
+
+      <!-- JET AIRWAYS -->
+      <div class="case-file" onclick="selectCase('jet')">
+        <div class="file-tab" style="background:#1a3a5c">CASE 003 — DECEASED</div>
+        <div class="file-body">
+          <div class="file-case-no">CASE NO. AR-003 · AVIATION SECTOR · 2019</div>
+          <div class="file-company">Jet Airways</div>
+          <div class="file-tagline">"26 years of flying — grounded in 3 months when the money ran out"</div>
+          <div class="file-stats">
+            <div class="stat-row"><span class="label">Years of Operation</span><span class="val">26 Years</span></div>
+            <div class="stat-row"><span class="label">Final Year Loss</span><span class="val red">₹5,836 Crore</span></div>
+            <div class="stat-row"><span class="label">Time of Death</span><span class="val">April 2019</span></div>
+            <div class="stat-row"><span class="label">Manner</span><span class="val red">Debt + Price War + Fuel Costs</span></div>
+          </div>
+          <div class="deceased-stamp">DECEASED</div>
+        </div>
+        <div class="file-open-hint">CLICK TO OPEN CASE FILE</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ EVIDENCE ROOM ═══════════ -->
+<div class="page" id="evidenceRoom">
+  <div class="evidence-header">
+    <div class="case-banner" id="evidCaseBanner">CASE FILE — LOADING</div>
+    <div class="section-title" style="font-size:clamp(1.8rem,5vw,2.8rem)">Evidence Room</div>
+    <div class="section-sub">Open all 5 evidence files before proceeding to analysis. Every detail matters.</div>
+  </div>
+
+  <div class="evidence-grid">
+    <div class="envelope" id="env0" onclick="openEvidence(0)">
+      <div class="env-top"></div>
+      <span class="env-icon">📋</span>
+      <div class="env-label">Financial Records</div>
+      <div class="env-seal">SEALED</div>
+    </div>
+    <div class="envelope" id="env1" onclick="openEvidence(1)">
+      <div class="env-top"></div>
+      <span class="env-icon">📰</span>
+      <div class="env-label">News Headlines</div>
+      <div class="env-seal">SEALED</div>
+    </div>
+    <div class="envelope" id="env2" onclick="openEvidence(2)">
+      <div class="env-top"></div>
+      <span class="env-icon">💬</span>
+      <div class="env-label">Customer Complaints</div>
+      <div class="env-seal">SEALED</div>
+    </div>
+    <div class="envelope" id="env3" onclick="openEvidence(3)">
+      <div class="env-top"></div>
+      <span class="env-icon">🎙️</span>
+      <div class="env-label">Founder's Last Statement</div>
+      <div class="env-seal">SEALED</div>
+    </div>
+    <div class="envelope" id="env4" onclick="openEvidence(4)">
+      <div class="env-top"></div>
+      <span class="env-icon">📊</span>
+      <div class="env-label">Market Position</div>
+      <div class="env-seal">SEALED</div>
+    </div>
+  </div>
+
+  <!-- Evidence viewer -->
+  <div class="evidence-viewer" id="evViewer">
+    <div class="ev-header">
+      <span id="evViewerTitle">EVIDENCE FILE</span>
+      <span class="ev-close" onclick="closeEvidence()">✕ CLOSE</span>
+    </div>
+    <div class="ev-body" id="evViewerBody"></div>
+  </div>
+
+  <div style="max-width:700px;width:100%;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.8rem">
+    <button class="back-btn" onclick="gp('caseSelectPage',15)">← CHANGE CASE</button>
+    <button class="begin-btn" style="max-width:320px;flex:1" onclick="proceedToAnalysis()">
+      PROCEED TO AUTOPSY →
+    </button>
+  </div>
+</div>
+
+<!-- ═══════════ ANALYSIS ═══════════ -->
+<div class="page" id="analysisPage">
+  <div class="analysis-container">
+    <button class="back-btn" onclick="gp('evidenceRoom',35)">← BACK TO EVIDENCE</button>
+
+    <div class="task-header-block">
+      <div class="task-num">AUTOPSY REPORT — TASK 01 OF 05</div>
+      <div class="task-name">SWOT Analysis</div>
+      <div class="task-instr">Based on the evidence you reviewed, analyse the company's internal Strengths and Weaknesses, and external Opportunities and Threats that existed at the time of failure.</div>
+    </div>
+
+    <div class="a-card">
+      <div class="a-card-title">📊 SWOT — <span id="swotCaseName" style="color:var(--paper);font-size:.78rem">Company Name</span></div>
+      <div class="swot-grid">
+        <div class="swot-cell sw-s">
+          <div class="swot-head">💪 STRENGTHS — What did they have?</div>
+          <textarea id="a_swot_s" class="swot-cell" placeholder="e.g. Strong brand recall, large user base, heavy funding, early mover advantage..." oninput="ccount(this,150)" style="width:100%;background:rgba(45,106,30,.05);border:1px solid rgba(45,106,30,.3);border-top:none;padding:.7rem;color:var(--paper);font-family:'Courier Prime',monospace;font-size:.78rem;line-height:1.5;resize:vertical;min-height:90px;outline:none;"></textarea>
+        </div>
+        <div class="swot-cell sw-w">
+          <div class="swot-head">⚠️ WEAKNESSES — What went wrong internally?</div>
+          <textarea id="a_swot_w" placeholder="e.g. High burn rate, no profitability plan, seller quality issues, poor customer service..." oninput="ccount(this,150)" style="width:100%;background:rgba(139,0,0,.05);border:1px solid rgba(139,0,0,.2);border-top:none;padding:.7rem;color:var(--paper);font-family:'Courier Prime',monospace;font-size:.78rem;line-height:1.5;resize:vertical;min-height:90px;outline:none;"></textarea>
+        </div>
+        <div class="swot-cell sw-o">
+          <div class="swot-head">🌟 OPPORTUNITIES — What could have saved them?</div>
+          <textarea id="a_swot_o" placeholder="e.g. Growing internet users, untapped tier-2 cities, niche categories, pivot opportunity..." oninput="ccount(this,150)" style="width:100%;background:rgba(184,134,11,.05);border:1px solid rgba(184,134,11,.2);border-top:none;padding:.7rem;color:var(--paper);font-family:'Courier Prime',monospace;font-size:.78rem;line-height:1.5;resize:vertical;min-height:90px;outline:none;"></textarea>
+        </div>
+        <div class="swot-cell sw-t">
+          <div class="swot-head">🌩️ THREATS — What killed them from outside?</div>
+          <textarea id="a_swot_t" placeholder="e.g. Amazon India entry, Flipkart price wars, SoftBank pressure, changing consumer behaviour..." oninput="ccount(this,150)" style="width:100%;background:rgba(100,50,150,.05);border:1px solid rgba(100,50,150,.2);border-top:none;padding:.7rem;color:var(--paper);font-family:'Courier Prime',monospace;font-size:.78rem;line-height:1.5;resize:vertical;min-height:90px;outline:none;"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="task-header-block" style="margin-top:2rem">
+      <div class="task-num">AUTOPSY REPORT — TASK 02 OF 05</div>
+      <div class="task-name">PESTLE Diagnosis</div>
+      <div class="task-instr">Which external factors were the most lethal? Select ALL that applied AND explain each chosen factor below.</div>
+    </div>
+
+    <div class="a-card">
+      <div class="a-card-title">🔬 SELECT THE KILLING FACTORS</div>
+      <div class="pestle-grid" id="pestleGrid">
+        <div class="pestle-item" onclick="togglePestle(this,'Political')">
+          <div class="pestle-check">✓</div>
+          <div><div class="pestle-label">🏛️ POLITICAL</div><div class="pestle-desc">Government policy, regulations, tax changes</div></div>
+        </div>
+        <div class="pestle-item" onclick="togglePestle(this,'Economic')">
+          <div class="pestle-check">✓</div>
+          <div><div class="pestle-label">💰 ECONOMIC</div><div class="pestle-desc">Market conditions, funding climate, recession</div></div>
+        </div>
+        <div class="pestle-item" onclick="togglePestle(this,'Social')">
+          <div class="pestle-check">✓</div>
+          <div><div class="pestle-label">👥 SOCIAL</div><div class="pestle-desc">Consumer behaviour, trust, cultural shifts</div></div>
+        </div>
+        <div class="pestle-item" onclick="togglePestle(this,'Technological')">
+          <div class="pestle-check">✓</div>
+          <div><div class="pestle-label">🔬 TECHNOLOGICAL</div><div class="pestle-desc">Tech disruption, platform shifts, digital changes</div></div>
+        </div>
+        <div class="pestle-item" onclick="togglePestle(this,'Legal')">
+          <div class="pestle-check">✓</div>
+          <div><div class="pestle-label">⚖️ LEGAL</div><div class="pestle-desc">Compliance issues, lawsuits, regulatory action</div></div>
+        </div>
+        <div class="pestle-item" onclick="togglePestle(this,'Environmental')">
+          <div class="pestle-check">✓</div>
+          <div><div class="pestle-label">🌍 ENVIRONMENTAL</div><div class="pestle-desc">Sustainability pressures, supply chain issues</div></div>
+        </div>
+      </div>
+      <div style="margin-top:1rem">
+        <label style="font-family:'Oswald',sans-serif;font-size:.65rem;letter-spacing:.15em;color:var(--amber);display:block;margin-bottom:.5rem">EXPLAIN YOUR SELECTED FACTORS:</label>
+        <textarea id="a_pestle_explain" class="analysis-textarea" rows="3" placeholder="e.g. Economic: Funding winter of 2016 dried up investor appetite. SoftBank pressured a merger rather than further investment. Social: Customers lost trust after fake product controversies went viral..."></textarea>
+      </div>
+    </div>
+
+    <div class="task-header-block" style="margin-top:2rem">
+      <div class="task-num">AUTOPSY REPORT — TASK 03 OF 05</div>
+      <div class="task-name">Fatal Financial Numbers</div>
+      <div class="task-instr">Every failed company has 3 numbers that sealed its fate. From the financial records you studied, identify the 3 most critical figures and explain why each was deadly.</div>
+    </div>
+
+    <div class="a-card">
+      <div class="a-card-title">📉 THE 3 NUMBERS THAT KILLED IT</div>
+      <div class="fatal-numbers">
+        <div class="fatal-box">
+          <label>FATAL NUMBER 1</label>
+          <input type="text" id="fn1" placeholder="e.g. ₹2,960 Cr loss">
+        </div>
+        <div class="fatal-box">
+          <label>FATAL NUMBER 2</label>
+          <input type="text" id="fn2" placeholder="e.g. $700M rejected">
+        </div>
+        <div class="fatal-box">
+          <label>FATAL NUMBER 3</label>
+          <input type="text" id="fn3" placeholder="e.g. 600 layoffs">
+        </div>
+      </div>
+      <div style="margin-top:1rem">
+        <label style="font-family:'Oswald',sans-serif;font-size:.65rem;letter-spacing:.15em;color:var(--amber);display:block;margin-bottom:.5rem">WHY WAS EACH NUMBER FATAL?</label>
+        <textarea id="a_fn_explain" class="analysis-textarea" rows="3" placeholder="e.g. ₹2,960 Cr annual loss meant they were burning faster than they earned. The $700M SoftBank offer rejection was the turning point — it signalled founder ego over survival. 600 layoffs destroyed internal morale and leaked to media, further damaging seller trust..."></textarea>
+        <div class="char-note" id="fn_count">0 / 300</div>
+      </div>
+    </div>
+
+    <div class="task-header-block" style="margin-top:2rem">
+      <div class="task-num">AUTOPSY REPORT — TASK 04 OF 05</div>
+      <div class="task-name">Official Cause of Death</div>
+      <div class="task-instr">Write your official diagnosis. In 3–5 sentences, state the PRIMARY reason this company died, the SECONDARY contributing factors, and the EXACT moment it became unrecoverable.</div>
+    </div>
+
+    <div class="a-card">
+      <div class="cod-container">
+        <div class="cod-stamp">OFFICIAL VERDICT</div>
+        <label style="font-family:'Oswald',sans-serif;font-size:.65rem;letter-spacing:.2em;color:var(--stamp-red);display:block;margin-bottom:.7rem;margin-top:.3rem">CAUSE OF DEATH — <span id="codCaseName">Company</span></label>
+        <textarea id="a_cod" class="analysis-textarea" rows="5"
+          style="border-color:rgba(139,0,0,.35);"
+          placeholder="Write your official cause of death here. Example structure: 'The primary cause of Snapdeal's death was uncontrolled cash burn — spending ₹1,000 crore per month on discounts without a clear path to profitability. This was compounded by founder ego — the rejection of both the SoftBank $700M offer and the Flipkart merger deal in 2017 removed all lifelines. The point of no return was March 2017, when SoftBank publicly announced they would no longer fund the company...'"
+          oninput="ccount(this,500)"></textarea>
+        <div class="char-note" id="cod_count">0 / 500</div>
+      </div>
+    </div>
+
+    <div class="task-header-block" style="margin-top:2rem">
+      <div class="task-num">AUTOPSY REPORT — TASK 05 OF 05</div>
+      <div class="task-name">The Prescription</div>
+      <div class="task-instr">If you were the strategic advisor called in 12 months before death — what exactly would you have done differently? Be specific. Vague advice scores zero.</div>
+    </div>
+
+    <div class="a-card">
+      <div class="a-card-title">💊 YOUR STRATEGIC PRESCRIPTION</div>
+      <textarea id="a_prescription" class="analysis-textarea" rows="5"
+        placeholder="e.g. Step 1 (Month 1): Accept the SoftBank $700M offer immediately and use it to extend runway by 18 months. Step 2 (Month 2): Stop discounting — shift to a seller-quality model, drop bottom 30% of sellers, focus on 5 categories instead of 30. Step 3 (Month 3): Restructure: reduce headcount by 30% but keep engineering and logistics. Step 4 (Month 6): Pivot to B2B wholesale for SMEs — a market Amazon couldn't crack...'"
+        oninput="ccount(this,500)"></textarea>
+      <div class="char-note" id="pres_count">0 / 500</div>
+    </div>
+
+    <button class="submit-btn" onclick="submitAutopsy()">
+      FILE THE AUTOPSY REPORT
+      <span>SUBMIT ALL FINDINGS TO RECORDS</span>
+    </button>
+  </div>
+</div>
+
+<!-- ═══════════ VERDICT ═══════════ -->
+<div class="page" id="verdictPage">
+  <div style="text-align:center;margin-bottom:1.5rem">
+    <div class="section-header" style="margin-bottom:.5rem">CASE CLOSED</div>
+    <div class="verdict-stamp">FILED</div>
+  </div>
+
+  <div class="report-container">
+    <div class="report-top">
+      <span class="report-top-title">OFFICIAL AUTOPSY REPORT · COMTECH 4.0</span>
+      <span class="report-top-date" id="reportDate">—</span>
+    </div>
+    <div class="report-body">
+
+      <div class="report-section" style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+        <div>
+          <div class="r-label">Analyst</div>
+          <div class="r-value" id="r_name">—</div>
+        </div>
+        <div>
+          <div class="r-label">Roll Number</div>
+          <div class="r-value" id="r_roll">—</div>
+        </div>
+        <div>
+          <div class="r-label">Section</div>
+          <div class="r-value" id="r_section">—</div>
+        </div>
+        <div>
+          <div class="r-label">Case Investigated</div>
+          <div class="r-value" id="r_case">—</div>
+        </div>
+      </div>
+
+      <div class="report-section">
+        <div class="r-label">OFFICIAL CAUSE OF DEATH</div>
+        <div class="r-value big" id="r_cod">—</div>
+      </div>
+
+      <div class="report-section">
+        <div class="r-label">EVALUATION SCORES</div>
+        <div class="score-grid">
+          <div class="score-box">
+            <div class="s-label">SWOT</div>
+            <div class="s-val" id="v_swot">—</div>
+            <div class="s-max">/25</div>
+          </div>
+          <div class="score-box">
+            <div class="s-label">PESTLE</div>
+            <div class="s-val" id="v_pestle">—</div>
+            <div class="s-max">/25</div>
+          </div>
+          <div class="score-box">
+            <div class="s-label">FINANCIALS</div>
+            <div class="s-val" id="v_fin">—</div>
+            <div class="s-max">/25</div>
+          </div>
+          <div class="score-box">
+            <div class="s-label">DIAGNOSIS</div>
+            <div class="s-val" id="v_diag">—</div>
+            <div class="s-max">/25</div>
+          </div>
+        </div>
+        <div class="final-score">
+          <span>TOTAL ANALYST SCORE</span>
+          <span id="v_total">— / 100</span>
+        </div>
+      </div>
+
+      <div class="report-section">
+        <div class="analyst-type">
+          <div class="at-label">YOUR ANALYST PROFILE</div>
+          <div class="at-type" id="r_analyst_type">—</div>
+          <div class="at-desc" id="r_analyst_desc">—</div>
+        </div>
+      </div>
+
+      <div class="report-section">
+        <div class="r-label">EVALUATOR NOTES</div>
+        <div class="r-value" id="r_feedback" style="font-style:italic;font-size:.78rem;line-height:1.7;">—</div>
+      </div>
+
+    </div>
+  </div>
+
+  <div style="max-width:680px;width:100%;padding:0 .5rem">
+    <div style="background:rgba(139,0,0,.08);border:1px solid rgba(139,0,0,.25);padding:.9rem 1rem;margin-bottom:.8rem;font-family:'Courier Prime',monospace;font-size:.75rem;color:var(--aged);line-height:1.7;text-align:center">
+      ✅ Report saved to organiser's records &nbsp;·&nbsp; 📸 Screenshot this for proof &nbsp;·&nbsp; 🎤 Be ready to present on evaluation day
+    </div>
+    <button class="share-btn" onclick="gp('introPage',0)">← INVESTIGATE ANOTHER CASE</button>
+  </div>
+</div>
+
+<!-- HIDDEN GOOGLE SHEETS FORM -->
+<form id="arForm" method="POST" target="_ar_frame" style="display:none">
+  <input name="timestamp"      id="hf_ts">
+  <input name="name"           id="hf_nm">
+  <input name="roll"           id="hf_rl">
+  <input name="section"        id="hf_sc">
+  <input name="case"           id="hf_ca">
+  <input name="total_score"    id="hf_tot">
+  <input name="swot_score"     id="hf_sw">
+  <input name="pestle_score"   id="hf_ps">
+  <input name="fin_score"      id="hf_fs">
+  <input name="diag_score"     id="hf_ds">
+  <input name="analyst_type"   id="hf_at">
+  <input name="swot_s"         id="hf_ss">
+  <input name="swot_w"         id="hf_sw2">
+  <input name="swot_o"         id="hf_so">
+  <input name="swot_t"         id="hf_st">
+  <input name="pestle_factors" id="hf_pf">
+  <input name="pestle_explain" id="hf_pe">
+  <input name="fatal_num1"     id="hf_fn1">
+  <input name="fatal_num2"     id="hf_fn2">
+  <input name="fatal_num3"     id="hf_fn3">
+  <input name="fin_explain"    id="hf_fe">
+  <input name="cause_of_death" id="hf_cod">
+  <input name="prescription"   id="hf_pr">
+  <input name="feedback"       id="hf_fb">
+</form>
+
+<script>
+// ═══ CONFIG ═══
+const GSHEET_URL = "https://script.google.com/macros/s/AKfycbyJjBoRLTSy_IYo-Q_C7edQlxQiWyDimKKx9-1qPPEAeOmSJswWCpZS5jeLVnsENwY7yg/exec";
+
+// ═══ STATE ═══
+let analyst = {};
+let selectedCase = '';
+let openedEvidence = new Set();
+let selectedPestle = [];
+let scores = {};
+
+// ═══ CASE DATA ═══
+const CASES = {
+  snapdeal:{
+    name:"Snapdeal",
+    short:"E-Commerce Giant",
+    banner:"CASE 001 — SNAPDEAL — E-COMMERCE — DECEASED 2016",
+    evidence:[
+      {
+        id:0,title:"Financial Records — Snapdeal FY2014–2017",
+        content:`<div class="ev-title">📋 Financial Records — Snapdeal</div>
+        <div class="ev-content">
+          <table class="autops-table">
+            <thead><tr><th>YEAR</th><th>REVENUE (₹ CR)</th><th>NET LOSS (₹ CR)</th><th>CASH BURN/MONTH</th></tr></thead>
+            <tbody>
+              <tr><td>FY 2014</td><td>168</td><td class="fatal">178</td><td>₹15 Cr</td></tr>
+              <tr><td>FY 2015</td><td>938</td><td class="fatal">1,319</td><td>₹110 Cr</td></tr>
+              <tr><td>FY 2016</td><td>1,457</td><td class="fatal">2,960</td><td>₹247 Cr</td></tr>
+              <tr><td>FY 2017</td><td>903</td><td class="fatal">613</td><td>₹51 Cr (post-layoffs)</td></tr>
+            </tbody>
+          </table>
+          <div style="margin-top:1rem;padding:.7rem;background:rgba(139,0,0,.08);border-left:3px solid var(--stamp-red);font-size:.75rem;line-height:1.6">
+            <strong>Critical Note:</strong> In 2016, Snapdeal received $200M from Ontario Teachers' Pension Fund. Within 8 months it was gone. SoftBank proposed a $700M rescue package contingent on a Flipkart merger — rejected by founders. Valuation collapsed from $6.5B to under $1B in 18 months.
+          </div>
+        </div>`
+      },
+      {
+        id:1,title:"News Headlines — Key Events 2015–2018",
+        content:`<div class="ev-title">📰 News Archive — Snapdeal</div><div class="ev-content">
+          <div class="headline-block"><div class="headline-paper">ECONOMIC TIMES · FEBRUARY 2017</div><div class="headline-text">"Snapdeal rejects Flipkart merger offer — founders choose independence over survival"</div><div class="headline-sub">SoftBank had engineered the deal to recover its $900M investment. Kunal Bahl and Rohit Bansal refused.</div></div>
+          <div class="headline-block"><div class="headline-paper">BUSINESS STANDARD · MARCH 2017</div><div class="headline-text">"Snapdeal lays off 600 employees in cost-cutting drive as funding dries up"</div><div class="headline-sub">The mass layoff was leaked to media before employees were informed, causing a PR catastrophe.</div></div>
+          <div class="headline-block"><div class="headline-paper">MINT · JUNE 2017</div><div class="headline-text">"Snapdeal founders take salary to zero; Nexus Venture Partners writes off investment"</div><div class="headline-sub">Public symbolic gesture came too late — investor confidence had already collapsed.</div></div>
+          <div class="headline-block"><div class="headline-paper">LIVEMINT · AUGUST 2017</div><div class="headline-text">"Snapdeal sells Freecharge to Axis Bank for ₹385 crore — had paid ₹2,800 crore in 2015"</div><div class="headline-sub">A 90% write-down on its marquee acquisition became the most visible proof of capital destruction.</div></div>
+        </div>`
+      },
+      {
+        id:2,title:"Customer Complaints — 2015–2017",
+        content:`<div class="ev-title">💬 Customer Complaints — Snapdeal</div><div class="ev-content">
+          <div class="complaint">"Ordered a branded iPhone. Received a fake. When I complained, customer care said return window had closed. Never shopping here again." <div class="source">— Consumer Forum Delhi, 2016</div></div>
+          <div class="complaint">"Returns take 45 days. Flipkart gives me money back in 5 days. Why would anyone choose Snapdeal?" <div class="source">— Twitter Review, @user2016</div></div>
+          <div class="complaint">"Paid ₹8,000 for a Nike shoe. Got a local duplicate. Seller is still active on the platform after 3 months." <div class="source">— National Consumer Helpline Complaint, 2016</div></div>
+          <div class="complaint">"Snapdeal's 'Unbox Zindagi' campaign was everywhere on TV but the product quality was getting worse every month. Marketing could not hide the reality." <div class="source">— Retail Analyst Report, KPMG India, 2017</div></div>
+        </div>`
+      },
+      {
+        id:3,title:"Founder's Last Statement",
+        content:`<div class="ev-title">🎙️ Kunal Bahl — Open Letter to Employees, Feb 2017</div><div class="ev-content">
+          <div style="background:#f8f0e0;border:1px solid var(--aged);padding:1.2rem;font-style:italic;line-height:1.8;font-size:.83rem">
+          <p>"We have made mistakes. We invested in too many categories, in too many companies, with too much speed. The market is more competitive than we anticipated..."</p>
+          <br><p>"The decision to not merge was ours alone. We believe in building Snapdeal independently. We are not looking for a soft landing — we are looking for a comeback."</p>
+          <br><p>"I take full responsibility. The 600 colleagues who had to leave — I am sorry. You deserved better leadership from us."</p>
+          </div>
+          <div style="margin-top:.8rem;font-size:.72rem;color:var(--rust);font-family:'Courier Prime',monospace">— Source: Internal all-hands email, leaked to Economic Times, February 2017</div>
+          <div style="margin-top:.7rem;padding:.6rem;background:rgba(139,0,0,.07);border-left:3px solid var(--stamp-red);font-size:.74rem;line-height:1.5">
+          <strong>Forensic Note:</strong> This letter was the first public admission of failure. Analysts noted the phrase "not looking for a soft landing" as evidence that the founders still did not accept the severity of the situation at that point.
+          </div>
+        </div>`
+      },
+      {
+        id:4,title:"Market Position — Competitive Landscape 2016",
+        content:`<div class="ev-title">📊 Market Position — Indian E-Commerce 2016</div><div class="ev-content">
+          <table class="autops-table">
+            <thead><tr><th>COMPANY</th><th>MARKET SHARE</th><th>FUNDING (TOTAL)</th><th>UNIT ECONOMICS</th></tr></thead>
+            <tbody>
+              <tr><td>Amazon India</td><td>31%</td><td>$5 Billion+</td><td>Improving</td></tr>
+              <tr><td>Flipkart</td><td>45%</td><td>$7 Billion+</td><td>Improving</td></tr>
+              <tr><td class="fatal">Snapdeal</td><td class="fatal">26% → 12%</td><td class="fatal">$1.8 Billion (exhausted)</td><td class="fatal">Worsening</td></tr>
+            </tbody>
+          </table>
+          <div style="margin-top:1rem;font-size:.75rem;line-height:1.7;color:#2a1e0a">
+            <strong>Key Insight:</strong> While Snapdeal's market share fell from 26% to 12% in 18 months, both Amazon and Flipkart were increasing. Amazon's entry with unlimited capital and global supply chain expertise meant Snapdeal was fighting two well-funded giants simultaneously — an unwinnable position at their burn rate.
+          </div>
+        </div>`
+      }
+    ]
+  },
+
+  ccd:{
+    name:"Cafe Coffee Day",
+    short:"Coffee Chain",
+    banner:"CASE 002 — CAFE COFFEE DAY — F&B SECTOR — DECEASED 2019",
+    evidence:[
+      {
+        id:0,title:"Financial Records — CCD FY2016–2019",
+        content:`<div class="ev-title">📋 Financial Records — Cafe Coffee Day</div>
+        <div class="ev-content">
+          <table class="autops-table">
+            <thead><tr><th>YEAR</th><th>REVENUE (₹ CR)</th><th>EBITDA (₹ CR)</th><th>TOTAL DEBT (₹ CR)</th></tr></thead>
+            <tbody>
+              <tr><td>FY 2016</td><td>1,620</td><td>280</td><td class="fatal">3,200</td></tr>
+              <tr><td>FY 2017</td><td>1,695</td><td>310</td><td class="fatal">4,100</td></tr>
+              <tr><td>FY 2018</td><td>1,768</td><td>295</td><td class="fatal">5,200</td></tr>
+              <tr><td>FY 2019</td><td>1,712</td><td class="fatal">-180</td><td class="fatal">6,547</td></tr>
+            </tbody>
+          </table>
+          <div style="margin-top:1rem;padding:.7rem;background:rgba(139,0,0,.08);border-left:3px solid var(--stamp-red);font-size:.75rem;line-height:1.6">
+            <strong>Critical Note:</strong> Debt was 3.7x annual revenue by 2019. Annual interest payments alone exceeded ₹800 crore — nearly 50% of revenue. Founder V.G. Siddhartha had personally guaranteed much of this debt, meaning creditors could seize personal assets. IT raids in 2017 on related Mysore coffee estates added ₹650 crore tax demand.
+          </div>
+        </div>`
+      },
+      {
+        id:1,title:"News Headlines — 2017–2019",
+        content:`<div class="ev-title">📰 News Archive — Cafe Coffee Day</div><div class="ev-content">
+          <div class="headline-block"><div class="headline-paper">THE HINDU · SEPTEMBER 2017</div><div class="headline-text">"IT Department raids VG Siddhartha's coffee estate; ₹650 crore tax evasion alleged"</div><div class="headline-sub">The Income Tax raid created severe banking relationship damage. Lenders began tightening terms.</div></div>
+          <div class="headline-block"><div class="headline-paper">ECONOMIC TIMES · JANUARY 2019</div><div class="headline-text">"CCD promoter sells 20% stake in Mindtree to Larsen & Toubro to repay debt"</div><div class="headline-sub">Siddhartha sold his most valuable personal asset — Mindtree shares — yet the debt spiral continued.</div></div>
+          <div class="headline-block"><div class="headline-paper">NDTV · JULY 29, 2019</div><div class="headline-text">"CCD founder VG Siddhartha goes missing; body found in Netravathi river"</div><div class="headline-sub">The founder's death triggered immediate management crisis. His family released his final letter the next day.</div></div>
+          <div class="headline-block"><div class="headline-paper">BUSINESS TODAY · AUGUST 2019</div><div class="headline-text">"CCD ₹6,547 crore debt: How India's coffee king drowned in a cup of his own ambition"</div><div class="headline-sub">Post-death analysis revealed systematic cross-subsidisation — coffee profits funding unrelated real estate bets.</div></div>
+        </div>`
+      },
+      {
+        id:2,title:"Customer Complaints — 2017–2019",
+        content:`<div class="ev-title">💬 Customer Feedback — Cafe Coffee Day</div><div class="ev-content">
+          <div class="complaint">"CCD was our favourite college hangout spot in 2010. By 2018 the coffee quality dropped, the interiors looked old, and Starbucks opened 200 metres away. The magic was gone." <div class="source">— Social Media Review Aggregate, 2018</div></div>
+          <div class="complaint">"Staff at my local CCD told me their salary was delayed by 2 months. You could see the low morale in how they served customers. The whole brand energy was dead." <div class="source">— Zomato Review, Bengaluru, 2019</div></div>
+          <div class="complaint">"CCD has 1,752 outlets but they all look the same as they did in 2009. No innovation, no new menu items that excite. Starbucks does a new seasonal drink every month. CCD does nothing." <div class="source">— Food Blogger, India Food Network, 2018</div></div>
+          <div class="complaint">"The founder's death and the debt news made me feel sad. CCD was part of India growing up. But management clearly lost track — you cannot expand to 1,752 outlets and then not renovate a single one." <div class="source">— Twitter thread, 2019</div></div>
+        </div>`
+      },
+      {
+        id:3,title:"Founder's Last Statement",
+        content:`<div class="ev-title">🎙️ VG Siddhartha — Final Letter, July 2019</div><div class="ev-content">
+          <div style="background:#f8f0e0;border:1px solid var(--aged);padding:1.2rem;font-style:italic;line-height:1.8;font-size:.83rem">
+          <p>"I have failed as an entrepreneur... I had asked a fund to give me time till the end of September. They have refused to give me more time and are pressurizing and harassing me."</p>
+          <br><p>"I am solely responsible for all the mistakes. Every bad decision is mine alone. I have been trying my best for the last two years to restructure the business but was not able to do so despite my best efforts."</p>
+          <br><p>"Please take care of all our employees who are over 30,000 in number. I am sorry I could not protect them."</p>
+          </div>
+          <div style="margin-top:.8rem;font-size:.72rem;color:var(--rust);font-family:'Courier Prime',monospace">— Source: Letter addressed to CCD Board of Directors, released July 31, 2019</div>
+          <div style="margin-top:.7rem;padding:.6rem;background:rgba(139,0,0,.07);border-left:3px solid var(--stamp-red);font-size:.74rem;line-height:1.5">
+          <strong>Forensic Note:</strong> The letter explicitly names a private equity fund's refusal to extend time as the immediate trigger. This case is unique in Indian business history — the founder's personal financial guarantees meant the business failure became a personal crisis. A clear warning about mixing personal wealth with corporate debt.
+          </div>
+        </div>`
+      },
+      {
+        id:4,title:"Market Position — Coffee Sector 2018",
+        content:`<div class="ev-title">📊 Market Position — Indian Coffee Chain Sector 2018</div><div class="ev-content">
+          <table class="autops-table">
+            <thead><tr><th>CHAIN</th><th>OUTLETS</th><th>AVG TICKET</th><th>GROWTH (YOY)</th></tr></thead>
+            <tbody>
+              <tr><td>Starbucks India</td><td>146</td><td>₹420</td><td class="green">+38%</td></tr>
+              <tr><td>Costa Coffee</td><td>110</td><td>₹390</td><td class="green">+22%</td></tr>
+              <tr><td class="fatal">Cafe Coffee Day</td><td class="fatal">1,752</td><td class="fatal">₹180</td><td class="fatal">-3%</td></tr>
+            </tbody>
+          </table>
+          <div style="margin-top:1rem;font-size:.75rem;line-height:1.7;color:#2a1e0a">
+            <strong>Key Insight:</strong> CCD competed on volume with low margins. 1,752 outlets at ₹180 average ticket vs Starbucks' 146 outlets at ₹420. The rising middle class was trading UP — choosing experience over price. CCD's model required perfect operational efficiency at scale, which is extremely hard to maintain when you're also managing ₹6,547 crore of debt and related-party investments across real estate, IT, and logistics.
+          </div>
+        </div>`
+      }
+    ]
+  },
+
+  jet:{
+    name:"Jet Airways",
+    short:"Aviation",
+    banner:"CASE 003 — JET AIRWAYS — AVIATION — GROUNDED 2019",
+    evidence:[
+      {
+        id:0,title:"Financial Records — Jet Airways FY2016–2019",
+        content:`<div class="ev-title">📋 Financial Records — Jet Airways</div>
+        <div class="ev-content">
+          <table class="autops-table">
+            <thead><tr><th>YEAR</th><th>REVENUE (₹ CR)</th><th>NET PROFIT/LOSS</th><th>TOTAL DEBT</th></tr></thead>
+            <tbody>
+              <tr><td>FY 2016</td><td>21,340</td><td class="green">+₹490 Cr</td><td>₹5,100 Cr</td></tr>
+              <tr><td>FY 2017</td><td>23,880</td><td>₹12 Cr</td><td>₹6,200 Cr</td></tr>
+              <tr><td>FY 2018</td><td>24,960</td><td class="fatal">-₹767 Cr</td><td>₹7,200 Cr</td></tr>
+              <tr><td>FY 2019</td><td>22,100</td><td class="fatal">-₹5,836 Cr</td><td class="fatal">₹8,411 Cr</td></tr>
+            </tbody>
+          </table>
+          <div style="margin-top:1rem;padding:.7rem;background:rgba(139,0,0,.08);border-left:3px solid var(--stamp-red);font-size:.75rem;line-height:1.6">
+            <strong>Critical Note:</strong> Jet operated 123 aircraft. Fuel costs = 35% of operating expenses. IndiGo was buying A320neo jets at 16% better fuel efficiency. Jet's ageing fleet made break-even impossible at competitive pricing. Banks injected ₹1,500 Cr in March 2019 — money ran out in 3 weeks. Final flight: April 17, 2019.
+          </div>
+        </div>`
+      },
+      {
+        id:1,title:"News Headlines — 2018–2019",
+        content:`<div class="ev-title">📰 News Archive — Jet Airways</div><div class="ev-content">
+          <div class="headline-block"><div class="headline-paper">LIVEMINT · OCTOBER 2018</div><div class="headline-text">"Jet Airways delays pilot and staff salaries for third consecutive month"</div><div class="headline-sub">Salary delays triggered mass pilot sick-leave protests, grounding 70+ flights per day.</div></div>
+          <div class="headline-block"><div class="headline-paper">BUSINESS STANDARD · JANUARY 2019</div><div class="headline-text">"Jet Airways grounds 5 Boeing 737s as lessors repossess planes over non-payment"</div><div class="headline-sub">Aircraft lessors have the legal right to repossess planes at any point. Once started, it became a cascade.</div></div>
+          <div class="headline-block"><div class="headline-paper">REUTERS · MARCH 2019</div><div class="headline-text">"Etihad refuses to invest further in Jet Airways without Naresh Goyal stepping down"</div><div class="headline-sub">Founder refused to exit. Etihad's withdrawal removed the last realistic rescue possibility.</div></div>
+          <div class="headline-block"><div class="headline-paper">NDTV · APRIL 17, 2019</div><div class="headline-text">"Jet Airways suspends all operations with immediate effect — 26 years of flying end"</div><div class="headline-sub">Over 23,000 employees jobless. ₹8,411 crore owed to banks. 123 aircraft on ground. India's aviation sector restructured overnight.</div></div>
+        </div>`
+      },
+      {
+        id:2,title:"Customer Complaints — 2018–2019",
+        content:`<div class="ev-title">💬 Customer Feedback — Jet Airways</div><div class="ev-content">
+          <div class="complaint">"My Mumbai-London flight was cancelled 4 hours before departure. Jet's customer care said call the bank for refund. After 26 years of loyal flying, this is how it ends." <div class="source">— Trip Advisor Review, January 2019</div></div>
+          <div class="complaint">"The pilots on my flight looked exhausted and frustrated. I overheard them saying their salary was delayed 3 months. How is this safe? DGCA should investigate." <div class="source">— DGCA Complaint Portal, February 2019</div></div>
+          <div class="complaint">"Jet was India's pride — full meal service, wide seats, professional crew. IndiGo treats you like a bus passenger but at least it shows up on time and pays its pilots. Jet should have pivoted years ago." <div class="source">— LinkedIn Post, Aviation Professional, 2019</div></div>
+          <div class="complaint">"I had booked 12 Jet flights for my company's annual sales conference. All cancelled. No refunds for 3 months. The corporate travel damage from Jet's collapse runs into hundreds of crores nationally." <div class="source">— FICCI Industry Feedback Report, 2019</div></div>
+        </div>`
+      },
+      {
+        id:3,title:"Founder's Last Statement",
+        content:`<div class="ev-title">🎙️ Naresh Goyal — Board Meeting Statement, March 2019</div><div class="ev-content">
+          <div style="background:#f8f0e0;border:1px solid var(--aged);padding:1.2rem;font-style:italic;line-height:1.8;font-size:.83rem">
+          <p>"I have given 26 years of my life to building this airline. Jet is not just a company to me — it is my identity, my life's work. I cannot simply walk away because some bankers and foreign partners have decided the numbers don't work."</p>
+          <br><p>"We have survived worse. The 2008 crisis, the fuel shock of 2009. This is a cash flow problem, not a structural problem. Give us three more months."</p>
+          <br><p>"If I leave, Jet leaves. This airline runs on my relationships — with aircraft lessors, with government, with pilots. Without me, there is no Jet."</p>
+          </div>
+          <div style="margin-top:.8rem;font-size:.72rem;color:var(--rust);font-family:'Courier Prime',monospace">— Source: Reconstructed from board minutes and journalist accounts, March 2019</div>
+          <div style="margin-top:.7rem;padding:.6rem;background:rgba(139,0,0,.07);border-left:3px solid var(--stamp-red);font-size:.74rem;line-height:1.5">
+          <strong>Forensic Note:</strong> Goyal's refusal to step down was the final trigger. His statement "without me there is no Jet" proved tragically self-fulfilling — but in the wrong direction. His resignation could have unlocked Etihad's ₹1,900 Cr rescue. He resigned 3 weeks too late, by which point bank confidence had collapsed.
+          </div>
+        </div>`
+      },
+      {
+        id:4,title:"Market Position — Aviation Sector 2019",
+        content:`<div class="ev-title">📊 Market Position — Indian Aviation 2019</div><div class="ev-content">
+          <table class="autops-table">
+            <thead><tr><th>AIRLINE</th><th>MARKET SHARE</th><th>FLEET SIZE</th><th>COST/SEAT/KM</th></tr></thead>
+            <tbody>
+              <tr><td>IndiGo</td><td>47%</td><td>200+ A320neo</td><td class="green">₹3.20 (lowest)</td></tr>
+              <tr><td>SpiceJet</td><td>13%</td><td>80 aircraft</td><td>₹3.80</td></tr>
+              <tr><td>Air India</td><td>12%</td><td>120+ aircraft</td><td>₹4.50</td></tr>
+              <tr><td class="fatal">Jet Airways</td><td class="fatal">14% → 0%</td><td class="fatal">123 (ageing)</td><td class="fatal">₹5.10 (highest)</td></tr>
+            </tbody>
+          </table>
+          <div style="margin-top:1rem;font-size:.75rem;line-height:1.7;color:#2a1e0a">
+            <strong>Key Insight:</strong> Jet's cost per seat-kilometre was 59% higher than IndiGo's. This structural disadvantage made profitable flying impossible at competitive prices. The root cause was fleet composition — Jet operated a mix of old Boeing 737 Classics and 777s that guzzled more fuel than IndiGo's new A320neo fleet. A fleet renewal would have cost ₹15,000+ crore — money that didn't exist given the debt load.
+          </div>
+        </div>`
+      }
+    ]
+  }
+};
+
+// ═══ NAVIGATION ═══
+function gp(id, pct){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active','fade-in'));
+  const t = document.getElementById(id);
+  t.classList.add('active','fade-in');
+  window.scrollTo(0,0);
+  document.getElementById('pFill').style.width = pct + '%';
+}
+
+// ═══ BEGIN CASE ═══
+function beginCase(){
+  const name    = document.getElementById('iName').value.trim();
+  const roll    = document.getElementById('iRoll').value.trim();
+  const section = document.getElementById('iSection').value.trim();
+  if(!name||!roll||!section){ toast('⚠️ Fill all fields to proceed','err'); return; }
+  analyst = {name,roll,section};
+  gp('caseSelectPage',15);
+}
+
+// ═══ SELECT CASE ═══
+function selectCase(caseId){
+  selectedCase = caseId;
+  const c = CASES[caseId];
+  document.getElementById('evidCaseBanner').textContent = c.banner;
+  // Reset envelopes
+  openedEvidence.clear();
+  document.querySelectorAll('.envelope').forEach((e,i)=>{
+    e.classList.remove('opened');
+    e.querySelector('.env-seal').textContent = 'SEALED';
+  });
+  document.getElementById('evViewer').classList.remove('show');
+  document.getElementById('swotCaseName').textContent = c.name;
+  document.getElementById('codCaseName').textContent  = c.name;
+  gp('evidenceRoom',35);
+}
+
+// ═══ OPEN EVIDENCE ═══
+function openEvidence(idx){
+  const c = CASES[selectedCase];
+  if(!c) return;
+  const ev = c.evidence[idx];
+  openedEvidence.add(idx);
+
+  // Mark envelope opened
+  const env = document.getElementById('env'+idx);
+  env.classList.add('opened');
+  env.querySelector('.env-seal').textContent = 'OPENED';
+
+  // Show viewer
+  const viewer = document.getElementById('evViewer');
+  document.getElementById('evViewerTitle').textContent = 'EVIDENCE FILE ' + (idx+1) + ' OF 5';
+  document.getElementById('evViewerBody').innerHTML = ev.content;
+  viewer.classList.add('show');
+  viewer.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function closeEvidence(){
+  document.getElementById('evViewer').classList.remove('show');
+}
+
+// ═══ PROCEED TO ANALYSIS ═══
+function proceedToAnalysis(){
+  if(openedEvidence.size < 3){
+    toast('⚠️ Open at least 3 evidence files before proceeding','err'); return;
+  }
+  gp('analysisPage',60);
+}
+
+// ═══ PESTLE TOGGLE ═══
+function togglePestle(el, factor){
+  el.classList.toggle('selected');
+  if(el.classList.contains('selected')){
+    selectedPestle.push(factor);
+  } else {
+    selectedPestle = selectedPestle.filter(f=>f!==factor);
+  }
+}
+
+// ═══ CHAR COUNT ═══
+function ccount(el, max){
+  const len = el.value.length;
+  const counterId = el.id.replace('a_','') + '_count';
+  const cEl = document.getElementById(counterId);
+  if(cEl) cEl.textContent = len + ' / ' + max;
+}
+
+// ═══ SCORE ENGINE ═══
+function scoreField(text, min, keywords, max){
+  if(!text||text.trim().length<5) return 0;
+  const t = text.trim().toLowerCase();
+  const words = t.split(/\s+/).length;
+  if(/(.)\1{4,}/.test(t)) return 0;
+  if(/[bcdfghjklmnpqrstvwxyz]{6,}/i.test(t)) return 0;
+  if(words < 4) return 1;
+
+  let s = Math.min(words / min * (max * 0.5), max * 0.5);
+  let kw = 0;
+  for(const k of keywords) if(t.includes(k)) kw++;
+  s += Math.min(kw / 4 * (max * 0.35), max * 0.35);
+  if(/\d/.test(t))  s += max * 0.08;
+  if(/₹|crore|lakh|million|billion|%/.test(t)) s += max * 0.07;
+  return Math.round(Math.min(s, max));
+}
+
+function computeScores(){
+  const kw_swot = ['strength','weakness','opportunity','threat','brand','market','competition','customer','product','strategy','advantage','risk','growth','revenue','cost','debt','fund','management','quality','technology'];
+  const kw_pestle = ['political','economic','social','technology','legal','environment','regulation','tax','consumer','digital','inflation','policy','government','competition','market'];
+  const kw_fin = ['crore','revenue','loss','profit','debt','cash','burn','investment','funding','valuation','margin','cost','balance','sheet','capital','equity','interest'];
+  const kw_diag = ['because','reason','cause','failure','mistake','decision','strategy','management','debt','competition','market','customer','product','pivot','refused','ignored'];
+
+  const s_swot_s = scoreField(document.getElementById('a_swot_s')?.value,'',kw_swot,6);
+  const s_swot_w = scoreField(document.getElementById('a_swot_w')?.value,'',kw_swot,7);
+  const s_swot_o = scoreField(document.getElementById('a_swot_o')?.value,'',kw_swot,6);
+  const s_swot_t = scoreField(document.getElementById('a_swot_t')?.value,'',kw_swot,6);
+  const swot = Math.min(s_swot_s+s_swot_w+s_swot_o+s_swot_t, 25);
+
+  const pestleBase = Math.min(selectedPestle.length * 3, 12);
+  const pestleExplain = scoreField(document.getElementById('a_pestle_explain')?.value,'',kw_pestle,13);
+  const pestle = Math.min(pestleBase + pestleExplain, 25);
+
+  const fn1 = document.getElementById('fn1')?.value.trim();
+  const fn2 = document.getElementById('fn2')?.value.trim();
+  const fn3 = document.getElementById('fn3')?.value.trim();
+  const fnFilled = [fn1,fn2,fn3].filter(v=>v&&v.length>2).length;
+  const fnExplain = scoreField(document.getElementById('a_fn_explain')?.value,'',kw_fin,19);
+  const fin = Math.min(fnFilled * 2 + fnExplain, 25);
+
+  const cod  = scoreField(document.getElementById('a_cod')?.value,'',kw_diag,15);
+  const pres = scoreField(document.getElementById('a_prescription')?.value,'',kw_diag,10);
+  const diag = Math.min(cod + pres, 25);
+
+  const total = swot + pestle + fin + diag;
+  return {swot, pestle, fin, diag, total};
+}
+
+function analystProfile(scores){
+  const t = scores.total;
+  if(t >= 85) return {type:"THE FORENSIC MASTER", desc:"Exceptional depth of analysis. You see what others miss — patterns, causality, financial signals. Future CFO or strategy consultant material."};
+  if(t >= 70) return {type:"THE SHARP ANALYST", desc:"Strong structured thinking with good financial awareness. A few gaps in connecting causes to consequences, but overall impressive diagnosis."};
+  if(t >= 55) return {type:"THE DEVELOPING ANALYST", desc:"Good instincts but needs more specific evidence-based reasoning. Analysis is sometimes surface-level — push deeper into numbers and decisions."};
+  if(t >= 35) return {type:"THE ROOKIE DETECTIVE", desc:"Basic framework awareness but analysis lacks specificity. Study the evidence files more carefully and connect each finding to your diagnosis."};
+  return {type:"THE TRAINEE", desc:"Significant gaps in analysis. Most fields need more detailed, evidence-backed content. Revisit all evidence and resubmit."};
+}
+
+function feedbackText(scores){
+  const parts = [];
+  const map = [{k:'swot',n:'SWOT Analysis'},{k:'pestle',n:'PESTLE Diagnosis'},{k:'fin',n:'Financial Analysis'},{k:'diag',n:'Cause of Death'}];
+  map.sort((a,b)=>scores[a.k]-scores[b.k]);
+  const weak = map[0], strong = map[3];
+  parts.push(`Strongest section: ${strong.n} (${scores[strong.k]}/25).`);
+  if(scores[weak.k] < 10) parts.push(`${weak.n} needs significant improvement — answers were too brief or lacked evidence from the case files.`);
+  else if(scores[weak.k] < 16) parts.push(`${weak.n} was your weakest area — add more specific data points from the financial records and news evidence.`);
+  if(selectedPestle.length < 2) parts.push('Selected very few PESTLE factors — revisit the evidence for external pressure signals.');
+  if(scores.fin < 12) parts.push('Financial analysis lacked specific numbers — always quote exact figures from the records.');
+  if(scores.total >= 70) parts.push('Overall strong forensic reasoning. Be ready to present your cause of death diagnosis verbally.');
+  else parts.push('Revisit the evidence room and resubmit with more specific, number-backed analysis before evaluation day.');
+  return parts.slice(0,4).join(' ');
+}
+
+// ═══ SUBMIT ═══
+function submitAutopsy(){
+  const cod = document.getElementById('a_cod')?.value.trim();
+  const pres = document.getElementById('a_prescription')?.value.trim();
+  if(!cod||cod.length<20){ toast('⚠️ Fill the Cause of Death section properly','err'); return; }
+  if(!pres||pres.length<20){ toast('⚠️ Fill the Prescription section','err'); return; }
+
+  const s = computeScores();
+  scores = s;
+  const profile = analystProfile(s);
+  const feedback = feedbackText(s);
+  const caseData = CASES[selectedCase];
+
+  // Fill verdict page
+  document.getElementById('reportDate').textContent = new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+  document.getElementById('r_name').textContent    = analyst.name;
+  document.getElementById('r_roll').textContent    = analyst.roll;
+  document.getElementById('r_section').textContent = analyst.section;
+  document.getElementById('r_case').textContent    = caseData.name + ' — ' + caseData.short;
+  document.getElementById('r_cod').textContent     = cod.slice(0,120) + (cod.length>120?'…':'');
+  document.getElementById('v_swot').textContent    = s.swot;
+  document.getElementById('v_pestle').textContent  = s.pestle;
+  document.getElementById('v_fin').textContent     = s.fin;
+  document.getElementById('v_diag').textContent    = s.diag;
+  document.getElementById('v_total').textContent   = s.total + ' / 100';
+  document.getElementById('r_analyst_type').textContent = profile.type;
+  document.getElementById('r_analyst_desc').textContent = profile.desc;
+  document.getElementById('r_feedback').textContent     = feedback;
+
+  // Save to Google Sheets
+  saveToSheets(s, profile, feedback);
+  gp('verdictPage',100);
+}
+
+// ═══ SAVE TO SHEETS ═══
+async function saveToSheets(s, profile, feedback){
+  if(!GSHEET_URL || GSHEET_URL.includes("PASTE_YOUR_APPS_SCRIPT_URL_HERE")){
+    toast('⚠️ Google Sheets URL not set — check Code.gs instructions','err');
+    return;
+  }
+
+  const set = (id,v)=>{ const el=document.getElementById(id); if(el) el.value=v; };
+  
+  // Set all hidden form values
+  set('hf_ts',  new Date().toLocaleString('en-IN'));
+  set('hf_nm',  analyst.name);
+  set('hf_rl',  analyst.roll);
+  set('hf_sc',  analyst.section);
+  set('hf_ca',  CASES[selectedCase]?.name||selectedCase);
+  set('hf_tot', s.total);
+  set('hf_sw',  s.swot);
+  set('hf_ps',  s.pestle);
+  set('hf_fs',  s.fin);
+  set('hf_ds',  s.diag);
+  set('hf_at',  profile.type);
+  set('hf_ss',  document.getElementById('a_swot_s')?.value||'');
+  set('hf_sw2', document.getElementById('a_swot_w')?.value||'');
+  set('hf_so',  document.getElementById('a_swot_o')?.value||'');
+  set('hf_st',  document.getElementById('a_swot_t')?.value||'');
+  set('hf_pf',  selectedPestle.join(', '));
+  set('hf_pe',  document.getElementById('a_pestle_explain')?.value||'');
+  set('hf_fn1', document.getElementById('fn1')?.value||'');
+  set('hf_fn2', document.getElementById('fn2')?.value||'');
+  set('hf_fn3', document.getElementById('fn3')?.value||'');
+  set('hf_fe',  document.getElementById('a_fn_explain')?.value||'');
+  set('hf_cod', document.getElementById('a_cod')?.value||'');
+  set('hf_pr',  document.getElementById('a_prescription')?.value||'');
+  set('hf_fb',  feedback);
+
+  // Cross-device compatible fetch submission
+  try {
+    const form = document.getElementById('arForm');
+    const formData = new FormData(form);
+    const params = new URLSearchParams();
+    for (const pair of formData.entries()) {
+      params.append(pair[0], pair[1]);
+    }
+
+    toast('⏳ Saving autopsy report to records...');
+    
+    // Using no-cors mode to ensure the POST reaches Google Apps Script 
+    // across all browsers (including Mac/Safari) without complex CORS blocks.
+    await fetch(GSHEET_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      cache: 'no-cache',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: params.toString()
+    });
+
+    toast('✅ Autopsy report saved to records');
+  } catch (error) {
+    console.error('Submission error:', error);
+    toast('⚠️ Connection error. Please try again.', 'err');
+  }
+}
+
+// ═══ TOAST ═══
+function toast(msg, type=''){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast' + (type==='err'?' err':'');
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+</script>
+</body>
+</html>

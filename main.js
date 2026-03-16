@@ -39,16 +39,15 @@ const COURSES = [
     meta:"150+ Questions · May 2025"
   },
   /* ── ADD MORE COURSES HERE ──────────────────────────────── */
-  // {
-  //   title:"Financial Accounting — Unit 1",
-  //   tag:"Notes",
-  //   desc:"Journal entries, ledger, trial balance, and final accounts.",
-  //   file:"financial-acc.html",
-  //   icon:"📒",
-  //   bg:"linear-gradient(135deg,#1a1000 0%,#3d2800 100%)",
-  //   badge:"FREE", bc:"bf",
-  //   meta:"6 Topics · June 2025"
-  // },
+  { title:" FINANCIAL AUTOPSY ROOM",
+     tag:"TEST",
+     desc:"ANALYSIS OF Journal entries, ledger, trial balance, and final accounts.",
+     file:"AutopsyRoom.html",
+   icon:"📒",
+     bg:"linear-gradient(135deg,#1a1000 0%,#3d2800 100%)",
+     badge:"FREE", bc:"bf",
+     meta:"6 Topics · June 2025"
+ },
 ];
 
 // Build cards

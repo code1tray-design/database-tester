@@ -507,7 +507,7 @@ function endGame(score, ranking) {
 }
 
 function saveToCloud(score, ranking, callback) {
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyuZeirN1escCDW9_7zjLPYdoIh8ilRISbrkhe5dFmU9aJ8skvGdfN-MwKFjcPqvXdspQ/exec";
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbznNb3DwMQw8ieUJW1TIECGDkK7AJ6ZvbXJErUg_UYcMi2xytOJpWdVlGc7hxyasgvwBw/exec";
     const timeSec = Math.floor((Date.now() - state.startTime) / 1000);
     const data = {
         type: "test",

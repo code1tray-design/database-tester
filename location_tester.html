@@ -190,11 +190,14 @@
 
   // ⚠️  Paste your Google Apps Script Web App URL (same one used in auth.js)
   const SHEET_ENDPOINT = 'https://script.google.com/macros/s/AKfycbzF41Fq9vgSqu60c4y9qarGYSNUdXL45FjZNN8mBqg6eK_rgWb14bNh3tL4oOhUYvBM/exec';
+//on off switch
+  // Toggle for testing: set to 'true' to skip verification and redirect instantly
+  const SKIP_LOCATION_CHECK = false; 
 
   // Chitkara University Punjab
   const ALLOWED_LAT       = 30.5167;
   const ALLOWED_LON       = 76.6590;
-  const ALLOWED_RADIUS_KM = 2;
+  const ALLOWED_RADIUS_KM = 1;
 
   // ⚠️  Change to your actual dashboard / homepage path
   const DASHBOARD_URL = 'homepage.html'; // changed from dashboard.html
@@ -311,6 +314,7 @@
   //  LOCATION CHECK — runs automatically on page load
   // ═══════════════════════════════════════════════════════════
   function startLocationCheck() {
+    if (SKIP_LOCATION_CHECK) { onSuccess({ coords: { latitude: ALLOWED_LAT, longitude: ALLOWED_LON, accuracy: 0 } }); return; }
     if (!navigator.geolocation) {
       setIcon('⚠️');
       document.getElementById('cardTitle').textContent = 'Not Supported';
