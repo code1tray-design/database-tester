@@ -22,7 +22,7 @@ const COURSES = [
     title:"COMTECH ",
     tag:"LEVEL 2",
     desc:"Market Field Study Submission.",
-    file:"ComTech_Level2.html",
+    file:"ComTech_Level2S.html",
     icon:"📁",
     bg:"linear-gradient(135deg,#00082e 0%,#0a1f7a 100%)",
     badge:"HOT", bc:"bh",
